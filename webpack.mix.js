@@ -11,5 +11,30 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/assets/js/admin.js', 'public/js')
-   .sass('resources/assets/sass/app.scss', 'public/css');
+mix.webpackConfig({
+  output: {
+    publicPath: "/",
+    chunkFilename: 'js/[name].[chunkhash].js'
+  },
+  resolve: {
+    alias: {
+      'components': 'assets/js/components',
+      'config': 'assets/js/config',
+      'plugins': 'assets/js/plugins',
+      'views': 'assets/js/views',
+      'styles': 'assets/js/styles'
+    },
+    modules: [
+      'node_modules',
+      path.resolve(__dirname, "resources")
+    ]
+  },
+});
+
+
+mix.js('resources/assets/js/admin.js', 'public/js/admin/admin.js').combine([
+	'node_modules/font-awesome/css/font-awesome.min.css',
+	'node_modules/ionicons/dist/css/ionicons.min.css',
+	'node_modules/element-ui/lib/theme-default/index.css',
+	'resources/assets/sass/app.scss'
+	],'public/css/admin.css');

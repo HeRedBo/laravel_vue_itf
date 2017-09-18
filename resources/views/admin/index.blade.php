@@ -22,5 +22,6 @@
 <body class="sidebar-mini skin-purple-light" >
 <div id="app"></div>
 <!-- <script type="text/javascript" src="/js/admin/admin.js"></script> -->
+<script type="text/javascript" src="/js/admin/admin.js"></script>
 </body>
 </html>

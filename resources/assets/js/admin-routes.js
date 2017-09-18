@@ -1,4 +1,3 @@
-
 export default [
-    { path: '/login', component: () => import('login/index.vue')},
+    { path: '/admin/login', component: () => import('views/admin/login/index.vue')},
 ];

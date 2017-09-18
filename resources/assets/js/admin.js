@@ -10,6 +10,8 @@ require('./bootstrap');
 import httpPlugin from 'plugins/http';
 import VueRouter from 'vue-router';
 import routes from './admin-routes.js';
+import ElementUI from 'element-ui'
+import App from './App.vue';
 
 Vue.use(VueRouter);
 Vue.use(ElementUI)
@@ -28,8 +30,9 @@ const router = new VueRouter({
     routes: routes
 });
 
-
 // 4. 创建和挂载根实例。
 // 记得要通过 router 配置参数注入路由，
 // 从而让整个应用都有路由功能
-const app = new Vue(Vue.util.extend({ router,store },App)).$mount('#app');
+const app = new Vue(Vue.util.extend({ router },App)).$mount('#app');
+
+
