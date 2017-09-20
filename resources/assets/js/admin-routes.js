@@ -10,7 +10,7 @@ export default [
         name : '首页',
         children : [
             {
-               // path: 'dashboard', component : 
+               path: 'dashboard', component : () => import('views/admin/dashboard/index.vue'),
             }
         ]
     }

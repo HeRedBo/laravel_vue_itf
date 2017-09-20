@@ -36,5 +36,6 @@ mix.js('resources/assets/js/admin.js', 'public/js/admin/admin.js').combine([
 	'node_modules/font-awesome/css/font-awesome.min.css',
 	'node_modules/ionicons/dist/css/ionicons.min.css',
 	'node_modules/element-ui/lib/theme-default/index.css',
-	'resources/assets/sass/app.scss'
+    'resources/assets/sass/app.scss',
+	'resources/assets/styles/index.scss'
 	],'public/css/admin.css');

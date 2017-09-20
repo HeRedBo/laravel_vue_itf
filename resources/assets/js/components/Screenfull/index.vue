@@ -12,12 +12,12 @@ import screenfull from 'screenfull';
 export default {
 	name : 'screenfull',
 	props : {
-		widht : {
+		width : {
 			type : Number,
 			default : 22
 		},
 		height : {
-			type : String,
+			type : Number,
 			default : 22
 		},
 		fill : {
