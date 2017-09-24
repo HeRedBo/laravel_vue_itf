@@ -65,6 +65,12 @@ class ApiResponse
         return $this->item($resource, $transformer);
     }
 
+    public function withSuccess($message = "Ok")
+    {
+        return $this->setStatusCode(
+            HttpResponse::HTTP_OK
+        )->withResult($message);
+    }
     /**
      * Make a 400 'Bad Request' response.
      *
@@ -90,6 +96,14 @@ class ApiResponse
     {
         return $this->setStatusCode(
             HttpResponse::HTTP_UNAUTHORIZED
+        )->withError($message);
+    }
+
+
+    public function  withUnprocessableEntity($message = 'Unprocessable Entity')
+    {
+        return $this->setStatusCode(
+            HttpResponse::HTTP_UNPROCESSABLE_ENTITY
         )->withError($message);
     }
 
