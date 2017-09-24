@@ -19,6 +19,7 @@ class CreateFederationsTable extends Migration
             $table->string('name', 50)->default('')->comment('联盟名称');
             $table->string('logo',255)->comment('联盟logo');
             $table->string('logo_thumb',255)->comment('联盟logo缩略图');
+            $table->string('remark', 255)->comment('联盟备注信息');
             $table->integer('operator_id')->unsigned()->default('0')->comment('操作人ID');
             $table->timestamps();
             $table->index('operator_id');

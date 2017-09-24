@@ -17,6 +17,7 @@ class CreateClassesTable extends Migration
         {
             $table->increments('id')->comment('主键ID');
             $table->string('name', 50)->default('')->comment('班级名称');
+            $table->string('remark', 255)->comment('班级备注信息');
             $table->integer('operator_id')->unsigned()->default('0')->comment('操作人ID');
             $table->timestamps();
             $table->index('operator_id');
