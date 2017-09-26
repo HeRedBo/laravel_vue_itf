@@ -9,6 +9,12 @@ Route::get('venue/edit ', ['as' => 'admin.venue.edit', 'uses' => 'VenueControlle
 Route::resource('venue', 'VenueController');
 Route::get('/upload/index', 'UploadController@index');
 
+
+// role
+Route::get('role/edit ', ['as' => 'admin.role.edit', 'uses' => 'RolesController@edit']);
+Route::resource('role', 'RolesController');
+
+
 if (!Request::ajax()) {
     Route::get('{path?}', ['uses' => 'IndexController@index'])->where('path', '[\/\w\.-]*');
 }
