@@ -4,6 +4,13 @@ namespace  App\Repositories;
 
 trait BaseRepository
 {
+    protected  $wheres = [];
+
+    protected  $whereIn = [];
+
+    protected  $sort = [];
+
+
     /**
      * Get number of records
      * @return mixed

@@ -179,7 +179,9 @@ return [
 
         // 第三方 服务提供者 
         // 七牛云服务
-        itbdw\QiniuStorage\QiniuFilesystemServiceProvider::class
+        itbdw\QiniuStorage\QiniuFilesystemServiceProvider::class,
+        // l5 Repository
+        Prettus\Repository\Providers\RepositoryServiceProvider::class,
 
     ],
 
