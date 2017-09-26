@@ -7,27 +7,16 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\VenueRepository;
 
-class VenueContoller extends Controller
+class VenueController extends ApiController
 {
     
     protected $venue;
 
-    protected $fields = [
-        'name' => '',
-        'federation_id' => '0',
-        'logo' => '',
-        'logo_thumb' => '',
-        'parent_id' => '0',
-        'province_code' => '0',
-        'city_code' => '0',
-        'district_code' => '0',
-        'address' => '',
-        'remark' => '',
-        'operator_id' => 0,
-    ]; 
+
 
     public function __construct(VenueRepository $venue)
     {
+        parent::__construct();
         $this->venue =  $venue;
     }
 
@@ -38,7 +27,7 @@ class VenueContoller extends Controller
      */
     public function index()
     {
-        //
+        return $this->response->withData($this->venue->page());
     }
 
     /**
@@ -60,16 +49,12 @@ class VenueContoller extends Controller
     public function store(Requests\VenueRequest $request)
     {
         $data = array_merge($request->all(), [
-            'user_id'      => \Auth::id(),
-            'last_user_id' => \Auth::id()
+            'operator_id'      => auth('admin')->user()->id,
         ]);
-        
-        foreach (array_keys($this->fields) as $key => $field) 
-        {
-            $articles->$field = $request->get($field, $this->fields[$field]);
-        }
-
+        $this->venue->store($data);
+        return $this->response->withCreated('数据创建成功');
     }
+
 
     /**
      * Display the specified resource.
@@ -88,9 +73,11 @@ class VenueContoller extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
-        //
+        $id      = $request->get('id');
+        $item    = $this->venue->getRowByPK($id)->toArray();
+        return $this->response->withData($item);
     }
 
     /**
@@ -100,9 +87,13 @@ class VenueContoller extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Requests\VenueRequest $request, $id)
     {
-        //
+        $data = array_merge($request->all(), [
+            'operator_id'      => auth('admin')->user()->id,
+        ]);
+        $this->venue->update($id, $data);
+        return $this->response->withSuccess('数据修改成功');
     }
 
     /**
@@ -113,6 +104,7 @@ class VenueContoller extends Controller
      */
     public function destroy($id)
     {
-        //
+        $this->venue->destroy($id);
+        return $this->response->withSuccess('数据删除成功');
     }
 }

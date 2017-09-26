@@ -15,6 +15,10 @@ class Venue extends Model
 		'remark','operator_id',
     ];
 
+    
+
+
 
 
 }
+

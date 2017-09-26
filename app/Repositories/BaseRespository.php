@@ -13,6 +13,7 @@ trait BaseRepository
         return $this->model->count();
     }
 
+
     public function updateColumn($id, $input)
     {
         $this->model = $this->getRowByPK($id);
@@ -73,6 +74,7 @@ trait BaseRepository
         $this->model = $this->getRowByPK($id);
         return $this->save($this->model, $input);
     }
+
     /**
      * Save the input's data
      *
@@ -82,6 +84,17 @@ trait BaseRepository
      */
     public  function save($model, $input)
     {
+
+        if(isset($this->fields) && is_array($this->fields))
+        {
+            foreach (array_keys($this->fields) as $field)
+            {
+
+                $input[$field] =  (isset($input[$field])) ?
+                    empty($input[$field]) ? $this->fields[$field] : $input[$field]  :
+                    $this->fields[$field];
+            }
+        }
         $model->fill($input);
         $model->save();
         return $model;
