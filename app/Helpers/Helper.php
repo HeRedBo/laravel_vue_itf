@@ -1,6 +1,7 @@
 <?php
 
 use itbdw\QiniuStorage\QiniuStorage;
+use App\Services\Logs\BLogger;
 
 function upBase64Img($base64_image_content, $path = 'images')
 {
@@ -32,7 +33,6 @@ if(!function_exists('human_filesize'))
     }
 }
 
-
 if(!function_exists('is_image')) 
 {
     /**
@@ -42,4 +42,24 @@ if(!function_exists('is_image'))
     {
         return starts_with($mimeType, 'image/');
     }
+}
+
+/**
+ * @param string $data 日志内容
+ * @param string $level 日志级别
+ * @param string $filename 日志文件名称
+ * @return bool
+ */
+function logResult($data, $level = 'info', $filename = '')
+{
+    $filename = $filename ?: BLogger::LOG_INFO;
+    $levels = [
+        'emergency', 'alert', 'critical',
+        'error', 'warning', 'notice',
+        'info', 'debug'
+    ];
+    if(!empty($level) && !in_array($level, $levels))
+        $level = 'info';
+    BLogger::getLogger($filename)->$level($data);
+    return true;
 }
