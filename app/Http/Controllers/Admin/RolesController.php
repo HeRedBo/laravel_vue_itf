@@ -38,7 +38,7 @@ class RolesController extends ApiController
     public function index()
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $roles = $this->repository->all();
+        $roles = $this->repository->paginate(20)->toArray();
 
         if (request()->wantsJson()) {
 
@@ -46,8 +46,9 @@ class RolesController extends ApiController
                 'data' => $roles,
             ]);
         }
-
-        return view('roles.index', compact('roles'));
+        return $this->response->withData($roles);
+       
+        //return view('roles.index', compact('roles'));
     }
 
     /**
@@ -59,20 +60,8 @@ class RolesController extends ApiController
      */
     public function store(RoleCreateRequest $request)
     {
-
         $role = $this->repository->create($request->all());
-
-        $response = [
-            'message' => 'Role created.',
-            'data'    => $role->toArray(),
-        ];
-
-        if ($request->wantsJson()) {
-
-            return response()->json($response);
-        }
-
-
+        return $this->response->withCreated('角色创建成功');
     }
 
 
@@ -86,18 +75,14 @@ class RolesController extends ApiController
     public function show($id)
     {
         $role = $this->repository->find($id);
-
         if (request()->wantsJson()) {
-
             return response()->json([
                 'data' => $role,
             ]);
         }
-
         return view('roles.show', compact('role'));
     }
-
-
+    
     /**
      * Show the form for editing the specified resource.
      *
@@ -105,12 +90,11 @@ class RolesController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
-
-        $role = $this->repository->find($id);
-
-        return view('roles.edit', compact('role'));
+        $id   = $request->get('id');
+        $role = $this->repository->find($id)->toArray();
+        return $this->response->withData($role);
     }
 
 
@@ -124,18 +108,10 @@ class RolesController extends ApiController
      */
     public function update(RoleUpdateRequest $request, $id)
     {
-
-        try {
-
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
-
+        try
+        {
             $role = $this->repository->update($request->all(), $id);
-
-            $response = [
-                'message' => 'Role updated.',
-                'data'    => $role->toArray(),
-            ];
-
+            return $this->response->withSuccess('数据更新成功');
             if ($request->wantsJson()) {
 
                 return response()->json($response);
