@@ -7,26 +7,29 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
-use App\Http\Requests\RoleCreateRequest;
-use App\Http\Requests\RoleUpdateRequest;
-use App\Repositories\RoleRepository;
+use App\Http\Requests\AdminCreateRequest;
+use App\Http\Requests\AdminUpdateRequest;
+use App\Repositories\AdminRepository;
 
 
 
-class RolesController extends ApiController
+class AdminsController extends ApiController
 {
 
     /**
-     * @var RoleRepository
+     * @var AdminRepository
      */
     protected $repository;
 
+    /**
+     * @var AdminValidator
+     */
+    protected $validator;
 
-    public function __construct(RoleRepository $repository)
+    public function __construct(AdminRepository $repository)
     {
         parent::__construct();
         $this->repository = $repository;
-
     }
 
 
@@ -38,30 +41,53 @@ class RolesController extends ApiController
     public function index()
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $roles = $this->repository->paginate(20)->toArray();
+        $admins = $this->repository->all();
 
         if (request()->wantsJson()) {
 
             return response()->json([
-                'data' => $roles,
+                'data' => $admins,
             ]);
         }
-        return $this->response->withData($roles);
-       
-        //return view('roles.index', compact('roles'));
+
+        return view('admins.index', compact('admins'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  RoleCreateRequest $request
+     * @param  AdminCreateRequest $request
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(RoleCreateRequest $request)
+    public function store(AdminCreateRequest $request)
     {
-        $role = $this->repository->create($request->all());
-        return $this->response->withCreated('角色创建成功');
+
+        try 
+        {
+            $admin = $this->repository->createAdminData($request->all());
+
+            $response = [
+                'message' => 'Admin created.',
+                'data'    => $admin->toArray(),
+            ];
+
+            if ($request->wantsJson()) {
+
+                return response()->json($response);
+            }
+
+            return redirect()->back()->with('message', $response['message']);
+        } catch (ValidatorException $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'error'   => true,
+                    'message' => $e->getMessageBag()
+                ]);
+            }
+
+            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
+        }
     }
 
 
@@ -74,15 +100,19 @@ class RolesController extends ApiController
      */
     public function show($id)
     {
-        $role = $this->repository->find($id);
+        $admin = $this->repository->find($id);
+
         if (request()->wantsJson()) {
+
             return response()->json([
-                'data' => $role,
+                'data' => $admin,
             ]);
         }
-        return view('roles.show', compact('role'));
+
+        return view('admins.show', compact('admin'));
     }
-    
+
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -90,28 +120,37 @@ class RolesController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request)
+    public function edit($id)
     {
-        $id   = $request->get('id');
-        $role = $this->repository->find($id)->toArray();
-        return $this->response->withData($role);
+
+        $admin = $this->repository->find($id);
+
+        return view('admins.edit', compact('admin'));
     }
 
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  RoleUpdateRequest $request
+     * @param  AdminUpdateRequest $request
      * @param  string            $id
      *
      * @return Response
      */
-    public function update(RoleUpdateRequest $request, $id)
+    public function update(AdminUpdateRequest $request, $id)
     {
-        try
-        {
-            $role = $this->repository->update($request->all(), $id);
-            return $this->response->withSuccess('数据更新成功');
+
+        try {
+
+            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
+
+            $admin = $this->repository->update($request->all(), $id);
+
+            $response = [
+                'message' => 'Admin updated.',
+                'data'    => $admin->toArray(),
+            ];
+
             if ($request->wantsJson()) {
 
                 return response()->json($response);
@@ -147,11 +186,11 @@ class RolesController extends ApiController
         if (request()->wantsJson()) {
 
             return response()->json([
-                'message' => 'Role deleted.',
+                'message' => 'Admin deleted.',
                 'deleted' => $deleted,
             ]);
         }
 
-        return redirect()->back()->with('message', 'Role deleted.');
+        return redirect()->back()->with('message', 'Admin deleted.');
     }
 }

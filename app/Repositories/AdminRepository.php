@@ -10,5 +10,7 @@ use Prettus\Repository\Contracts\RepositoryInterface;
  */
 interface AdminRepository extends RepositoryInterface
 {
-    //
+    
+    public function createAdminData(array $data);
+
 }

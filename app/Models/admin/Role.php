@@ -8,8 +8,18 @@ use Prettus\Repository\Traits\TransformableTrait;
 
 class Role extends Model implements Transformable
 {
+    
+    protected  $table = "admin_roles";
     use TransformableTrait;
+    
+    protected $dates = ['created_at', 'updated_at'];
 
-    protected $fillable = [];
-
+     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name', 'description', 'display_name',
+    ];
 }

@@ -1,30 +1,31 @@
 <?php
 
-namespace App\Models\admin;
+namespace App\Models\Admin;
 
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
+use Illuminate\Database\Eloquent\Model;
+use Prettus\Repository\Contracts\Transformable;
+use Prettus\Repository\Traits\TransformableTrait;
 
-class Admin extends Authenticatable
+class Admin extends Model implements Transformable
 {
-   use Notifiable;
-   protected $table = 'admin';
-   protected $softDelete = true;
-
-  
-   /**
+    use TransformableTrait;
+    
+    use Notifiable;
+    protected $table = 'admin';
+    protected $softDelete = true;
+    
+    
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'username','name', 'email', 'password','picture','phone'
     ];
-
-     /**
+    
+    /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
@@ -32,4 +33,5 @@ class Admin extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
 }

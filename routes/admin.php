@@ -14,6 +14,14 @@ Route::get('/upload/index', 'UploadController@index');
 Route::get('role/edit ', ['as' => 'admin.role.edit', 'uses' => 'RolesController@edit']);
 Route::resource('role', 'RolesController');
 
+// permission
+Route::get('permission/edit ', ['as' => 'admin.role.permission', 'uses' => 'PermissionsController@edit']);
+Route::resource('permission', 'PermissionsController');
+
+// admin
+Route::get('admins/edit ', ['as' => 'admins.admin.permission', 'uses' => 'AdminsController@edit']);
+Route::resource('admins', 'AdminsController');
+
 
 if (!Request::ajax()) {
     Route::get('{path?}', ['uses' => 'IndexController@index'])->where('path', '[\/\w\.-]*');
