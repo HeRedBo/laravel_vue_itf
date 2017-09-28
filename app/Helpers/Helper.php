@@ -45,6 +45,20 @@ if(!function_exists('is_image'))
 }
 
 /**
+ * 判断字符串是否是base64编
+ * @param string $image_content
+ * @return bool 返回数据校验结果
+ */
+function checkBase64Image($image_content)
+{
+    if(preg_match('/^(data:\s*image\/(\w+);base64,)/', $image_content))
+    {
+        return true;
+    }
+    return false;
+}
+
+/**
  * @param string $data 日志内容
  * @param string $level 日志级别
  * @param string $filename 日志文件名称
@@ -63,3 +77,21 @@ function logResult($data, $level = 'info', $filename = '')
     BLogger::getLogger($filename)->$level($data);
     return true;
 }
+
+if(!function_exists('error'))
+{
+   
+    function error($msg = 'error', array $data = [])
+    {
+        return ['status' => 0, 'msg' => $msg, 'data' => $data];
+    }
+}
+
+if(!function_exists('success'))
+{
+    function success($msg = 'success', array  $data = [])
+    {
+        return ['status' => 1, 'msg' => $msg, 'data' => $data];
+    }
+}
+

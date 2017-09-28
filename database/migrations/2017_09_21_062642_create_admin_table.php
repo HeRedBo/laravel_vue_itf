@@ -1,11 +1,13 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class CreateAdminTable extends Migration
 {
+    protected $table_name = 'admin';
     /**
      * Run the migrations.
      *
@@ -13,7 +15,7 @@ class CreateAdminTable extends Migration
      */
     public function up()
     {
-        Schema::create('admin', function (Blueprint $table) {
+        Schema::create($this->table_name, function (Blueprint $table) {
             $table->increments('id')->comment('主键ID');
             $table->string('username',60)->unique()->comment('登录名');
             $table->string('name',100)->comment('昵称');
@@ -24,6 +26,7 @@ class CreateAdminTable extends Migration
             $table->rememberToken();
             $table->timestamps();
         });
+        DB::statement("ALTER TABLE $this->table_name comment '后台管理员表'");
     }
 
     /**
@@ -33,6 +36,6 @@ class CreateAdminTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('admin');
+        Schema::dropIfExists($this->table_name);
     }
 }

@@ -18,6 +18,9 @@ Route::resource('role', 'RolesController');
 Route::get('permission/edit ', ['as' => 'admin.role.permission', 'uses' => 'PermissionsController@edit']);
 Route::resource('permission', 'PermissionsController');
 
+// admin
+Route::get('admins/edit ', ['as' => 'admins.admin.permission', 'uses' => 'AdminsController@edit']);
+Route::resource('admins', 'AdminsController');
 
 
 if (!Request::ajax()) {

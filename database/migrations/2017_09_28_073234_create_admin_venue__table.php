@@ -1,13 +1,14 @@
 <?php
 
+
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRolePermissionTable extends Migration
+class CreateAdminVenueTable extends Migration
 {
-    protected $table_name = 'role_permission';
-
+    protected $table_name = 'admin_venue';
     /**
      * Run the migrations.
      *
@@ -15,13 +16,14 @@ class CreateRolePermissionTable extends Migration
      */
     public function up()
     {
+         // 道馆课程表
         Schema::create($this->table_name, function (Blueprint $table) {
             $table->increments('id')->comment('主键ID');
-            $table->integer('permission_id')->unsigned()->comment('权限id');
-            $table->integer('role_id')->unsigned()->index('permission_role_role_id_foreign')->comment('角色ID');
-            $table->unique(['permission_id','role_id']);
+            $table->integer('admin_id')->unsigned()->comment('管理员ID');
+            $table->integer('venue_id')->unsigned()->comment('道馆ID');
+            $table->unique(['admin_id','venue_id']);
         });
-        DB::statement("ALTER TABLE $this->table_name comment '角色权限表'");
+        DB::statement("ALTER TABLE $this->table_name comment '管理员道馆关联表'");
     }
 
     /**
@@ -31,6 +33,6 @@ class CreateRolePermissionTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists($this->table_name);
+         Schema::dropIfExists($this->table_name);
     }
 }

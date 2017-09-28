@@ -6,6 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateAdminPermissionsTable extends Migration
 {
+    protected $table_name = 'admin_permissions';
     /**
      * Run the migrations.
      *
@@ -13,7 +14,7 @@ class CreateAdminPermissionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('admin_permissions', function (Blueprint $table) {
+        Schema::create($this->table_name, function (Blueprint $table) {
             $table->increments('id',11)->comment('主键ID');
             $table->string('name',50)->unique('permissions_name_unique')->comment('权限名称');
             $table->string('display_name', 50)->default('')->comment('显示名称');
@@ -25,6 +26,7 @@ class CreateAdminPermissionsTable extends Migration
             $table->smallInteger('order_num')->default(0)->comment('排序');
             $table->timestamps();
         });
+        DB::statement("ALTER TABLE $this->table_name comment '权限表'");
     }
 
     /**
@@ -34,6 +36,6 @@ class CreateAdminPermissionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('admin_permissions');
+        Schema::dropIfExists($this->table_name);
     }
 }
