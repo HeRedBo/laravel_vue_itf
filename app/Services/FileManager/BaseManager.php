@@ -98,10 +98,9 @@ class BaseManager
      /**
      * 返回文件详细信息数组
      */
-    protected function fileDetails($path)
+    public function fileDetails($path)
     { 
         $path = '/' . ltrim($path, '/');
-
         return [
             'name'     => basename($path),
             'fullPath' => $path,
@@ -118,8 +117,8 @@ class BaseManager
      */
     public function fileWebpath($path)
     { 
-        $path = rtrim(config('blog.uploads.webpath'), '/') . '/' .ltrim($path, '/');
-        return url($path);
+        $path =  '/' .ltrim($path, '/');
+        return $this->disk->url($path);
     }
 
     /**
@@ -139,18 +138,35 @@ class BaseManager
     {
         return $this->disk->size($path);
     }
-
+    
     /**
-     * 返回最后修改时间
+     * Get the file's last modified time by the path.
+     *
+     * @param $path
+     * @return string
      */
     public function fileModified($path)
     {
         return Carbon::createFromTimestamp(
-            $this->disk->lastModified($path)
-        );
+            substr($this->disk->lastModified($path), 0, 10)
+        )->toDateTimeString();
     }
-
-
+    
+    /**
+     * Get all the files by the folder.
+     *
+     * @param  string $folder
+     * @return array
+     */
+    public function getFileList($folder)
+    {
+        $files = [];
+        $filesContent = $this->disk->allFiles($folder);
+        foreach ($filesContent as $file) {
+            $files[] = $this->fileDetails($file);
+        }
+        return $files;
+    }
     /**
      * 创建新目录
      */
@@ -209,8 +225,8 @@ class BaseManager
      */
     public function storeFile(UploadedFile $file, $dir = '', $name = '')
     {
-        $hashName = emnty($name) 
-                    ? str_ireplace('.jpeg', '.jpg', $file->hashName()) 
+        $hashName = empty($name)
+                    ? str_ireplace('.jpeg', '.jpg', $file->hashName())
                     : $name;
         $mime = $file->getMimeType();
         $realPath = $this->disk->putFileAs($dir, $file, $hashName);
@@ -222,8 +238,7 @@ class BaseManager
             'size'          => human_filesize($file->getClientSize()),
             'real_path'     => $realPath,
             'relative_url'  => public_path('files')."/$realPath",
-            //'url'           => asset(public_path('files')."/$realPath"),
-            'url'           =>$this->disk->url($realPath),
+            'url'           =>$this->fileWebPath($realPath),
         ];
     }
 
@@ -263,6 +278,12 @@ class BaseManager
             return "File does not exist.";
         }
         return $this->disk->delete($path);
+    }
+    
+    public  function  fileUrl($path)
+    {
+        $path =   '/' .ltrim($path, '/');
+        return $this->disk->url($path);
     }
 
     

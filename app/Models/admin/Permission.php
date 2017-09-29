@@ -15,15 +15,11 @@ class Permission extends Model implements Transformable
     protected $dates = ['created_at', 'updated_at'];
 
     protected $fillable = ['name','display_name','parent_id','icon','is_show','order_num'];
-    
-    protected  $attributes = [
-        'name' => '',
-        'display_name' => '',
-        'parent_id' => 0,
-        'icon' => '',
-        'is_show' => 0,
-        'order_num' => 0,
-    ];
-    
+
+
+    public function roles()
+    {
+        return $this->belongsToMany(roles::class,'role_permission','permission_id','role_id');
+    }
 
 }

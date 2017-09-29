@@ -3,19 +3,25 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Requests\AdminCreateRequest;
 use App\Http\Requests\AdminUpdateRequest;
 use App\Repositories\AdminRepository;
-
+use App\Models\Admin\Admin;
 
 
 class AdminsController extends ApiController
 {
-
+    protected  $fields = [
+        'username' => '',
+        'name'     => '',
+        'phone'    => '',
+        'email'    => '',
+        'picture'  => '',
+        'roles'    => [],
+    ];
     /**
      * @var AdminRepository
      */
@@ -62,32 +68,11 @@ class AdminsController extends ApiController
      */
     public function store(AdminCreateRequest $request)
     {
-
-        try 
-        {
-            $admin = $this->repository->createAdminData($request->all());
-
-            $response = [
-                'message' => 'Admin created.',
-                'data'    => $admin->toArray(),
-            ];
-
-            if ($request->wantsJson()) {
-
-                return response()->json($response);
-            }
-
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'error'   => true,
-                    'message' => $e->getMessageBag()
-                ]);
-            }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
-        }
+         $res = $this->repository->createAdminData($request->all());
+            if($res['status'] == 1)
+                return $this->response->withCreated('数据创建成功');
+            else 
+                return $this->response->withError($res['msg']);
     }
 
 
@@ -120,12 +105,19 @@ class AdminsController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
-
-        $admin = $this->repository->find($id);
-
-        return view('admins.edit', compact('admin'));
+        $id = $request->get('id');
+        $result = $this->repository->getAdminInfo($id);
+        if($result['status'] == 1)
+        {
+            return $this->response
+                        ->setResponseData($result['data'])
+                        ->withSuccess($result['msg']);
+        } else
+        {
+            return $this->response->withError($res['msg']);
+        }
     }
 
 
@@ -139,8 +131,9 @@ class AdminsController extends ApiController
      */
     public function update(AdminUpdateRequest $request, $id)
     {
-
-        try {
+        
+        try
+        {
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
 

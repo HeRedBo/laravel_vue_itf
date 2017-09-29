@@ -8,6 +8,9 @@ Route::get('/ApiTest/up-base64-img', 'ApiTestController@uploadBase64Img');
 Route::get('venue/edit ', ['as' => 'admin.venue.edit', 'uses' => 'VenueController@edit']);
 Route::resource('venue', 'VenueController');
 Route::get('/upload/index', 'UploadController@index');
+Route::post('/upload/uploadImg', 'UploadController@uploadImg');
+Route::get('/upload/file-detail', 'UploadController@fileDetail');
+Route::get('/upload/file-list', 'UploadController@getFileList');
 
 
 // role

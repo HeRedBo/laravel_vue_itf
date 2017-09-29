@@ -11,7 +11,7 @@ use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Requests\PermissionCreateRequest;
 use App\Http\Requests\PermissionUpdateRequest;
 use App\Repositories\PermissionRepository;
-
+use Illuminate\Support\Facades\DB;
 
 class PermissionsController extends ApiController
 {
@@ -19,7 +19,7 @@ class PermissionsController extends ApiController
      * @var PermissionRepository
      */
     protected $repository;
-    
+
     public function __construct(PermissionRepository $repository)
     {
         parent::__construct();
@@ -34,14 +34,14 @@ class PermissionsController extends ApiController
      */
     public function index()
     {
-        
+
         $data['tree'] =  $this->repository->getTreeData();
         $data['select'] = $this->repository->getSelectList();
         return $this->response->withData($data);
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
         $permissions = $this->repository->all();
 
-        if (request()->wantsJson()) 
+        if (request()->wantsJson())
         {
 
             return response()->json([

@@ -15,10 +15,14 @@ class Venue extends Model
 		'remark','operator_id',
     ];
 
+
+    public function users()
+    {
+        return $this->belongsToMany(Admin::class,'admin_venue','venue_id','admin_id');
+    }
+
     
 
 
 
-
 }
-

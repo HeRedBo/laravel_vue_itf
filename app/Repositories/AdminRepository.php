@@ -12,5 +12,7 @@ interface AdminRepository extends RepositoryInterface
 {
     
     public function createAdminData(array $data);
+    
+    public  function getAdminInfo($id);
 
 }
