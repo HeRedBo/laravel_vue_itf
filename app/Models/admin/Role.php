@@ -44,6 +44,42 @@ class Role extends Model implements Transformable
     }
 
     
+    public function getTreeData()
+    {
+        $data = [];
+        $permission = new permission();
+        $list = $permission->query()
+            ->orderBy('order_num','ASC')
+            ->get()
+            ->toArray();
 
+        foreach ($list as $k => $v) 
+        {
+            if($v['parent_id'] == 0) 
+            {
+                $data[$k]['id'] = $v['id'];
+                $data[$k]['parent'] = '#';
+                $data[$k]['text'] = $v['display_name'];
+                $data[$k]['state'] = ['opened' => true];
+            } 
+            else
+            {
+                $data[$k]['id'] = $v['id'];
+                $data[$k]['parent']= $v['parent_id'];
+                $data[$k]['text'] = $v['display_name'];
+
+            }
+
+       
+            $isExists = $this->permissions->contains('id',$v['id']);
+            if($isExists)
+            {
+                $data[$k]['state'] = ['opened' => true, 'selected' => true];
+            }
+
+        }
+
+        return $data;
+    }
 
 }

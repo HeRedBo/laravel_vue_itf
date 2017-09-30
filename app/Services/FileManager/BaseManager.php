@@ -16,10 +16,10 @@ class BaseManager
     protected $mimeDetect;
     
 
-    public function __construct(PhpRepository $mimeDetect)
+    public function __construct()
     {
         $this->disk = Storage::disk(config('filesystems.default', 'public'));
-        $this->mimeDetect = $mimeDetect;
+        $this->mimeDetect = new PhpRepository();
     }
 
 
@@ -215,14 +215,14 @@ class BaseManager
     }
 
      /**
-     * Handle the file upload.
-     *
-     * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
-     * @param string                                              $dir
-     * @param string                                              $name
-     *
-     * @return array|bool
-     */
+      * Handle the file upload.
+      *
+      * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
+      * @param string                                              $dir
+      * @param string                                              $name
+      *
+      * @return array|bool
+      */
     public function storeFile(UploadedFile $file, $dir = '', $name = '')
     {
         $hashName = empty($name)

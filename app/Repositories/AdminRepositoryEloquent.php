@@ -47,11 +47,12 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
-
+    
     /**
      *  create admin data
-     * @param  array  $data [description]
-     * @return
+     * @param array $data
+     * @return array|void
+     * @author Red-Bo
      */
     public function createAdminData(array $data)
     {
@@ -75,11 +76,9 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
             }
             
             // 保存用户信息
-         
             $admin->save();
             $roles  = $data['roles'];
             $venues = $data['venues'];
-     
             if(!empty($roles))
             {
                 $admin->giveRoleTo($roles);
@@ -131,9 +130,65 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
        $user['venuesStr'] = (!empty($venues_res)) ? implode(',', $venueStr) : '未分配';
        return success('数据获取成功', $user);
     }
-
+    
+    /**
+     * @param  integer   $id record id
+     * @param array $data  request data
+     * @return array|void   返回操作结果
+     * @author Red-Bo
+     */
     public function updateAdminData($id, array $data)
     {
         
+        try 
+        {
+             $admin = $this->find($id);
+            if($admin)
+            {
+                DB::beginTransaction();
+                $old_picture = $admin->picture;
+                foreach(array_keys($this->fields) as $field)
+                {
+                    $admin->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
+                }
+                unset($admin->roles);
+                unset($admin->venues);
+                if($data['password'] != '')
+                {
+                    $admin->password = bcrypt($data['password']);
+                }
+                if(checkBase64Image($data['picture']))
+                {
+                    $admin->picture = upBase64Img($data['picture'],'admin/avatar');
+                    // 删除旧图片
+                   // Storage::disk('local')->delete($old_picture);
+                }
+                // 保存用户信息
+                $admin->save();
+                $roles  = $data['roles'];
+                $venues = $data['venues'];
+                if(!empty($roles))
+                {
+                    $admin->giveRoleTo($roles);
+                }
+                if(!empty($venues))
+                {
+                    $admin->giveVenueTo($venues);
+                }
+                DB::commit();
+                return success('数据修改成功');
+            }
+            else
+            {
+                return errror('数据不存在');
+            }
+        }
+        catch (\Exception $e)
+        {
+            DB::rollBack();
+            logResult('【管理员数据创建失败】'. $e->__toString(),'error');
+            return error($e->getMessage());
+        }
+       
     }
 }

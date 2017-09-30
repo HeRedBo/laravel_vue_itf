@@ -28,6 +28,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(\App\Repositories\RoleRepository::class, \App\Repositories\RoleRepositoryEloquent::class);
         $this->app->bind(\App\Repositories\RoleRepository::class, \App\Repositories\RoleRepositoryEloquent::class);
         $this->app->bind(\App\Repositories\PermissionRepository::class, \App\Repositories\PermissionRepositoryEloquent::class);
+        $this->app->bind(\App\Repositories\VenueRepository::class, \App\Repositories\VenueRepositoryEloquent::class);
         //:end-bindings:
     }
 }

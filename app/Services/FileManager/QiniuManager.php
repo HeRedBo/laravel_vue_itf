@@ -2,6 +2,7 @@
 namespace App\Services\FileManager;
 
 use Carbon\Carbon;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class QiniuManager extends BaseManager
 {
@@ -34,6 +35,36 @@ class QiniuManager extends BaseManager
         return Carbon::createFromTimestamp(
             substr($this->disk->lastModified($path), 0, 10)
         )->toDateTimeString();
+    }
+    
+    
+    /**
+     * Handle the file upload.
+     *
+     * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
+     * @param string                                              $dir
+     * @param string                                              $name
+     *
+     * @return array|bool
+     */
+    public function storeFile(UploadedFile $file, $dir = '', $name = '')
+    {
+        $extension =$file->getClientOriginalExtension();
+        $fileName = date('YmdHis').'-' . microtime(true).'-'. rand(109, 999) . '.' .$extension;
+        $hashName = empty($name)
+            ? str_ireplace('.jpeg', '.jpg', $fileName)
+            : $name;
+        $mime = $file->getMimeType();
+        $realPath = $this->disk->putFileAs($dir, $file, $hashName);
+        return [
+            'success'       => true,
+            'filename'      => $hashName,
+            'original_name' => $file->getClientOriginalName(),
+            'mime'          => $mime,
+            'size'          => human_filesize($file->getClientSize()),
+            'real_path'     => $realPath,
+            'url'           =>$this->fileWebPath($realPath),
+        ];
     }
     
 }

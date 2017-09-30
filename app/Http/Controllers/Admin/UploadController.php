@@ -10,9 +10,9 @@ class UploadController extends Controller
 {
     protected $manager;
 
-    public function __construct(BaseManager $manager)
+    public function __construct()
     {
-        $this->manager = $manager;
+        $this->manager = app('uploader');
     }
 
      /**

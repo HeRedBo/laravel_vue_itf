@@ -9,10 +9,12 @@ use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Requests\AdminCreateRequest;
 use App\Http\Requests\AdminUpdateRequest;
 use App\Repositories\AdminRepository;
+use App\Repositories\RoleRepository;
+use App\Repositories\VenueRepository;
 use App\Models\Admin\Admin;
 
 
-class AdminsController extends ApiController
+class AdminController extends ApiController
 {
     protected  $fields = [
         'username' => '',
@@ -26,16 +28,26 @@ class AdminsController extends ApiController
      * @var AdminRepository
      */
     protected $repository;
+    
+    protected  $role;
+
+    protected $venue; 
 
     /**
      * @var AdminValidator
      */
     protected $validator;
 
-    public function __construct(AdminRepository $repository)
+    public function __construct(
+        AdminRepository $repository, 
+        RoleRepository $role,
+        VenueRepository $venue
+    )
     {
         parent::__construct();
         $this->repository = $repository;
+        $this->role = $role;
+        $this->venue = $venue;
     }
 
 
@@ -48,7 +60,6 @@ class AdminsController extends ApiController
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
         $admins = $this->repository->all();
-
         if (request()->wantsJson()) {
 
             return response()->json([
@@ -119,8 +130,30 @@ class AdminsController extends ApiController
             return $this->response->withError($res['msg']);
         }
     }
-
-
+    
+    /**
+     * 获取所有的角色数据
+     * @return \Illuminate\Http\JsonResponse
+     * @author Red-Bo
+     */
+    public function role()
+    {
+        $roles = $this->role->all()->toArray();
+        return $this->response->withData($roles);
+    }
+    
+    /**
+     * 获取道馆下拉列表
+     * @return \Illuminate\Http\JsonResponse
+     * @author Red-Bo
+     */
+    public  function  venues()
+    {
+        $columns  = ['id','name','logo'];
+        $venues = $this->venue->all($columns)->toArray();
+        return $this->response->withData($venues);
+    }
+        
     /**
      * Update the specified resource in storage.
      *
@@ -131,6 +164,8 @@ class AdminsController extends ApiController
      */
     public function update(AdminUpdateRequest $request, $id)
     {
+        
+        
         
         try
         {

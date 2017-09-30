@@ -1,24 +1,36 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
 
 use App\Http\Requests;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use Prettus\Validator\Contracts\ValidatorInterface;
+use Prettus\Validator\Exceptions\ValidatorException;
+use App\Http\Requests\VenueCreateRequest;
+use App\Http\Requests\VenueUpdateRequest;
 use App\Repositories\VenueRepository;
+use App\Validators\VenueValidator;
+
 
 class VenueController extends ApiController
 {
-    
-    protected $venue;
 
+    /**
+     * @var VenueRepository
+     */
+    protected $repository;
 
+    /**
+     * @var VenueValidator
+     */
+    protected $validator;
 
-    public function __construct(VenueRepository $venue)
+    public function __construct(VenueRepository $repository)
     {
-        parent::__construct();
-        $this->venue =  $venue;
+        $this->repository = $repository;
     }
+
 
     /**
      * Display a listing of the resource.
@@ -27,84 +39,159 @@ class VenueController extends ApiController
      */
     public function index()
     {
-        return $this->response->withData($this->venue->page());
-    }
+        $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
+        $venues = $this->repository->all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        if (request()->wantsJson()) {
+
+            return response()->json([
+                'data' => $venues,
+            ]);
+        }
+
+        return view('venues.index', compact('venues'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  VenueCreateRequest $request
+     *
      * @return \Illuminate\Http\Response
      */
-    public function store(Requests\VenueRequest $request)
+    public function store(VenueCreateRequest $request)
     {
-        $data = array_merge($request->all(), [
-            'operator_id'      => auth('admin')->user()->id,
-        ]);
-        $this->venue->store($data);
-        return $this->response->withCreated('数据创建成功');
+        
+        try {
+
+            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
+
+            $venue = $this->repository->create($request->all());
+
+            $response = [
+                'message' => 'Venue created.',
+                'data'    => $venue->toArray(),
+            ];
+
+            if ($request->wantsJson()) {
+
+                return response()->json($response);
+            }
+
+            return redirect()->back()->with('message', $response['message']);
+        } catch (ValidatorException $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'error'   => true,
+                    'message' => $e->getMessageBag()
+                ]);
+            }
+
+            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
+        }
     }
 
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        //
+        $venue = $this->repository->find($id);
+
+        if (request()->wantsJson()) {
+
+            return response()->json([
+                'data' => $venue,
+            ]);
+        }
+
+        return view('venues.show', compact('venue'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
+     *
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request)
+    public function edit($id)
     {
-        $id      = $request->get('id');
-        $item    = $this->venue->getRowByPK($id)->toArray();
-        return $this->response->withData($item);
+
+        $venue = $this->repository->find($id);
+
+        return view('venues.edit', compact('venue'));
     }
+
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  VenueUpdateRequest $request
+     * @param  string            $id
+     *
+     * @return Response
      */
-    public function update(Requests\VenueRequest $request, $id)
+    public function update(VenueUpdateRequest $request, $id)
     {
-        $data = array_merge($request->all(), [
-            'operator_id'      => auth('admin')->user()->id,
-        ]);
-        $this->venue->update($id, $data);
-        return $this->response->withSuccess('数据修改成功');
+
+        try {
+
+            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
+
+            $venue = $this->repository->update($request->all(), $id);
+
+            $response = [
+                'message' => 'Venue updated.',
+                'data'    => $venue->toArray(),
+            ];
+
+            if ($request->wantsJson()) {
+
+                return response()->json($response);
+            }
+
+            return redirect()->back()->with('message', $response['message']);
+        } catch (ValidatorException $e) {
+
+            if ($request->wantsJson()) {
+
+                return response()->json([
+                    'error'   => true,
+                    'message' => $e->getMessageBag()
+                ]);
+            }
+
+            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $this->venue->destroy($id);
-        return $this->response->withSuccess('数据删除成功');
+        $deleted = $this->repository->delete($id);
+
+        if (request()->wantsJson()) {
+
+            return response()->json([
+                'message' => 'Venue deleted.',
+                'deleted' => $deleted,
+            ]);
+        }
+
+        return redirect()->back()->with('message', 'Venue deleted.');
     }
 }

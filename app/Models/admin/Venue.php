@@ -1,12 +1,15 @@
 <?php
 
-namespace App\Models\admin;
+namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Model;
+use Prettus\Repository\Contracts\Transformable;
+use Prettus\Repository\Traits\TransformableTrait;
 
-class Venue extends Model
+class Venue extends Model implements Transformable
 {
-    //
+    use TransformableTrait;
+
     protected $dates = ['created_at', 'updated_at'];
 
     protected $fillable = [
@@ -20,9 +23,5 @@ class Venue extends Model
     {
         return $this->belongsToMany(Admin::class,'admin_venue','venue_id','admin_id');
     }
-
-    
-
-
 
 }

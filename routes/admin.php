@@ -15,6 +15,7 @@ Route::get('/upload/file-list', 'UploadController@getFileList');
 
 // role
 Route::get('role/edit ', ['as' => 'admin.role.edit', 'uses' => 'RolesController@edit']);
+Route::get('role/getAcl ', ['as' => 'admin.role.getAcl', 'uses' => 'RolesController@getAcl']);
 Route::resource('role', 'RolesController');
 
 // permission
@@ -22,8 +23,10 @@ Route::get('permission/edit ', ['as' => 'admin.role.permission', 'uses' => 'Perm
 Route::resource('permission', 'PermissionsController');
 
 // admin
-Route::get('admins/edit ', ['as' => 'admins.admin.permission', 'uses' => 'AdminsController@edit']);
-Route::resource('admins', 'AdminsController');
+Route::get('admin/edit', ['as' => 'admin.admin.edit', 'uses' => 'AdminController@edit']);
+Route::get('admin/role', ['as' => 'admin.admin.role', 'uses' => 'AdminController@role']);
+Route::get('admin/venues', ['as' => 'admin.admin.role', 'uses' => 'AdminController@venues']);
+Route::resource('admin', 'AdminController');
 
 
 if (!Request::ajax()) {

@@ -154,4 +154,36 @@ class RolesController extends ApiController
 
         return redirect()->back()->with('message', 'Role deleted.');
     }
+
+
+    public function getAcl(Request $request)
+    {
+        $id = $request->get('id');
+        $data = $this->repository->getAcl($id);
+        if($data['status'] ==1 )
+        {
+            return $this->response->withData($data);
+        } 
+        else 
+        {
+            return $this->response->withError($data['msg']);
+        }
+    }
+
+
+    public function setAcl(Request $request)
+    {
+        $result = $this->repository->setAcl($request);
+        if($result['status'] ==1)
+        {
+            return $this->response->withSuccess($result['msg']);
+        }
+        else 
+        {
+            return $this->response->withError($result['msg']);
+        }
+        
+    }
+
+    
 }
