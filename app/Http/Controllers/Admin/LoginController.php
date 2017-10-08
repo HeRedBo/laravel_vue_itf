@@ -64,6 +64,7 @@ class LoginController extends ApiController
      */
     public function login(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             $this->username() => 'required',
             'password' => 'required|min:6'
@@ -92,6 +93,6 @@ class LoginController extends ApiController
         // to login and redirect the user back to the login form. Of course, when this
         // user surpasses their maximum number of attempts they will get locked out.
         $this->incrementLoginAttempts($request);
-        return $this->response->withError('用户名或密码错误');
+        return $this->response->withBadRequest('用户名或密码错误');
     }
 }

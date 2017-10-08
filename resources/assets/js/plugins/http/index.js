@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { apiUrl } from 'config/base'
-
+import NProgress from 'nprogress' // Progress 进度条
 /**
  * Create Axios
  */
@@ -18,8 +18,21 @@ http.defaults.headers.common = {
     'X-Requested-With': 'XMLHttpRequest'
 };
 
+
+// Add a request interceptor 
+http.interceptors.request.use(function (config) {
+    // Do something before request is sent 
+    NProgress.start() // 开启Progress
+    return config;
+  }, function (error) {
+    // Do something with request error 
+    return Promise.reject(error);
+  });
+
 // respone拦截器
 http.interceptors.response.use(function (response) {
+    NProgress.done() // 结束Progress
+    console.log('response');
     // Do something with response data 
     return response;
 
@@ -53,26 +66,29 @@ http.interceptors.response.use(function (response) {
 
 
   }, function (error) {
+     
     const { response } = error
     if ([401].indexOf(response.status) >= 0) {
         if (response.status == 401 && response.data.error.message != 'Unauthorized') {
           return Promise.reject(response);
         }
         window.location = '/login';
-      }
-     console.log('err' + error)// for debug
-     Message({
-       message: error.message,
-       type: 'error',
-       duration: 5 * 1000
-     })
-     return Promise.reject(error);
+    }
+    console.log('err' + error)// for debug
+    //  Message({
+    //    message: error.message,
+    //    type: 'error',
+    //    duration: 5 * 1000
+    //  })
+
+    NProgress.done() // 结束Progress
+    return Promise.reject(error);
   });
 
-  export default function install (Vue) {
-      Object.defineProperty(Vue.prototype, '$http', {
+export default function install (Vue) {
+    Object.defineProperty(Vue.prototype, '$http', {
           get() {
               return http
           }
       })
-  }
+}

@@ -1,1 +1,1 @@
-export const apiUrl = '/api/'
+export const apiUrl = '/admin/'

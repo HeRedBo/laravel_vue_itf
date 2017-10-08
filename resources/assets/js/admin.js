@@ -14,7 +14,24 @@ import ElementUI from 'element-ui'
 import App from './App.vue';
 
 Vue.use(VueRouter);
-Vue.use(ElementUI)
+Vue.use(ElementUI);
+Vue.use(httpPlugin);
+
+
+window.swal = require('sweetalert');
+window.toastr = require('toastr');
+window.toastr.options = {
+	positionClass: "toast-top-right",
+    showDuration: "300",
+    hideDuration: "1000",
+    timeOut: "5000",
+    extendedTimeOut: "1000",
+    showEasing: "swing",
+    hideEasing: "linear",
+    showMethod: "fadeIn",
+    hideMethod: "fadeOut"
+}
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

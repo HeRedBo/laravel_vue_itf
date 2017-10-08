@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import {isvalidUsername} from 'utils/validate';
+import { stack_error } from 'config/helper';
 export default {
   name: 'login',
   data() {
@@ -45,8 +47,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '1111111'
+          username: 'admin',
+          password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -67,38 +69,27 @@ export default {
     },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
+        var that = this;
         if (valid) {
-          this.loading = true
-          this.$store.dispatch('LoginByUsername', this.loginForm).then(() => {
-            this.loading = false
-            this.$router.push({ path: '/' })
-                // this.showDialog = true
-          }).catch(() => {
-            this.loading = false
+            that.loading = true;
+            this.$http({
+              method :"post",
+              url : 'login',
+              data : this.loginForm
+            })
+            .then(function(response) {
+              that.loading = false
+              console.log('asdasda');
           })
+          .catch(function(error) {
+            that.loading = false;
+            stack_error(error);
+          });
         } else {
           console.log('error submit!!')
           return false
         }
       })
-    },
-    afterQRScan() {
-          // const hash = window.location.hash.slice(1)
-          // const hashObj = getQueryObject(hash)
-          // const originUrl = window.location.origin
-          // history.replaceState({}, '', originUrl)
-          // const codeMap = {
-          //   wechat: 'code',
-          //   tencent: 'code'
-          // }
-          // const codeName = hashObj[codeMap[this.auth_type]]
-          // if (!codeName) {
-          //   alert('第三方登录失败')
-          // } else {
-          //   this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-          //     this.$router.push({ path: '/' })
-          //   })
-          // }
     }
   },
   created() {
