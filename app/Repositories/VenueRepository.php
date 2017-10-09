@@ -11,4 +11,7 @@ use Prettus\Repository\Contracts\RepositoryInterface;
 interface VenueRepository extends RepositoryInterface
 {
     
+    public  function  createVenueData(array $data);
+    
+    public  function  updateVenueData(array $data,$id);
 }

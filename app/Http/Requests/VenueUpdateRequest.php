@@ -13,7 +13,7 @@ class VenueUpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,8 @@ class VenueUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'required|unique:venues,name,'.$this->get('id'),
+            'logo' => 'required',
         ];
     }
 }

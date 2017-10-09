@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
@@ -11,7 +10,6 @@ use App\Http\Requests\VenueCreateRequest;
 use App\Http\Requests\VenueUpdateRequest;
 use App\Repositories\VenueRepository;
 use App\Validators\VenueValidator;
-
 
 class VenueController extends ApiController
 {
@@ -28,6 +26,7 @@ class VenueController extends ApiController
 
     public function __construct(VenueRepository $repository)
     {
+        parent::__construct();
         $this->repository = $repository;
     }
 
@@ -61,34 +60,14 @@ class VenueController extends ApiController
      */
     public function store(VenueCreateRequest $request)
     {
-        
-        try {
-
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
-
-            $venue = $this->repository->create($request->all());
-
-            $response = [
-                'message' => 'Venue created.',
-                'data'    => $venue->toArray(),
-            ];
-
-            if ($request->wantsJson()) {
-
-                return response()->json($response);
-            }
-
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'error'   => true,
-                    'message' => $e->getMessageBag()
-                ]);
-            }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
-        }
+        $data = array_merge($request->all(), [
+            'operator_id'      => auth('admin')->user()->id,
+        ]);
+        $res = $this->repository->createVenueData($data);
+        if($res['status'] == 1)
+            return $this->response->withCreated('数据创建成功');
+        else
+            return $this->response->withError($res['msg']);
     }
 
 
@@ -102,7 +81,6 @@ class VenueController extends ApiController
     public function show($id)
     {
         $venue = $this->repository->find($id);
-
         if (request()->wantsJson()) {
 
             return response()->json([
@@ -121,15 +99,13 @@ class VenueController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
-
-        $venue = $this->repository->find($id);
-
-        return view('venues.edit', compact('venue'));
+        $id      = $request->get('id');
+        $venue   = $this->repository->find($id)->toArray();
+        return $this->response->withData($venue);
     }
-
-
+    
     /**
      * Update the specified resource in storage.
      *
@@ -140,39 +116,18 @@ class VenueController extends ApiController
      */
     public function update(VenueUpdateRequest $request, $id)
     {
-
-        try {
-
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
-
-            $venue = $this->repository->update($request->all(), $id);
-
-            $response = [
-                'message' => 'Venue updated.',
-                'data'    => $venue->toArray(),
-            ];
-
-            if ($request->wantsJson()) {
-
-                return response()->json($response);
-            }
-
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-
-            if ($request->wantsJson()) {
-
-                return response()->json([
-                    'error'   => true,
-                    'message' => $e->getMessageBag()
-                ]);
-            }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
-        }
+    
+        $data = array_merge($request->all(), [
+            'operator_id'      => auth('admin')->user()->id,
+        ]);
+        $res = $this->repository->updateVenueData($data, $id);
+        
+        if($res['status'] == 1)
+            return $this->response->withSuccess('数据更新成功');
+        else
+            return $this->response->withError($res['msg']);
     }
-
-
+    
     /**
      * Remove the specified resource from storage.
      *
@@ -183,15 +138,6 @@ class VenueController extends ApiController
     public function destroy($id)
     {
         $deleted = $this->repository->delete($id);
-
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'message' => 'Venue deleted.',
-                'deleted' => $deleted,
-            ]);
-        }
-
-        return redirect()->back()->with('message', 'Venue deleted.');
+        return $this->response->withSuccess('数据删除成功');
     }
 }

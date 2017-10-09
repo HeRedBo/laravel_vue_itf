@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Schema;
 use  App\Services\FileManager\BaseManager;
 use  App\Services\FileManager\QiniuManager;
 
-
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -29,6 +28,8 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
        $this->app->register(RepositoryServiceProvider::class);
+
+
        $this->app->singleton('uploader', function($app) {
            $config = config('filesystems.default','public');
            if($config == 'qiniu')
