@@ -6,7 +6,8 @@
 		</transition>
 	</section>
 </template>
-<script type="text/javascript">
+
+<script>
 
 export default {
 	name : 'AppMain',
@@ -16,5 +17,4 @@ export default {
 		}
 	}
 }
-
 </script>
