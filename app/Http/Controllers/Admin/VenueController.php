@@ -137,7 +137,26 @@ class VenueController extends ApiController
      */
     public function destroy($id)
     {
-        $deleted = $this->repository->delete($id);
+        $this->repository->delete($id);
         return $this->response->withSuccess('数据删除成功');
+    }
+
+    public function getVenueOptions()
+    {
+        $data = $this->repository->getTreeData();
+        return $this->response->withData($data);
+    }
+    
+    public function  checkVenueName(Request $request)
+    {
+        $name  = $request->get('name');
+       
+        $status = 0;
+        $check = $this->repository->checkVenueName($name);
+        if($check)
+            $status = 1;
+        
+        $result['status'] = $status;
+        return $this->response->withData($result);
     }
 }

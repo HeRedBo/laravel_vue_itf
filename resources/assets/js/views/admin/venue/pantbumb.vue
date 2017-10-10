@@ -1,28 +1,19 @@
 <template>
 	<div class="components-container">
 		<pan-thumb :image='image'>
-			你的权限:
-			<span class="pan-info-roles" > 查看个人头像</span>
 		</pan-thumb>
 		 <el-button type="primary" icon="upload" style="position: absolute;bottom: 15px;margin-left: 40px;" @click="imagecropperShow=true">修改头像
     </el-button>
-
-	<div class="col-md-2 col-md-offset-1">
-         <avatar :src="image"></avatar>
-    </div>
-
-	<image-cropper :width="300" :height="300" url="https://httpbin.org/post" @close='close' @crop-upload-success="cropSuccess" :key="imagecropperKey" v-show="imagecropperShow"></image-cropper>
-
+	  <image-cropper :width="300" :height="300" url="/upload/upAvatar" @close='close' @crop-upload-fail='cropUploadFail' @crop-upload-success="cropSuccess" :key="imagecropperKey" v-show="imagecropperShow"></image-cropper>
 	</div>
-
-	
-	
 </template>
 
 <script>
 
 import PanThumb from 'components/Panthumb';
 import ImageCropper from 'components/ImageCropper';
+import { stack_error } from 'config/helper';
+
 export default {
   components: { PanThumb ,ImageCropper},
   data() {
@@ -36,11 +27,16 @@ export default {
     cropSuccess(resData) {
       this.imagecropperShow = false
       this.imagecropperKey = this.imagecropperKey + 1
-      this.image = resData.files.avatar
+      this.image = resData.data.url
     },
     close() {
       this.imagecropperShow = false
-	}
+    },
+    cropUploadFail(error,field, ki)
+    {
+      stack_error(error);
+    },
+    
  }
 }
 </script>

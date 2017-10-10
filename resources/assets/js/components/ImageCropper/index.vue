@@ -649,10 +649,13 @@
                     headers,
                     field,
                     ki,
-                    createImgUrl
+                    createImgUrl,
                 } = this,
                 fmData = new FormData();
-            fmData.append(field, data2blob(createImgUrl, mime), field + '.' + imgFormat);
+                let mimeArr  = mime.split("/");
+                let extension = mimeArr[1];
+            fmData.append(field, data2blob(createImgUrl, mime), field + '.' + extension);
+            console.log(fmData);
             // 添加其他参数
             if (typeof params == 'object' && params) {
                 Object.keys(params).forEach((k) => {
@@ -679,13 +682,17 @@
             })
             .then(resData=>{
                 that.loading = 2;
-                that.$emit('crop-upload-success', resData.data);
+                let {data} = resData;
+                that.$emit('crop-upload-success', data);
             }).catch(err=>{
+                that.loading = 3;
+                that.hasError = true;
+                that.errorMsg = lang.fail;
+
+                 
+                that.$emit('crop-upload-fail', err, field, ki);
                 if (that.value) {
-                        that.loading = 3;
-                        that.hasError = true;
-                        that.errorMsg = lang.fail;
-                        that.$emit('crop-upload-fail', err, field, ki);
+                       
                     }
             });
             // fetch({

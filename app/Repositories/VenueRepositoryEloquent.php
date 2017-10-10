@@ -86,8 +86,36 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
             return success('数据创建成功');
         }
         return error('记录不存在，请检查');
-
-        
-       
     }
+    
+    public  function checkVenueName($name)
+    {
+        $where = [
+            'name'=>$name,
+        ];
+        return  $this->findWhere($where)->toArray();
+    }
+    public function getTreeData()
+    {
+        $fields = ['id','name','parent_id','created_at','updated_at'];
+        $venues = $this->all($fields)->toArray();
+        return  $this->_reSort($venues);
+    }
+    
+    private function _reSort($data, $parent_id=0, $level=0, $isClear=TRUE)
+	{
+		static $ret = array();
+		if($isClear)
+			$ret = array();
+		foreach ($data as $k => $v)
+		{
+			if($v['parent_id'] == $parent_id)
+			{
+				$v['level'] = $level;
+				$ret[] = $v;
+				$this->_reSort($data, $v['id'], $level+1, FALSE);
+			}
+		}
+		return $ret;
+	}
 }

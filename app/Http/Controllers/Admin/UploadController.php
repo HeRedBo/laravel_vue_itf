@@ -6,12 +6,13 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\FileManager\BaseManager;
 
-class UploadController extends Controller
+class UploadController extends ApiController
 {
     protected $manager;
 
     public function __construct()
     {
+        parent::__construct();
         $this->manager = app('uploader');
     }
 
@@ -30,6 +31,7 @@ class UploadController extends Controller
     {
         $file = $request->file('files');
         $allowed_extensions = ['png','jpg','gif','jpeg'];
+       
         if($file->getClientOriginalExtension()
             && !in_array($file->getClientOriginalExtension(), $allowed_extensions))
         {
@@ -38,7 +40,6 @@ class UploadController extends Controller
     
         $destinationPath = "files/images/";
         $extension =$file->getClientOriginalExtension();
-        $fileName = date('ymdHis') . microtime(true). rand(10, 99) . '.' .$extension;
         $res = $this->manager->storeFile($file, $destinationPath);
         dd($res);
     }
@@ -50,10 +51,28 @@ class UploadController extends Controller
         dd($imgInfo);
     }
     
+    
+    
     public  function getFileList()
     {
         $path = 'files';// public_path('files/files');
         $list = $this->manager->getFileList($path);
         dd($list);
+    }
+    
+    public function uploadAvatar(Request $request)
+    {
+        $file = $request->file('avatar');
+        $allowed_extensions = ['png','jpg','gif','jpeg'];
+        if($file->getClientOriginalExtension()
+            && !in_array($file->getClientOriginalExtension(), $allowed_extensions))
+        {
+            return $this->response->withUnprocessableEntity('文件格式有误');
+        }
+        $destinationPath = "files/avatar/";
+        $extension =$file->getClientOriginalExtension();
+        
+        $res = $this->manager->storeFile($file, $destinationPath);
+        return $this->response->withData($res);
     }
 }

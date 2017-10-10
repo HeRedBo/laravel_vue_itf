@@ -50,9 +50,12 @@ class QiniuManager extends BaseManager
     public function storeFile(UploadedFile $file, $dir = '', $name = '')
     {
         $extension =$file->getClientOriginalExtension();
-        $fileName = date('YmdHis').'-' . microtime(true).'-'. rand(109, 999) . '.' .$extension;
+        //$extension = str_ireplace('jpeg', 'jpg', $extension);
+        //$fileName = date('ymdHis') . microtime(true). rand(10, 99) . '.' .$extension;
+        $fileName = date('YmdHis') . microtime(true). rand(109, 999) . '.' .$extension;
+        //str_ireplace('.jpeg', '.jpg', $fileName)
         $hashName = empty($name)
-            ? str_ireplace('.jpeg', '.jpg', $fileName)
+            ?$fileName
             : $name;
         $mime = $file->getMimeType();
         $realPath = $this->disk->putFileAs($dir, $file, $hashName);

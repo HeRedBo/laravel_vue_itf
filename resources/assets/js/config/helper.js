@@ -49,3 +49,7 @@ function isEmpty(obj)
     }
     return true;
 }
+
+export function str_repeat(str, num) { 
+    return new Array( num + 1 ).join( str ); 
+} 

@@ -12,12 +12,19 @@ Route::group(['middleware' => ['auth:admin']], function() {
     if (!Request::ajax()) {
         Route::get('{path?}', ['uses' => 'IndexController@index'])->where('path', '[\/\w\.-]*');
     }
-
-    // file upload
+    
+   
     Route::get('venue/edit ', ['as' => 'admin.venue.edit', 'uses' => 'VenueController@edit']);
+    Route::get('venue/getVenues ', ['as' => 'admin.venue.getVenues', 'uses' => 'VenueController@getVenueOptions']);
+    Route::get('venue/checkName ', ['as' => 'admin.venue.checkName', 'uses' => 'VenueController@checkVenueName']);
     Route::resource('venue', 'VenueController');
+    
+    // file upload
     Route::get('/upload/index', 'UploadController@index');
     Route::post('/upload/uploadImg', 'UploadController@uploadImg');
+    Route::post('/upload/uploadImg', 'UploadController@uploadImg');
+    Route::post('/upload/upAvatar', 'UploadController@uploadAvatar');
+    
     Route::get('/upload/file-detail', 'UploadController@fileDetail');
     Route::get('/upload/file-list', 'UploadController@getFileList');
 

@@ -33,6 +33,11 @@ export default [
                         path: 'pantbumb',
                         name : '图片上传',
                         component : () => import('views/admin/venue/pantbumb.vue'),
+                    },
+                    {
+                        path: 'distpicker',
+                        name : '省市区联动',
+                        component : () => import('views/admin/venue/Distpicker.vue'),
                     }
                 ]
                 // component : require('views/admin/venue/Index.vue')
