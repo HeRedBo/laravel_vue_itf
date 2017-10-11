@@ -20,8 +20,11 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         'logo_thumb' => '',
         'parent_id' => '0',
         'province_code' => '0',
+        'province' => '',
+        'city' => '',
         'city_code' => '0',
-        'district_code' => '0',
+        'area_code' => '0',
+        'area' => '0',
         'address' => '',
         'remark' => '',
         'operator_id' => 0,
@@ -88,11 +91,14 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         return error('记录不存在，请检查');
     }
     
-    public  function checkVenueName($name)
+    public  function checkVenueName($name, $id)
     {
         $where = [
             'name'=>$name,
         ];
+        if($id > 0) {
+            $where[] = ['id','!=', $id];
+        }
         return  $this->findWhere($where)->toArray();
     }
     public function getTreeData()

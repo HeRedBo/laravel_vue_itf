@@ -150,9 +150,10 @@ class VenueController extends ApiController
     public function  checkVenueName(Request $request)
     {
         $name  = $request->get('name');
+        $id    = $request->get('id');
        
         $status = 0;
-        $check = $this->repository->checkVenueName($name);
+        $check = $this->repository->checkVenueName($name,$id);
         if($check)
             $status = 1;
         

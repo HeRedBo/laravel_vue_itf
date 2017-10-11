@@ -1,0 +1,56 @@
+<template>
+	<venue-form :venueForm="venueForm" :value ="value" :select="select"></venue-form>	
+</template>
+
+<script>
+import VenueForm from './Form';
+import {stack_error} from 'config/helper';
+export default {
+	components: { VenueForm},
+
+    data() {
+        return {
+            venueForm : {},
+            value:0,
+            select: {}
+        }
+    },
+
+    created() {
+        this.loadVenue();
+    },
+    
+    methods : {
+
+        loadVenue() {
+            var url = 'venue/edit', that = this, id = this.$route.params.id;
+            this.$http({
+             method :"GET",
+             url : url,
+             params : {
+               id : id
+             }
+          })
+          .then(function(response) {
+            var responseJson = response.data;
+            var data = responseJson.data;
+            that.venueForm = data;
+            that.value = data.parent_id;
+            let {province,city, area} = data;
+            let select = {};
+            select.province = province;
+            select.city = city;
+            select.area = area;
+            console.log(select);
+            
+            that.select = select;
+          
+          })
+          .catch(function(error) {
+            console.log('check name error')
+            stack_error(error);
+          }); 
+        }
+    }
+}
+</script>

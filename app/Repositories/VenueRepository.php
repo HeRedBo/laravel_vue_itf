@@ -17,5 +17,5 @@ interface VenueRepository extends RepositoryInterface
 
     public function getTreeData();
     
-    public function  checkVenueName($name);
+    public function  checkVenueName($name, $id);
 }

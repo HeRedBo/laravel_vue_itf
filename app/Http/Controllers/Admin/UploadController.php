@@ -69,7 +69,7 @@ class UploadController extends ApiController
         {
             return $this->response->withUnprocessableEntity('文件格式有误');
         }
-        $destinationPath = "files/avatar/";
+        $destinationPath = "files/avatar";
         $extension =$file->getClientOriginalExtension();
         
         $res = $this->manager->storeFile($file, $destinationPath);

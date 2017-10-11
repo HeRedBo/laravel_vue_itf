@@ -25,6 +25,11 @@ export default [
                         component : () => import('views/admin/venue/Create.vue'),
                     },
                     {
+                        path: 'update/:id',
+                        name : '编辑道馆',
+                        component : () => import('views/admin/venue/Edit.vue'),
+                    },
+                    {
                         path: 'form',
                         name : '表单测试',
                         component : () => import('views/admin/venue/Form.vue'),
