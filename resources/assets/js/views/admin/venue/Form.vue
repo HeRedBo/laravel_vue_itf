@@ -31,7 +31,7 @@
           </el-form-item>
 
            <el-form-item label="区域">
-             <v-distpicker  @selected="onSelected"></v-distpicker>
+             <v-distpicker  @selected="onSelected"  :province="select.province" :city="select.city" :area="select.area" ></v-distpicker>
           </el-form-item>
           	
           <el-form-item label="详细地址">
@@ -70,10 +70,6 @@ export default
           default() {
               return {}
           }
-      },
-      value : {
-         type: String,
-         default: ''
       },
       select : {
         type : Object,

@@ -1,5 +1,5 @@
 <template>
-	<venue-form :venueForm="venueForm" :value ="value" :select="select"></venue-form>	
+	<venue-form :venueForm="venueForm" :select="select"></venue-form>	
 </template>
 
 <script>
@@ -11,7 +11,6 @@ export default {
     data() {
         return {
             venueForm : {},
-            value:0,
             select: {}
         }
     },
@@ -41,13 +40,10 @@ export default {
             select.province = province;
             select.city = city;
             select.area = area;
-            console.log(select);
-            
             that.select = select;
-          
           })
           .catch(function(error) {
-            console.log('check name error')
+            console.log('load  venue data error')
             stack_error(error);
           }); 
         }

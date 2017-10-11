@@ -1,5 +1,5 @@
 <template>
-	<venue-form :venueForm="venueForm" :value ="value" :select="select"></venue-form>	
+	<venue-form :venueForm="venueForm" :select="select"></venue-form>	
 </template>
 
 <script>
@@ -11,7 +11,6 @@ export default {
            venueForm : {
                parent_id: ''
             },
-            value:'',
             select: {}
         }
     },
