@@ -30,6 +30,17 @@ export default [
                         component : () => import('views/admin/venue/Edit.vue'),
                     },
                     {
+                        path: 'Index',
+                        name : '道馆列表',
+                        component : () => import('views/admin/venue/Index.vue'),
+                    },
+
+                    {
+                        path: 'Table',
+                        name : '表格',
+                        component : () => import('views/admin/venue/Index_table.vue'),
+                    },
+                    {
                         path: 'form',
                         name : '表单测试',
                         component : () => import('views/admin/venue/Form.vue'),

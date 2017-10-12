@@ -32,6 +32,12 @@ window.toastr.options = {
     hideMethod: "fadeOut"
 }
 
+// 全局组件
+Vue.component(
+	'vTable',
+	require('components/admin/Table.vue')
+);
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
