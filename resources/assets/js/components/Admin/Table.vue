@@ -1,25 +1,28 @@
-<template>
+  <template>
+    <div>
 
     <el-table
         :data="tableData"
         border
         :stripe="stripped?true:false"
         style="width: 100%"
-    >
+         >
+        <el-table-column  v-for="(field,key) in fields" :key="key"
+            :prop="key"
+            :label= "field.label"
+            :sortable="field.sortable?true:false"
+        >
+        </el-table-column>
+    </el-table>
 
-    <el-table-column  v-for="(field,key) in fields" :key="key"
-        :prop="key"
-        :label= "field.label"
-        :sortable="field.sortable?true:false"
-    >
-    </el-table-column>
-  </el-table>
-
-
+  
+        <Pagination></Pagination>
+    </div>
 </template>
 <script>
-
+import Pagination from './Pagination.vue';
 export default {
+    components: {Pagination},
     props : {
         fields: {
             type: Object,
@@ -58,7 +61,7 @@ export default {
     created() {
         this.listLoading = false
         console.log('23234534')
-        console.log(this.fields)
+        //console.log(this.fields)
     
     },
     methods :{

@@ -1,13 +1,9 @@
 <template>
     <div class="app-container calendar-list-container">
-            <vTable ref="table"
+       
+         <vTable
             :fields="fields"
-            stripped
-            
-        > 
-    
-       </vTable>
-
+         ></vTable>
     </div>
         
 </template>
@@ -15,21 +11,23 @@
     @import "resources/assets/styles/index";
     </style>
 <script>
-
-export default {
+ export default {
+   
+    methods: {
+    },
     data() {
-        return {
-            fields: {
+      return {
+        currentPage: 1,
+        // pageSize: 20,
+        fields: {
                 date : {label : 'date', sortable: true},
                 name : {label : 'name' , sortable:true},
                 address: { label : 'address'}
-            },
+        }
             
 
-        }
-    },
-
-    
-}
+      };
+    }
+  }
 </script>
 
