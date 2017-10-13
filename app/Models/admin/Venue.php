@@ -17,11 +17,34 @@ class Venue extends Model implements Transformable
 		'province_code','city_code','district_code','address',
 		'remark','operator_id',
     ];
-
+    
 
     public function users()
     {
         return $this->belongsToMany(Admin::class,'admin_venue','venue_id','admin_id');
+    }
+    
+    public function operator()
+    {
+        return $this->hasOne(Admin::class, 'id', 'operator_id');
+    }
+    
+    public function getLogoAttribute($logo)
+    {
+       
+        if(\Request::method() == 'PUT' || \Request::method() == "DELETE")
+        {
+            return $logo;
+        }
+        $manager = app('uploader');
+        if ($logo)
+        {
+            return $manager->fileWebPath($logo);
+        } else
+        {
+            return Storage::disk('local')->url('admin/noavatar.png');
+        }
+        
     }
 
 }

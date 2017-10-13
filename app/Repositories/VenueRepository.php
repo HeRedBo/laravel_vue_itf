@@ -10,6 +10,8 @@ use Prettus\Repository\Contracts\RepositoryInterface;
  */
 interface VenueRepository extends RepositoryInterface
 {
+  
+    public function  VenueList($request);
     
     public  function  createVenueData(array $data);
     

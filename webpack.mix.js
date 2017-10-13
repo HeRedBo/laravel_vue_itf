@@ -38,7 +38,7 @@ mix.js('resources/assets/js/admin.js', 'public/js/admin/admin.js').combine([
 	'node_modules/ionicons/dist/css/ionicons.min.css',
   'node_modules/element-ui/lib/theme-default/index.css',
   'node_modules/toastr/toastr.scss',
-	'node_modules/sweetalert2/dist/sweetalert2.min.css',
+  'node_modules/sweetalert2/dist/sweetalert2.min.css',
 	'node_modules/nprogress/nprogress.css',
   'resources/assets/sass/app.scss',
 	'resources/assets/styles/index.scss'

@@ -18,9 +18,10 @@ Vue.use(ElementUI);
 Vue.use(httpPlugin);
 
 
-window.swal = require('sweetalert');
+window.swal = require('sweetalert2');
 window.toastr = require('toastr');
 window.toastr.options = {
+    closeButton: true,
 	positionClass: "toast-top-right",
     showDuration: "300",
     hideDuration: "1000",

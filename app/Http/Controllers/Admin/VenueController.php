@@ -36,19 +36,16 @@ class VenueController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $venues = $this->repository->all();
-
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'data' => $venues,
-            ]);
+        try
+        {
+            $list = $this->repository->VenueList($request);
+            return $this->response->withData($list);
+        }catch (\Exception $e)
+        {
+            return $this->response->withInternalServer($e->getMessage());
         }
-
-        return view('venues.index', compact('venues'));
     }
 
     /**

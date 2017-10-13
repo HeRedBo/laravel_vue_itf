@@ -6,6 +6,7 @@ use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\VenueRepository;
 use App\Models\Admin\Venue;
+use  App\Criteria\VenueCriteria;
 
 /**
  * Class VenueRepositoryEloquent
@@ -29,7 +30,13 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         'remark' => '',
         'operator_id' => 0,
     ];
-    
+    protected $fieldSearchable = [
+        'name'=>'like',
+        'province',
+    ];
+    protected $pageSize = 15;
+
+
     /**
      * Specify Model class name
      *
@@ -49,6 +56,8 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
+
+
     
     /**
      * 道馆新增
@@ -91,6 +100,14 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         return error('记录不存在，请检查');
     }
     
+    public function VenueList($request)
+    {
+        $pageSize = $request->get('pageSize') ?: $this->pageSize;
+        return  $this->with('operator')
+                    ->paginate($pageSize)
+                    ->toArray();
+        
+    }
     public  function checkVenueName($name, $id)
     {
         $where = [
@@ -101,6 +118,7 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         }
         return  $this->findWhere($where)->toArray();
     }
+
     public function getTreeData()
     {
         $fields = ['id','name','parent_id','created_at','updated_at'];
