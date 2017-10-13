@@ -22,7 +22,7 @@
           <!-- 头像 -->
           <el-form-item label="头像">
             <div class="components-container">
-              <pan-thumb :image='image'>
+              <pan-thumb :image="venueForm.id&&image=='' ? venueForm.logo : image ">
               </pan-thumb>
               <el-button type="primary" icon="upload" style="position: absolute;bottom: 15px;margin-left: 40px;" @click="imagecropperShow=true">修改logo
               </el-button>
@@ -108,12 +108,13 @@ export default
         },
         imagecropperShow: false,
 		    imagecropperKey: 0,
-        image: 'https://wpimg.wallstcn.com/577965b9-bb9e-4e02-9f0c-095b41417191',
+        image: '',
         
       }
     },
     created() {
       this.getVenues();
+      this.checkLoginImage();
     },
     methods: {
       onSubmit() 
@@ -135,7 +136,9 @@ export default
                 console.log(JSON.stringify(response));
                 var responseData = response.data;
                 toastr.success(responseData.message);
-						    //that.$router.back();
+                
+                // 跳转到列表页
+                that.$router.push({ path: '/admin/venue/index' })
               })
               .catch(function(error) {
                 stack_error(error);
@@ -172,8 +175,6 @@ export default
         this.venueForm.city          = data.city.value;
         this.venueForm.area_code     = data.area.code;
         this.venueForm.area          = data.area.value;
-
-        console.log(data)
       },
 
       getVenues() {
@@ -218,7 +219,9 @@ export default
             console.log('check name error')
             stack_error(error);
           }); 
-      }
+      },
+
+     
   
     }
   }

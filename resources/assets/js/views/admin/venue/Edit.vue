@@ -1,5 +1,7 @@
 <template>
-	<venue-form :venueForm="venueForm" :select="select"></venue-form>	
+	<venue-form :venueForm="venueForm" :select="select"
+        :image = "image"
+    ></venue-form>	
 </template>
 
 <script>
@@ -11,7 +13,8 @@ export default {
     data() {
         return {
             venueForm : {},
-            select: {}
+            select: {},
+            image : '' 
         }
     },
 
@@ -41,6 +44,7 @@ export default {
             select.city = city;
             select.area = area;
             that.select = select;
+            that.image  = data.logo_url;
           })
           .catch(function(error) {
             console.log('load  venue data error')

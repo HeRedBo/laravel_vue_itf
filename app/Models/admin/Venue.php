@@ -12,6 +12,8 @@ class Venue extends Model implements Transformable
 
     protected $dates = ['created_at', 'updated_at'];
 
+
+
     protected $fillable = [
 		'name','federation_id','logo','logo_thumb','parent_id',
 		'province_code','city_code','district_code','address',
@@ -32,19 +34,23 @@ class Venue extends Model implements Transformable
     public function getLogoAttribute($logo)
     {
        
+        $manager = app('uploader');
         if(\Request::method() == 'PUT' || \Request::method() == "DELETE")
         {
             return $logo;
         }
-        $manager = app('uploader');
+       
         if ($logo)
         {
             return $manager->fileWebPath($logo);
+            
         } else
         {
-            return Storage::disk('local')->url('admin/noavatar.png');
+            return $manager->url('files/avatar/default.png');
         }
         
     }
+
+
 
 }

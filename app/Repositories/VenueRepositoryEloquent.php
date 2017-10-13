@@ -89,13 +89,28 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         $venue = $this->find($id);
         if($venue)
         {
+        if($venue)
+            $old_logo = $venue->logo;
             // 设置字段默认值
             foreach(array_keys($this->fields) as $field)
             {
+                if($field == 'logo')
+                {
+                    if(strrpos($data[$field],'http:') !== false) {
+                        continue;
+                    }
+                }
                 $venue->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
             }
+            $logo = $data['logo'];
+            if($old_logo != $logo)
+            {
+                // 删除旧图
+                $manager = app('uploader');
+                $manager->deleteFile($old_logo);
+            }
             $venue->save();
-            return success('数据创建成功');
+            return success('数据更新成功');
         }
         return error('记录不存在，请检查');
     }
