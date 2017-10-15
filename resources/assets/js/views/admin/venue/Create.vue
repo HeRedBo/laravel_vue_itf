@@ -1,5 +1,5 @@
 <template>
-	<venue-form :venueForm="venueForm" :select="select"></venue-form>	
+        <venue-form :venueForm="venueForm" :select="select"></venue-form>	
 </template>
 
 <script>

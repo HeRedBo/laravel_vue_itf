@@ -67,14 +67,7 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
             }
             $admin->password = bcrypt($data['password']);
             unset($admin->roles);
-            unset($admin->venues);
-            // 上传用户图片处理
-            if(checkBase64Image($data['picture']))
-            {
-                // 处理图片逻辑写在这里
-                $admin->picture = upBase64Img($data['picture'],'admin/avatar');
-            }
-            
+            unset($admin->venues); 
             // 保存用户信息
             $admin->save();
             $roles  = $data['roles'];
@@ -86,7 +79,7 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
 
             if(!empty($venues))
             {
-                $admin->giveVenueTo($venues);
+                 $admin->giveVenueTo($venues);
             }
 
             DB::commit();
@@ -111,23 +104,23 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
        {
            $roles = $user->roles;
            $venues = $user->venues;
-           foreach ($roles as $role)
-           {
-               $roles_res[] = ['label' => $role->name, 'value' => $role->id];
-               $roleStr[]   = $role->name;
-           
-           }
-           foreach ($venues as $venue)
-           {
-               $venues_res[] = ['label' => $venue->name, 'value' => $venue->id];
-               $venueStr[] = $venue->name;
-           }
+        //    foreach ($roles as $role)
+        //    {
+        //        $roles_res[] = ['label' => $role->name, 'value' => $role->id];
+        //        $roleStr[]   = $role->name;
+
+        //    }
+        //    foreach ($venues as $venue)
+        //    {
+        //        $venues_res[] = ['label' => $venue->name, 'value' => $venue->id];
+        //        $venueStr[] = $venue->name;
+        //    }
        }
        $user = $user->toArray();
-       $user['roles'] = $roles_res;
-       $user['rolesStr'] = $id == 1 ? '管理员' : (!empty($roleStr) ? implode(',', $roleStr) : '未分配');
-       $user['venues'] = $venues_res;
-       $user['venuesStr'] = (!empty($venues_res)) ? implode(',', $venueStr) : '未分配';
+       $user['roles'] = array_column($roles->toArray(),'id');
+       //$user['rolesStr'] = $id == 1 ? '管理员' : (!empty($roleStr) ? implode(',', $roleStr) : '未分配');
+       $user['venues'] = array_column($venues->toArray(),'id');
+       //$user['venuesStr'] = (!empty($venues_res)) ? implode(',', $venueStr) : '未分配';
        return success('数据获取成功', $user);
     }
     
@@ -137,18 +130,24 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
      * @return array|void   返回操作结果
      * @author Red-Bo
      */
-    public function updateAdminData($id, array $data)
+    public function updateAdminData(array $data,$id)
     {
         
         try 
         {
-             $admin = $this->find($id);
+            $admin = $this->find($id);
             if($admin)
             {
                 DB::beginTransaction();
                 $old_picture = $admin->picture;
                 foreach(array_keys($this->fields) as $field)
                 {
+                    if($field == 'picture')
+                    {
+                        if(strrpos($data[$field],'http:') !== false) {
+                            continue;
+                        }
+                    }
                     $admin->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
                 }
                 unset($admin->roles);
@@ -157,14 +156,16 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
                 {
                     $admin->password = bcrypt($data['password']);
                 }
-                if(checkBase64Image($data['picture']))
+
+                if($old_picture != $data['picture'])
                 {
-                    $admin->picture = upBase64Img($data['picture'],'admin/avatar');
-                    // 删除旧图片
-                   // Storage::disk('local')->delete($old_picture);
+                    // 删除旧图
+                    $manager = app('uploader');
+                    $manager->deleteFile($old_picture);
                 }
                 // 保存用户信息
                 $admin->save();
+                
                 $roles  = $data['roles'];
                 $venues = $data['venues'];
                 if(!empty($roles))
@@ -185,10 +186,23 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
         }
         catch (\Exception $e)
         {
+            var_dump($e->__toString());
             DB::rollBack();
             logResult('【管理员数据创建失败】'. $e->__toString(),'error');
             return error($e->getMessage());
         }
        
+    }
+
+
+    public function checkUserName($username, $id)
+    {
+        $where = [
+            'username'=>$username,
+        ];
+        if($id > 0) {
+            $where[] = ['id','!=', $id];
+        }
+        return  $this->findWhere($where)->toArray();
     }
 }

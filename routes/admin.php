@@ -30,18 +30,22 @@ Route::group(['middleware' => ['auth:admin']], function() {
 
     // role
     Route::get('role/edit ', ['as' => 'admin.role.edit', 'uses' => 'RolesController@edit']);
-    Route::get('role/getAcl ', ['as' => 'admin.role.getAcl', 'uses' => 'RolesController@getAcl']);
+    Route::get('role/getAcl', ['as' => 'admin.role.getAcl', 'uses' => 'RolesController@getAcl']);
+    Route::post('role/setAcl', ['as' => 'admin.role.getAcl', 'uses' => 'RolesController@setAcl']);
+    Route::get('role/checkName ', ['as' => 'admin.role.checkName', 'uses' => 'RolesController@checkRoleName']);
     Route::resource('role', 'RolesController');
 
     // permission
-    Route::get('permission/edit ', ['as' => 'admin.role.permission', 'uses' => 'PermissionsController@edit']);
+    Route::get('permission/edit ', ['as' => 'admin.permission.edit', 'uses' => 'PermissionsController@edit']);
     Route::resource('permission', 'PermissionsController');
 
     // admin
-    Route::get('admin/edit', ['as' => 'admin.admin.edit', 'uses' => 'AdminController@edit']);
-    Route::get('admin/role', ['as' => 'admin.admin.role', 'uses' => 'AdminController@role']);
-    Route::get('admin/venues', ['as' => 'admin.admin.role', 'uses' => 'AdminController@venues']);
-    Route::resource('admin', 'AdminController');
+    Route::get('user/edit', ['as' => 'admin.user.edit', 'uses' => 'AdminController@edit']);
+    Route::get('user/role', ['as' => 'admin.user.role', 'uses' => 'AdminController@role']);
+    Route::get('user/venues', ['as' => 'admin.user.role', 'uses' => 'AdminController@venues']);
+    Route::get('user/checkUserName', ['as' => 'admin.user.role', 'uses' => 'AdminController@checkUserName']);
+
+    Route::resource('user', 'AdminController');
     
 });
 

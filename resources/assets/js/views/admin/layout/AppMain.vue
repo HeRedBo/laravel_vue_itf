@@ -1,10 +1,14 @@
 <template>
-	<section class="app-main" style="min-height: 100%">
+	<section class="content" style="min-height: 100%; border-left: 1px solid #d2d6de;
+	background-color:rgb(228, 232, 239);
+	z-index: 800;">
 		<!-- 动态组件 -->
 		<transition name="fade" mode="out-in">
 		  <router-view :key="key"></router-view>
 		</transition>
 	</section>
+
+	
 </template>
 
 <script>

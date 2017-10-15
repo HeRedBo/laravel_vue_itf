@@ -113,7 +113,6 @@ class VenueController extends ApiController
      */
     public function update(VenueUpdateRequest $request, $id)
     {
-    
         $data = array_merge($request->all(), [
             'operator_id'      => auth('admin')->user()->id,
         ]);
@@ -122,7 +121,7 @@ class VenueController extends ApiController
         if($res['status'] == 1)
             return $this->response->withSuccess('数据更新成功');
         else
-            return $this->response->withError($res['msg']);
+            return $this->response->withInternalServer($res['msg']);
     }
     
     /**

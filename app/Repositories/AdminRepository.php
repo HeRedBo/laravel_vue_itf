@@ -15,6 +15,8 @@ interface AdminRepository extends RepositoryInterface
     
     public  function getAdminInfo($id);
     
-    public  function updateAdminData($id , array $data);
+    public  function updateAdminData(array $data, $id);
+
+    public function checkUserName($name, $id);
 
 }

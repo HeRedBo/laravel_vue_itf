@@ -14,6 +14,17 @@ use App\Validators\PermissionValidator;
  */
 class PermissionRepositoryEloquent extends BaseRepository implements PermissionRepository
 {
+
+    protected $fields = [
+        'name' => '',
+        'display_name' => '',
+        'parent_id' => 0,
+        'icon' => '',
+        'is_show' => 0,
+        'order_num' => 0,
+     ];
+
+
     /**
      * Specify Model class name
      *
@@ -79,5 +90,38 @@ class PermissionRepositoryEloquent extends BaseRepository implements PermissionR
             }
         }
         return $arr;
+    }
+
+
+    public function createPermissionData(array $data)
+    {
+        $permisson = $this->model;
+        // 设置字段默认值
+        foreach(array_keys($this->fields) as $field)
+        {
+            $permisson->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
+        }
+        $permisson->save();
+        return success('数据创建成功');
+    }
+
+    public function updatePermissionData(array $data, $id)
+    {
+        $permisson = $this->find($id);
+        if($permisson)
+        {
+            // 设置字段默认值
+            foreach(array_keys($this->fields) as $field)
+            {
+                $permisson->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
+                if($field == 'is_show') {
+                    $permisson->$field = (bool) $permisson->$field;
+                } 
+                
+            }
+            $permisson->save();
+            return success('数据更新成功');
+        }
+        return error('记录不存在，请检查');
     }
 }

@@ -58,35 +58,54 @@ export default [
                 ]
                 // component : require('views/admin/venue/Index.vue')
 
+            },
+            {
+                path : 'role',
+                component:Parent,
+                name : '角色管理',
+                children : [
+                    {
+                        path: 'index',
+                        name : '角色列表',
+                        component : require('./views/admin/role/Index.vue')
+                    },
+                    {
+                        path: 'setacl/:id',
+                        name: '设置权限',
+                        component: () => import('views/admin/role/Acl.vue')
+                    }
+                ]
+            },
+            {
+                path : 'permission',
+                component:Parent,
+                name : '权限管理',
+                children : [
+                    {
+                        path: 'index',
+                        name : '权限列表',
+                        component : require('./views/admin/permission/Index.vue')
+                    }
+                ]
+            },
+            {
+                path : 'user',
+                component:Parent,
+                name : '用户管理',
+                children : [
+                    {
+                        path: 'create',
+                        name : '用户新增',
+                        component : () => import('views/admin/user/Create.vue')
+                    },
+                    {
+                        path: 'update/:id',
+                        name : '角色编辑',
+                        component : () => import('views/admin/user/Update.vue')
+                    }
+                ]
             }
-            // ,
-            // {
-            //     path : 'role',
-            //     component:Parent,
-            //     name : '角色管理',
-            //     children : [
-            //         {
-            //             path: 'index',
-            //             name : '权限列表',
-            //             component : require('./views/admin/role/Index.vue')
-            //         },
-            //         {
-            //             path: 'create',
-            //             name : '添加角色',
-            //             component : require('./views/admin/role/Create.vue')
-            //         },
-            //          {
-            //             path: 'update/:id',
-            //             name : '编辑角色',
-            //             component : require('./views/admin/role/Update.vue')
-            //         },
-            //         {
-            //             path: 'setacl/:id',
-            //             name: '设置权限',
-            //             component: require('./views/admin/role/Acl.vue')
-            //         }
-            //     ]
-            // },
+
         ]
     }
 

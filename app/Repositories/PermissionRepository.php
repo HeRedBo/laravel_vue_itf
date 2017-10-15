@@ -13,4 +13,8 @@ interface PermissionRepository extends RepositoryInterface
     
    	public  function  getSelectList();
     public  function  getTreeData();
+
+    public  function createPermissionData(array $data);
+
+    public function updatePermissionData(array $data, $id);
 }

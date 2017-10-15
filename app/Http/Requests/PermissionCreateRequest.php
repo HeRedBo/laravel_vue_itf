@@ -26,7 +26,6 @@ class PermissionCreateRequest extends FormRequest
         return [
             'name'         => 'required|unique:admin_permissions|max:225',
             'display_name' => 'required|max:225',
-            'parent_id'    => 'required|int'
         ];
     }
 }

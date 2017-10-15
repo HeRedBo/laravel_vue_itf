@@ -17,4 +17,8 @@ interface RoleRepository extends RepositoryInterface
     public function getAcl($roleId);
 
     public function setAcl(Request $request);
+
+    public function checkRoleName($name,$id);
+
+    public function updateRoleData(array $data, $id);
 }

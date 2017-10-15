@@ -16,6 +16,15 @@ use Illuminate\Http\Request;
  */
 class RoleRepositoryEloquent extends BaseRepository implements RoleRepository
 {
+    protected $fields = [
+        'name' => '',
+        'display_name' => '',
+        'description' => '',
+    ];
+
+    protected $fieldSearchable = [
+        'name'=>'like',
+    ];
     /**
      * Specify Model class name
      *
@@ -61,5 +70,41 @@ class RoleRepositoryEloquent extends BaseRepository implements RoleRepository
         $role = Role::find((int) $id);
         $role->permissions()->sync($request->get('permission',[]));
         return success('权限设置成功');
+    }
+
+    public function  checkRoleName($name, $id)
+    {
+        $where = [
+            'name'=>$name,
+        ];
+        if($id > 0) {
+            $where[] = ['id','!=', $id];
+        }
+        return  $this->findWhere($where)->toArray();
+    }
+
+
+     /**
+     * 道馆数据更新
+     * @param array $data 需要更新的数据
+     * @param int   $id
+     * @author Red-Bo
+     */
+    public  function updateRoleData(array $data, $id)
+    {
+        $role = $this->find($id);
+        if($role)
+        {
+           
+            // 设置字段默认值
+            foreach(array_keys($this->fields) as $field)
+            {
+                
+                $role->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
+            }
+            $role->save();
+            return success('数据更新成功');
+        }
+        return error('记录不存在，请检查');
     }
 }

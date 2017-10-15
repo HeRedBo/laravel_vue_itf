@@ -213,7 +213,6 @@ class ApiResponse
     public  function item($item , TransformerAbstract $transformer = null)
     {
         $data =$this->transform->item($item, $transformer);
-        dd($data);
         return $this->json(
             $this->transform->item($item, $transformer)
         );

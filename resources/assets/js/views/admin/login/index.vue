@@ -27,7 +27,7 @@
 
 <script>
 import {isvalidUsername} from 'utils/validate';
-import { stack_error } from 'config/helper';
+import { stack_error} from 'config/helper';
 export default {
   name: 'login',
   data() {

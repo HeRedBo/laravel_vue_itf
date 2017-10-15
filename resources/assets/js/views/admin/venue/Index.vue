@@ -1,8 +1,10 @@
 <template>
     <div class="app-container calendar-list-container">
         <div class="filter-container">
-            <el-input  style="width: 200px;" class="filter-item" placeholder="标题" ></el-input>
+            <el-input  style="width: 200px;" class="filter-item" placeholder="标题" v-model="searchQuery.name" ></el-input>
+            <el-button class="filter-item" type="primary" icon="search" @click="loadVenueList">搜索</el-button>
             <router-link :to="{path:'create'}" class="btn btn-success btn-md">
+                
                 <el-button class="filter-item" style="margin-left: 10px;"  type="primary" icon="edit">
                     添加  
                 </el-button>
@@ -26,9 +28,9 @@
         <el-table-column 
             align="center" 
             label="ID" 
-            
             prop="id"
             sortable="custom"
+            width="80"
           >
  
         </el-table-column>
@@ -74,6 +76,12 @@
          >
         </el-table-column>
 
+        <el-table-column
+          prop="area"
+          label="区"
+         >
+        </el-table-column>
+          
         <el-table-column
           prop="address"
           label="详细地址"
@@ -123,21 +131,23 @@
     </div>
 </template>
 <script>
-import {stack_error} from 'config/helper';
+import {stack_error,parseSearchParam} from 'config/helper';
 export default {
     data() {
       return {
         tableData: [],
         currentPage : 1,
         pageSizes : [15,20, 50, 100, 200],
-        perPage : 1,
+        perPage : 15,
         layouts : 'total, sizes, prev, pager, next, jumper',
         totalRows : 0,
         params : {
           orderBy:'id',
           sortedBy: 'desc'
         },
+        searchQuery : {},
         listLoading: true,
+
 
       }
     },
@@ -148,10 +158,11 @@ export default {
         formatter(row, column) {
           return row.address;
         },
-
         loadVenueList() {
           let url = 'venue',that =this;
-          this.listLoading = true
+          var search_query = parseSearchParam(that.searchQuery);
+          that.params.search = search_query;
+          this.listLoading = true;
           this.$http({
             method :'GET',
             url : url,
@@ -176,7 +187,6 @@ export default {
       handleSizeChange(val) {
         this.params.pageSize = val;
         this.loadVenueList();
-      
       },
 
       handleCurrentChange(val) {
@@ -185,9 +195,7 @@ export default {
       },
 
       sortChange(val) {
-       
         this.params.orderBy = val.prop;
-
         if(val.order == 'ascending')
         {
             this.params.sortedBy = 'ASC';
@@ -197,7 +205,6 @@ export default {
         {
             this.params.sortedBy = 'DESC';
         }
-
         this.loadVenueList();
       },
 

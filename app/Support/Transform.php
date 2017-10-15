@@ -45,9 +45,11 @@ class Transform
     public  function  item($data, TransformerAbstract $transformer = null)
     {
         $transformer = $transformer ?: $this->fetchDefaultTransformer($data);
-        return $this->fractal->createData(
+        $data = $this->fractal->createData(
             new FractalItem($data, $transformer)
         )->toArray();
+        dd($data);
+
     }
     protected  function  fetchDefaultTransformer($data)
     {

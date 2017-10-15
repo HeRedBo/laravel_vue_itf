@@ -59,15 +59,15 @@ class AdminController extends ApiController
     public function index()
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $admins = $this->repository->all();
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'data' => $admins,
-            ]);
+        try
+        {
+            $users = $this->repository->paginate(20)->toArray();
+            return $this->response->withData($users);
         }
-
-        return view('admins.index', compact('admins'));
+        catch (\Exception $e)
+        {
+            return $this->response->withInternalServer($e->getMessage());
+        }
     }
 
     /**
@@ -79,11 +79,11 @@ class AdminController extends ApiController
      */
     public function store(AdminCreateRequest $request)
     {
-         $res = $this->repository->createAdminData($request->all());
-            if($res['status'] == 1)
-                return $this->response->withCreated('数据创建成功');
-            else 
-                return $this->response->withError($res['msg']);
+        $res = $this->repository->createAdminData($request->all());
+        if($res['status'] == 1)
+            return $this->response->withCreated('数据创建成功');
+        else 
+            return $this->response->withInternalServer($res['msg']);
     }
 
 
@@ -164,38 +164,16 @@ class AdminController extends ApiController
      */
     public function update(AdminUpdateRequest $request, $id)
     {
-        
-        
-        
         try
         {
-
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
-
-            $admin = $this->repository->update($request->all(), $id);
-
-            $response = [
-                'message' => 'Admin updated.',
-                'data'    => $admin->toArray(),
-            ];
-
-            if ($request->wantsJson()) {
-
-                return response()->json($response);
-            }
-
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-
-            if ($request->wantsJson()) {
-
-                return response()->json([
-                    'error'   => true,
-                    'message' => $e->getMessageBag()
-                ]);
-            }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
+            $res = $this->repository->updateAdminData($request->all(), $id);
+            if($res['status'] == 1)
+                return $this->response->withSuccess('数据更新成功');
+            else
+                return $this->response->withInternalServer($res['msg']);
+           
+        } catch (\Exception $e) {
+            return $this->response->withInternalServer($e->getMessage());
         }
     }
 
@@ -220,5 +198,21 @@ class AdminController extends ApiController
         }
 
         return redirect()->back()->with('message', 'Admin deleted.');
+    }
+
+
+
+    public function checkUserName(Request $request) 
+    {
+        $name  = $request->get('username');
+        $id    = $request->get('id');
+       
+        $status = 0;
+        $check = $this->repository->checkUserName($name,$id);
+        if($check)
+            $status = 1;
+        
+        $result['status'] = $status;
+        return $this->response->withData($result);
     }
 }

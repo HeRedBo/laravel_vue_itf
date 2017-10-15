@@ -112,4 +112,22 @@ class Admin extends Authenticatable implements Transformable
     {
         $this->venues()->save($venue);
     }
+
+    public function getPictureAttribute($pic)
+    {
+        $manager = app('uploader');
+        if(\Request::method() == 'PUT' || \Request::method() == "DELETE")
+        {
+            return $pic;
+        }
+        if ($pic) 
+        {
+            return $manager->fileWebPath($pic);
+        }
+        else
+        {
+            return $manager->fileWebPath('files/avatar/default.png');
+        }
+    }
+
 }

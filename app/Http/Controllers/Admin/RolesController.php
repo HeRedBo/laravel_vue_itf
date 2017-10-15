@@ -37,17 +37,16 @@ class RolesController extends ApiController
      */
     public function index()
     {
-        $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $roles = $this->repository->paginate(20)->toArray();
-
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'data' => $roles,
-            ]);
+        try
+        {
+            $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
+            $roles = $this->repository->paginate(20)->toArray();
+            return $this->response->withData($roles);
         }
-        return $this->response->withData($roles);
-       
+        catch (\Exception $e)
+        {
+            return $this->response->withInternalServer($e->getMessage());
+        }
         //return view('roles.index', compact('roles'));
     }
 
@@ -108,28 +107,11 @@ class RolesController extends ApiController
      */
     public function update(RoleUpdateRequest $request, $id)
     {
-        try
-        {
-            $role = $this->repository->update($request->all(), $id);
+        $res = $this->repository->updateRoleData($request->all(), $id);
+        if($res['status'] == 1)
             return $this->response->withSuccess('数据更新成功');
-            if ($request->wantsJson()) {
-
-                return response()->json($response);
-            }
-
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-
-            if ($request->wantsJson()) {
-
-                return response()->json([
-                    'error'   => true,
-                    'message' => $e->getMessageBag()
-                ]);
-            }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
-        }
+        else
+            return $this->response->withInternalServer($res['msg']);
     }
 
 
@@ -143,7 +125,7 @@ class RolesController extends ApiController
     public function destroy($id)
     {
         $deleted = $this->repository->delete($id);
-
+        return $this->response->withSuccess('数据删除成功');
         if (request()->wantsJson()) {
 
             return response()->json([
@@ -162,7 +144,7 @@ class RolesController extends ApiController
         $data = $this->repository->getAcl($id);
         if($data['status'] ==1 )
         {
-            return $this->response->withData($data);
+            return $this->response->withData($data['data']);
         } 
         else 
         {
@@ -173,6 +155,7 @@ class RolesController extends ApiController
 
     public function setAcl(Request $request)
     {
+        
         $result = $this->repository->setAcl($request);
         if($result['status'] ==1)
         {
@@ -183,6 +166,21 @@ class RolesController extends ApiController
             return $this->response->withError($result['msg']);
         }
         
+    }
+
+
+    public function  checkRoleName(Request $request)
+    {
+        $name  = $request->get('name');
+        $id    = $request->get('id');
+       
+        $status = 0;
+        $check = $this->repository->checkRoleName($name,$id);
+        if($check)
+            $status = 1;
+        
+        $result['status'] = $status;
+        return $this->response->withData($result);
     }
 
     

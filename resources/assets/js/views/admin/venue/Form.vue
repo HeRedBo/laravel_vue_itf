@@ -1,55 +1,62 @@
 <template>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box box-primary">
+          <div class="box-body">
+              <el-form ref="venueForm"  :model="venueForm" :rules="VenueRules"  label-width="80px" class="el-form"
+                style="width: 41%;
+                margin-left: 10%;
+                margin-top: 20px;"
+              >
+                  <el-form-item label="道馆名称" prop="name">
+                    <el-input v-model="venueForm.name" ></el-input>
+                  </el-form-item>
+      
+                <el-form-item label="父级">
+                    <el-select v-model="venueForm.parent_id" placeholder="请选择">
+                      <el-option
+                        v-for="item in venueOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                      </el-option>
+                    </el-select>
+                </el-form-item>
+      
+                <!-- 头像 -->
+                <el-form-item label="头像">
+                  <div class="components-container">
+                    <pan-thumb :image="venueForm.id ? venueForm.logo : image ">
+                    </pan-thumb>
+                    <el-button type="primary" icon="upload" style="position: absolute;bottom: 15px;margin-left: 40px;" @click="imagecropperShow=true">修改logo
+                    </el-button>
+                    <image-cropper :width="300" :height="300" url="/upload/upAvatar" @close='close' @crop-upload-fail='cropUploadFail' @crop-upload-success="cropSuccess" :key="imagecropperKey" v-show="imagecropperShow"></image-cropper>
+                </div>
+                </el-form-item>
+      
+                 <el-form-item label="区域">
+                   <v-distpicker  @selected="onSelected"  :province="select.province" :city="select.city" :area="select.area" ></v-distpicker>
+                </el-form-item>
+                  
+                <el-form-item label="详细地址">
+                  <el-input type="textarea" v-model="venueForm.address"></el-input>
+                </el-form-item>
+      
+                <el-form-item label="道馆备注">
+                  <el-input type="textarea" v-model="venueForm.remark"></el-input>
+                </el-form-item>
+      
+                <el-form-item>
+                  <el-button type="primary" @click="onSubmit"> {{ venueForm.id ? '更新' : '立即创建' }}</el-button>
+                  <el-button>取消</el-button>
+                </el-form-item>
+              </el-form>
 
-  <el-row style="margin-top: 20px;">
-    <el-col :span="12" :offset="4">
+          </div>
 
-      <el-form ref="venueForm"  :model="venueForm" :rules="VenueRules"  label-width="80px" class="el-form">
-            <el-form-item label="道馆名称" prop="name">
-              <el-input v-model="venueForm.name" ></el-input>
-            </el-form-item>
-
-          <el-form-item label="父级">
-              <el-select v-model="venueForm.parent_id" placeholder="请选择">
-                <el-option
-                  v-for="item in venueOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-          </el-form-item>
-
-          <!-- 头像 -->
-          <el-form-item label="头像">
-            <div class="components-container">
-              <pan-thumb :image="venueForm.id&&image=='' ? venueForm.logo : image ">
-              </pan-thumb>
-              <el-button type="primary" icon="upload" style="position: absolute;bottom: 15px;margin-left: 40px;" @click="imagecropperShow=true">修改logo
-              </el-button>
-	            <image-cropper :width="300" :height="300" url="/upload/upAvatar" @close='close' @crop-upload-fail='cropUploadFail' @crop-upload-success="cropSuccess" :key="imagecropperKey" v-show="imagecropperShow"></image-cropper>
-	        </div>
-          </el-form-item>
-
-           <el-form-item label="区域">
-             <v-distpicker  @selected="onSelected"  :province="select.province" :city="select.city" :area="select.area" ></v-distpicker>
-          </el-form-item>
-          	
-          <el-form-item label="详细地址">
-            <el-input type="textarea" v-model="venueForm.address"></el-input>
-          </el-form-item>
-
-          <el-form-item label="道馆备注">
-            <el-input type="textarea" v-model="venueForm.remark"></el-input>
-          </el-form-item>
-
-          <el-form-item>
-            <el-button type="primary" @click="onSubmit"> {{ venueForm.id ? '更新' : '立即创建' }}</el-button>
-            <el-button>取消</el-button>
-          </el-form-item>
-        </el-form>
-    </el-col>
-    
-  </el-row>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -108,21 +115,18 @@ export default
         },
         imagecropperShow: false,
 		    imagecropperKey: 0,
-        image: '',
+        image: 'http://owu2vcxbh.bkt.clouddn.com/files/avatar/default.png',
         
       }
     },
     created() {
       this.getVenues();
-      this.checkLoginImage();
     },
     methods: {
       onSubmit() 
       {
          this.$refs.venueForm.validate(valid => {
             var that = this;
-            console.log(valid);
-
             if (valid) {
               
               let url = '/venue' + (this.venueForm.id ? '/' + this.venueForm.id : '')
@@ -133,10 +137,13 @@ export default
                 data : that.venueForm
               })
               .then(function(response) {
-                console.log(JSON.stringify(response));
-                var responseData = response.data;
-                toastr.success(responseData.message);
-                
+                  var {data} = response; 
+
+                  that.$message({
+                    showClose: true,
+                    message: data.message,
+                    type: 'success'
+                  });
                 // 跳转到列表页
                 that.$router.push({ path: '/admin/venue/index' })
               })

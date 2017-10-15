@@ -17,6 +17,8 @@ Vue.use(VueRouter);
 Vue.use(ElementUI);
 Vue.use(httpPlugin);
 
+require('jstree');
+require('admin-lte');
 
 window.swal = require('sweetalert2');
 window.toastr = require('toastr');

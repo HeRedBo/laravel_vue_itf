@@ -24,6 +24,7 @@ class PermissionsController extends ApiController
     {
         parent::__construct();
         $this->repository = $repository;
+
     }
 
 
@@ -61,7 +62,7 @@ class PermissionsController extends ApiController
      */
     public function store(PermissionCreateRequest $request)
     {
-        $permission = $this->repository->create($request->all());
+        $permission = $this->repository->createPermissionData($request->all());
         return $this->response->withCreated('权限创建成功');
     }
 
@@ -98,8 +99,9 @@ class PermissionsController extends ApiController
     public function edit(Request $request)
     {
         $id = $request->get('id');
-        $permission = $this->repository->find($id)->toArray();
-        return $this->response->withData($permission);
+        $this->repository->setPresenter("Prettus\\Repository\\Presenter\\ModelFractalPresenter");
+        $permission = $this->repository->find($id);
+        return $this->response->withData($permission['data']);
     }
 
 
@@ -113,7 +115,7 @@ class PermissionsController extends ApiController
      */
     public function update(PermissionUpdateRequest $request, $id)
     {
-        $permission = $this->repository->update($request->all(), $id);
+        $permission = $this->repository->updatePermissionData($request->all(), $id);
         return $this->response->withSuccess('权限修改成功');
     }
 
@@ -127,16 +129,14 @@ class PermissionsController extends ApiController
      */
     public function destroy($id)
     {
-        $deleted = $this->repository->delete($id);
-
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'message' => 'Permission deleted.',
-                'deleted' => $deleted,
-            ]);
+        try
+        {
+            $this->repository->delete($id);
+            return $this->response->withSuccess('数据删除成功');
         }
-
-        return redirect()->back()->with('message', 'Permission deleted.');
+        catch (\Expectation $e)
+        {
+            return $this->response->withInternalServer($e->getMessage());
+        }
     }
 }

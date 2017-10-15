@@ -19,7 +19,7 @@
 		// window.User = {!! auth('admin')->user() !!};
 	</script>
 </head>
-<body class="sidebar-mini skin-purple-light" >
+<body class="sidebar-mini skin-purple-light" style="background-color: rgb(228, 232, 239);" >
 <div id="app"></div>
 <!-- <script type="text/javascript" src="/js/admin/admin.js"></script> -->
 <script type="text/javascript" src="/js/admin/admin.js"></script>

@@ -34,6 +34,9 @@ mix.webpackConfig({
 
 
 mix.js('resources/assets/js/admin.js', 'public/js/admin/admin.js').combine([
+  'node_modules/bootstrap3/dist/css/bootstrap.min.css',
+	'node_modules/admin-lte/dist/css/AdminLTE.min.css',
+	'node_modules/admin-lte/dist/css/skins/_all-skins.min.css',
 	'node_modules/font-awesome/css/font-awesome.min.css',
 	'node_modules/ionicons/dist/css/ionicons.min.css',
   'node_modules/element-ui/lib/theme-default/index.css',
