@@ -16,14 +16,6 @@ use App\Models\Admin\Admin;
 
 class AdminController extends ApiController
 {
-    protected  $fields = [
-        'username' => '',
-        'name'     => '',
-        'phone'    => '',
-        'email'    => '',
-        'picture'  => '',
-        'roles'    => [],
-    ];
     /**
      * @var AdminRepository
      */
