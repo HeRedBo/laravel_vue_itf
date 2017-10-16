@@ -88,19 +88,13 @@ class AdminController extends ApiController
      */
     public function show($id)
     {
-        $admin = $this->repository->find($id);
-
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'data' => $admin,
-            ]);
-        }
-
-        return view('admins.show', compact('admin'));
+        $res = $this->repository->getAdminInfo($id);
+        if($res['status'] == 1)
+            return $this->response->withData($res['data']);
+        else
+            return $this->response->withInternalServer($res['msg']);
     }
-
-
+    
     /**
      * Show the form for editing the specified resource.
      *
@@ -179,17 +173,12 @@ class AdminController extends ApiController
      */
     public function destroy($id)
     {
-        $deleted = $this->repository->delete($id);
-
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'message' => 'Admin deleted.',
-                'deleted' => $deleted,
-            ]);
-        }
-
-        return redirect()->back()->with('message', 'Admin deleted.');
+        
+        $res = $this->repository->deleteUser($id);
+        if($res['status'] == 1)
+            return $this->response->withSuccess($res['msg']);
+        else
+            return $this->response->withInternalServer($res['msg']); 
     }
 
 

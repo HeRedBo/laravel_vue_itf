@@ -46,7 +46,7 @@ class Venue extends Model implements Transformable
             
         } else
         {
-            return $manager->url('files/avatar/default.png');
+            return $manager->fileWebPath('files/avatar/default.png');
         }
         
     }

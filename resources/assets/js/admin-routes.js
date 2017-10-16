@@ -102,7 +102,12 @@ export default [
                         path: 'update/:id',
                         name : '角色编辑',
                         component : () => import('views/admin/user/Update.vue')
-                    }
+                    },
+                    {
+                        path: 'index',
+                        name : '用户列表',
+                        component : () => import('views/admin/user/Index.vue')
+                    },
                 ]
             }
 

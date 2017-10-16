@@ -59,23 +59,10 @@
                         <template scope="scope">
 
                                 <div class="btn-group">
-                                       
                                         <router-link :to="{path:'setacl/'+ scope.row.id}" class="btn bg-purple btn-xs">设置权限</router-link>
                                         <button class="btn bg-orange btn-xs" @click="handleUpdate(scope.row)">编辑</button>
                                         <a @click="handleDelete(scope.row.id)" class="btn btn-danger btn-xs">删除</a>
-                                    </div>
-                             <!-- <el-button
-                                size="small"
-                                @click="handleUpdate(scope.row)">编辑
-                              </el-button>
-                            <!-- <router-link :to="{path:'update/'+  scope.row.id}">
-                             
-                            </router-link> -->
-                            <!-- <el-button
-                                size="small"
-                                type="danger"
-                                @click="handleDelete(scope.row.id)">删除
-                            </el-button> --> 
+                                </div>
                         </template>
                         </el-table-column>
                     

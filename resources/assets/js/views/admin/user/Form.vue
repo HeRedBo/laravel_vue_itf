@@ -55,7 +55,7 @@
                       <!-- 头像 -->
                       <el-form-item label="头像">
                         <div class="components-container">
-                          <pan-thumb :image="userForm.id? userForm.picture : image ">
+                          <pan-thumb :image="image">
                           </pan-thumb>
                           <el-button type="primary" icon="upload" style="position: absolute;bottom: 15px;margin-left: 40px;" @click="imagecropperShow=true">修改头像
                           </el-button>
@@ -65,7 +65,11 @@
 
                       <el-form-item>
                         <el-button type="primary" @click="onSubmit"> {{ userForm.id ? '更新' : '立即创建' }}</el-button>
-                        <el-button>取消</el-button>
+                        <router-link :to="{path:'/admin/user/index'}"> 
+                       
+                            <el-button>取消</el-button>
+                    </router-link>
+                        
                       </el-form-item>
 
                     </el-form>
@@ -147,11 +151,20 @@
                     ],
               },
               imagecropperShow: false,
-                  imagecropperKey: 0,
-              image: 'http://owu2vcxbh.bkt.clouddn.com/files/avatar/default.png',
-              
+              imagecropperKey: 0,
+              image: 'http://owu2vcxbh.bkt.clouddn.com/files/avatar/default.png', 
             }
           },
+
+          watch : {
+            userForm() {
+              // console.log(this.image);
+              if(this.userForm.id)
+               {
+                 this.image = this.userForm.picture;               }
+            }
+          },
+
           created() {
             this.getRole();
             this.getVenues();
@@ -178,14 +191,13 @@
                     .then(function(response) {
                         
                         var {data} = response; 
-                        console.log(data);
                         that.$message({
                           showClose: true,
                           message: data.message,
                           type: 'success'
                         });
                       // 跳转到列表页
-                     // that.$router.push({ path: '/admin/venue/index' })
+                      that.$router.push({ path: '/admin/user/index' })
                     })
                     .catch(function(error) {
                       stack_error(error);

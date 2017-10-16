@@ -99,29 +99,33 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
         $user = $user_model->with('roles')
                             ->with('venues')
                             ->find($id);
-        $roles_res = $venues_res = [];
+        $roleStr = $venueStr = [];
        if($user)
        {
            $roles = $user->roles;
            $venues = $user->venues;
-        //    foreach ($roles as $role)
-        //    {
-        //        $roles_res[] = ['label' => $role->name, 'value' => $role->id];
-        //        $roleStr[]   = $role->name;
-
-        //    }
-        //    foreach ($venues as $venue)
-        //    {
-        //        $venues_res[] = ['label' => $venue->name, 'value' => $venue->id];
-        //        $venueStr[] = $venue->name;
-        //    }
+           foreach ($roles as $role)
+            {
+                //$roles_res[] = ['label' => $role->name, 'value' => $role->id];
+                $roleStr[]   = $role->name;
+            }
+            foreach ($venues as $venue)
+            {
+                //$venues_res[] = ['label' => $venue->name, 'value' => $venue->id];
+             
+                $venueStr[] = $venue->name;
+            }
+           $user = $user->toArray();
+           $user['roles'] = array_column($roles->toArray(),'id');
+           $user['rolesStr'] = $id == 1 ? '超级管理员' : (!empty($roleStr) ? implode(',', $roleStr) : '未分配');
+           $user['venues'] = array_column($venues->toArray(),'id');
+           $user['venuesStr'] = (!empty($roleStr)) ? implode(',', $venueStr) : '未分配';
+           return success('数据获取成功', $user);
        }
-       $user = $user->toArray();
-       $user['roles'] = array_column($roles->toArray(),'id');
-       //$user['rolesStr'] = $id == 1 ? '管理员' : (!empty($roleStr) ? implode(',', $roleStr) : '未分配');
-       $user['venues'] = array_column($venues->toArray(),'id');
-       //$user['venuesStr'] = (!empty($venues_res)) ? implode(',', $venueStr) : '未分配';
-       return success('数据获取成功', $user);
+       else {
+           return error('数据不存在');
+       }
+       
     }
     
     /**
@@ -152,7 +156,7 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
                 }
                 unset($admin->roles);
                 unset($admin->venues);
-                if($data['password'] != '')
+                if(isset($data['password']) && $data['password'] != '')
                 {
                     $admin->password = bcrypt($data['password']);
                 }
@@ -181,12 +185,11 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
             }
             else
             {
-                return errror('数据不存在');
+                return error('数据不存在');
             }
         }
         catch (\Exception $e)
         {
-            var_dump($e->__toString());
             DB::rollBack();
             logResult('【管理员数据创建失败】'. $e->__toString(),'error');
             return error($e->getMessage());
@@ -204,5 +207,27 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
             $where[] = ['id','!=', $id];
         }
         return  $this->findWhere($where)->toArray();
+    }
+
+
+    public function deleteUser($id)
+    {
+        $user = $this->find($id);
+        if($user) {
+            $picture = $user->picture;
+            $old_picture = $user->picture;
+            if($old_picture)
+            {
+                 // 删除用户图片
+                $manager = app('uploader');
+                $manager->deleteFile($old_picture);
+                
+            }
+            $user->delete();
+            return success('数据删除成功');
+        } else {
+            return errror('数据不存在');
+        }
+           
     }
 }
