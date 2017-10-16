@@ -1,6 +1,6 @@
 <template>
 	<el-menu class="navbar" mode="horizontal">
-		<!-- <hamburger class="hamburger-container" :toggleClick="toggleSideBar" ></hamburger> -->
+		<hamburger class="hamburger-container" :toggleClick="toggleSideBar"  :isActive="sidebar.opened"></hamburger>
 		<levelbar></levelbar>
 		<screenfull class='screenfull'></screenfull>
 
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-
+import { mapGetters } from 'vuex'
 import Hamburger from 'components/Hamburger';
 import Levelbar from './Levelbar';
 import Screenfull from 'components/Screenfull'
@@ -36,9 +36,14 @@ export default {
 		Levelbar,
 		Screenfull
 	},
+	computed : {
+		...mapGetters([
+			'sidebar'
+		])
+	},
 	methods : {
 		toggleSideBar() {
-
+			this.$store.dispatch('ToggleSideBar')
 		},
 		
 		logout() {

@@ -1,5 +1,5 @@
 <template>
-	<div class="app-wrapper">
+	<div class="app-wrapper" :class="{hideSidebar:!sidebar.opened}">
 		<sidebar class="sidebar-container"></sidebar>
 		<div class="main-container">
 			<navbar></navbar>
@@ -18,7 +18,9 @@ export default {
         AppMain
 	},
 	computed : {
-        
+        sidebar() {
+      		return this.$store.state.app.sidebar
+    	}
 	}
 }
 
@@ -49,7 +51,7 @@ export default {
 		left: 0;
 		z-index: 1001;
 		overflow-y: auto;
-			&::-webkit-scrollbar {display:none}
+		 &::-webkit-scrollbar {display:none}
 	}
 	.main-container {
 		min-height: 100%;

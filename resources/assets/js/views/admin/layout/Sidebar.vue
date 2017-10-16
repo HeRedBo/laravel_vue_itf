@@ -5,24 +5,27 @@
 </template>
 
 <script>
-import SidebarItem from './SidebarItem'
+import { mapGetters } from 'vuex';
+import SidebarItem from './SidebarItem';
 export default {
     components : {
         SidebarItem
     },
     data() {
         return {
-            permission_routers : []
+            permission_routers : [],
         }
     },
     methods : {
-
+       
     },
-
     computed: {
-    
+        ...mapGetters([
+            'sidebar'
+        ]),
         isCollapse() {
-            return false
+            console.log(!this.sidebar.opened);
+            return !this.sidebar.opened
         }
     },
 
