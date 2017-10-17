@@ -2,6 +2,7 @@
 	<el-menu class="navbar" mode="horizontal">
 		<hamburger class="hamburger-container" :toggleClick="toggleSideBar"  :isActive="sidebar.opened"></hamburger>
 		<levelbar></levelbar>
+		<tabs-view></tabs-view>
 		<screenfull class='screenfull'></screenfull>
 
 		<!-- <el-dropdown class="avatar-container" trigger="click">
@@ -27,6 +28,7 @@
 import { mapGetters } from 'vuex'
 import Hamburger from 'components/Hamburger';
 import Levelbar from './Levelbar';
+import TabsView from './TabsView';
 import Screenfull from 'components/Screenfull'
 
 
@@ -34,7 +36,8 @@ export default {
 	components : {
 		Hamburger,
 		Levelbar,
-		Screenfull
+		Screenfull,
+		TabsView
 	},
 	computed : {
 		...mapGetters([
