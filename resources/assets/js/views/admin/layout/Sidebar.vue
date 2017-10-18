@@ -7,17 +7,32 @@
 <script>
 import { mapGetters } from 'vuex';
 import SidebarItem from './SidebarItem';
+import { stack_error } from 'config/helper';
 export default {
     components : {
         SidebarItem
     },
     data() {
         return {
-            permission_routers : [],
+            permission_routers : {},
         }
     },
     methods : {
-       
+       getMenus() {
+            var url = '/menu',that =this;
+            this.$http({
+                    method :"GET",
+                    url : url,
+            })
+            .then(function(response) {
+                let {data} = response;
+                console.log(data.data);
+                that.permission_routers = data.data;     
+            }).catch(function(error) {
+                that.loading = false;
+                stack_error(error);
+            });
+       }
     },
     computed: {
         ...mapGetters([
@@ -29,11 +44,8 @@ export default {
         }
     },
 
-    created() {
-        // var url = "/admin/menu", that = this;
-        // this.$http.get(url).then(function(response) {
-        //     that.permission_routers = response.data
-        // })
+    created(){
+       this.getMenus();
     }
 }
 </script>

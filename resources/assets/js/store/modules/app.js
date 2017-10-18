@@ -44,7 +44,7 @@ const app = {
         delVisitedViews({ commit, state},view) {
            return new Promise((resolve) => {
                commit("DEL_VISITED_VIEWS",view)
-               resolve({...state.visitedViews});
+               resolve([...state.visitedViews]);
            }) 
         }
     }
