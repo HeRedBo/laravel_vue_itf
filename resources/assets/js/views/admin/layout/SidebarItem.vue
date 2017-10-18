@@ -3,16 +3,16 @@
 		<template v-for="item in routes">
 
 			<!-- 处理无下拉框menu -->
-			    <router-link v-if="item.is_show&&item.children.length==1" :to="item.children[0].url">
+			    <!-- <router-link v-if="item.is_show&&item.children.length==1" :to="item.children[0].url">
 	        	<el-menu-item :index="item.children[0].path" class='submenu-title-noDropdown'>
-	          		<!-- <icon-svg v-if='item.icon' :icon-class="item.icon"></icon-svg> -->
+	          		<icon-svg v-if='item.icon' :icon-class="item.icon"></icon-svg>
 							  <i class="fa" v-if='item.icon' v-bind:class="item.icon"></i> 
 	          		<span>{{item.children[0].display_name}}</span>
 	        	</el-menu-item>
-      		</router-link>
+      		</router-link> -->
 
 				<!-- 处理有下拉框的menu数据 -->
-      		<el-submenu :index="item.display_name" v-if="item.is_show">
+      		<el-submenu :index="item.name" v-if="item.is_show">
 		        <template slot="title">
 		        	<i class="fa" v-bind:class="item.icon" ></i> <span>{{ item.display_name}}</span>
 		        </template>
