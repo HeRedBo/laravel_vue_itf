@@ -60,6 +60,43 @@ class Admin extends Authenticatable implements Transformable
         return $this->belongsToMany(Venue::class,'admin_venue','admin_id','venue_id');
     }
 
+
+    /**
+     *  判断用户是具有某权限
+     *
+     * @param mixed $permisson
+     * @return boolean
+     * @author RddBo
+     */
+    public function hasPermission($permisson) 
+    {
+        if(is_string($permisson)){
+            $permisson = Permission::where('name', $permisson)->first();
+            if(!$permisson) return false;
+        }
+        return $this->hasRole($permisson->roles);
+    }
+
+    /**
+     * 判断的用户是否具有某个群权限
+     * 
+     * @param [type] $role
+     * @return boolean
+     * @author RddBo
+     */
+    public function hasRole($role) 
+    {       
+       
+        if(is_string($role)) 
+        {
+            return $this->roles->contains('name',$ole);
+        }
+
+        return !!$role->intersect($this->roles)->count();
+    }
+
+
+
     /**
      * 角色整体添加与修改
      *

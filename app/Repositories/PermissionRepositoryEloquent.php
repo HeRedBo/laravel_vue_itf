@@ -7,6 +7,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\PermissionRepository;
 use App\Models\Admin\Permission;
 use App\Validators\PermissionValidator;
+use Cache;
 
 /**
  * Class PermissionRepositoryEloquent
@@ -50,7 +51,7 @@ class PermissionRepositoryEloquent extends BaseRepository implements PermissionR
     public function getTreeData()
     {
         $data = [];
-        $list = $this->orderBy('order_num','DESC')
+        $list = $this->orderBy('order_num','ASC')
                 ->all()
                 ->toArray();
         foreach ($list as $k => $v)
@@ -102,6 +103,8 @@ class PermissionRepositoryEloquent extends BaseRepository implements PermissionR
             $permisson->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
         }
         $permisson->save();
+        Cache::forget('menus');
+
         return success('数据创建成功');
     }
 
@@ -120,6 +123,7 @@ class PermissionRepositoryEloquent extends BaseRepository implements PermissionR
                 
             }
             $permisson->save();
+            Cache::forget('menus');            
             return success('数据更新成功');
         }
         return error('记录不存在，请检查');

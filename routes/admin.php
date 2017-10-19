@@ -5,11 +5,15 @@ Route::get('/ApiTest/api-test', 'ApiTestController@ApiTest');
 Route::get('/ApiTest/up-base64-img', 'ApiTestController@uploadBase64Img');
 
 
-Route::group(['middleware' => ['auth:admin','menu']], function()
-{
+Route::group(['middleware' => ['auth:admin','menu']], function() {
+
     Route::get('/', 'IndexController@index');
     Route::get('/menu', ['as' => 'admin.menu', 'uses' => 'IndexController@menu']);
 });
+
+Route::group(['middleware' => ['auth:admin']], function() {
+
+   
 
 Route::group(['middleware' => ['auth:admin']], function() {
     
