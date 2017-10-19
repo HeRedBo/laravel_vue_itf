@@ -20,6 +20,8 @@ const app = {
         ADD_VISITED_VIEWS : (state, view) => {
             if(state.visitedViews.some(v => v.path === view.path )) return;
             state.visitedViews.push({name: view.name, path : view.path});
+            console.info('view')
+            console.info(view)
         },
         DEL_VISITED_VIEWS : (state, view ) => {
             let index;
@@ -44,7 +46,7 @@ const app = {
         delVisitedViews({ commit, state},view) {
            return new Promise((resolve) => {
                commit("DEL_VISITED_VIEWS",view)
-               resolve({...state.visitedViews});
+               resolve([...state.visitedViews]);
            }) 
         }
     }

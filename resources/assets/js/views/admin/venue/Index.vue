@@ -44,9 +44,7 @@
         <el-table-column
           label="logo"
           >
-          <template scope="scope">
-
-
+          <template slot-scope="scope">
               <el-popover
                 ref="popover"
                 placement="right"
@@ -98,7 +96,7 @@
         <el-table-column label="操作"
         width="150"
         >
-            <template scope="scope">
+            <template slot-scope="scope">
                 <router-link :to="{path:'update/'+  scope.row.id}">
                   <el-button
                   size="small"

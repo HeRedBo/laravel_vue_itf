@@ -56,7 +56,7 @@
                         </el-table-column>
                     
                         <el-table-column label="操作" width="250">
-                        <template scope="scope">
+                        <template slot-scope="scope">
 
                                 <div class="btn-group">
                                         <router-link :to="{path:'setacl/'+ scope.row.id}" class="btn bg-purple btn-xs">设置权限</router-link>
