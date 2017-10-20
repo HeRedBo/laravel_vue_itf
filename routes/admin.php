@@ -12,10 +12,6 @@ Route::group(['middleware' => ['auth:admin','menu']], function() {
 });
 
 Route::group(['middleware' => ['auth:admin']], function() {
-
-   
-
-Route::group(['middleware' => ['auth:admin']], function() {
     
     if (!Request::ajax()) {
         Route::get('{path?}', ['uses' => 'IndexController@index'])->where('path', '[\/\w\.-]*');
@@ -56,17 +52,3 @@ Route::group(['middleware' => ['auth:admin']], function() {
     Route::resource('user', 'AdminController');
     
 });
-
-
-
-
-
-
-
-
-
-
-if (!Request::ajax()) {
-    Route::get('{path?}', ['uses' => 'IndexController@index'])->where('path', '[\/\w\.-]*');
-}
-
