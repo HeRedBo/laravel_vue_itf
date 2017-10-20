@@ -68,12 +68,16 @@ http.interceptors.response.use(function (response) {
   }, function (error) {
      
     const { response } = error
-    if ([401].indexOf(response.status) >= 0) {
-        if (response.status == 401 && response.data.error.message != 'Unauthorized') {
-          return Promise.reject(response);
+    if ([401].indexOf(response.status) >= 0) 
+    {
+     
+        if (response.status == 401 && response.data.message != 'Unauthorized') {
+          return Promise.reject(error);
         }
-        window.location = '/login';
+        // 跳转到登录页面
+        window.location = '/admin/login';
     }
+    
     console.log('err' + error)// for debug
     //  Message({
     //    message: error.message,

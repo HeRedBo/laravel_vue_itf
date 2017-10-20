@@ -1,9 +1,10 @@
 export function stack_error(error) {
-    console.log(error);
+    console.log(error)
     var that = this;
     if(!error.hasOwnProperty('response')) {
         if(typeof error == 'object' && error instanceof Error)
         {
+            
             var message = error.name + " : " + error.message;
             toastr.error(message);
         }

@@ -16,6 +16,7 @@
 			'csrfToken' => csrf_token(),
 			]) !!}
 		window.Name = '{!! config('app.name','Laravel') !!}';
+		window.User = {!!$user!!}
 		// window.User = {!! auth('admin')->user() !!};
 	</script>
 </head>

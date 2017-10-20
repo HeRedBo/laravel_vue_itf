@@ -17,9 +17,22 @@
 						首页
 					</el-dropdown-item>
 				</router-link>
+
 				<el-dropdown-item divided><span @click="logout" style="display:block;">退出登录</span></el-dropdown-item>
 			</el-dropdown-menu>
 		</el-dropdown> -->
+		
+		<el-dropdown class="avatar-container" trigger="click">
+			 <div class="avatar-wrapper">
+				<img class="user-avatar" :src="image">
+				<i class="el-icon-caret-bottom"></i>
+			</div>
+			  <el-dropdown-menu slot="dropdown">
+				<el-dropdown-item divided>
+					<span @click="logout" style="display:block;">退出</span>
+				</el-dropdown-item>
+			  </el-dropdown-menu>
+		</el-dropdown>
 
 	</el-menu>
 </template>
@@ -30,9 +43,14 @@ import Hamburger from 'components/Hamburger';
 import Levelbar from './Levelbar';
 import TabsView from './TabsView';
 import Screenfull from 'components/Screenfull'
-
+import { stack_error} from 'config/helper';
 
 export default {
+	data() {
+		return {
+			image : window.User.picture
+		}
+	},
 	components : {
 		Hamburger,
 		Levelbar,
@@ -50,7 +68,22 @@ export default {
 		},
 		
 		logout() {
-			
+
+			var that = this;
+			this.$http({
+              method :"GET",
+              url : 'logout',
+              data : this.loginForm
+            })
+            .then(function(response) {
+                //location.reload()// 为了重新实例化vue-router对象 避免bug
+               that.$router.push({ path: '/admin/login' })
+               
+           })
+           .catch(function(error) {
+            
+             stack_error(error);
+           });
 		}
 	}
 }
@@ -84,7 +117,7 @@ export default {
 					right: 35px;
 					.avatar-wrapper {
 							cursor: pointer;
-							margin-top: 5px;
+							/* margin-top: 5px; */
 							position: relative;
 							.user-avatar {
 									width: 40px;

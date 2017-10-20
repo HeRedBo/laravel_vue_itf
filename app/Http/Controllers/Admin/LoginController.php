@@ -64,7 +64,6 @@ class LoginController extends ApiController
      */
     public function login(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             $this->username() => 'required',
             'password' => 'required|min:6'
@@ -95,4 +94,22 @@ class LoginController extends ApiController
         $this->incrementLoginAttempts($request);
         return $this->response->withBadRequest('用户名或密码错误');
     }
+
+
+
+    /**
+     * 退出
+     * @param  Request $request [description]
+     * @return  
+     */
+    public function logout(Request $request)
+    {
+        $this->guard()->logout();
+        if($request->ajax())
+        {
+            return $this->response->withSuccess("退出成功");
+        }
+        return redirect('/admin/login');
+    }
+
 }

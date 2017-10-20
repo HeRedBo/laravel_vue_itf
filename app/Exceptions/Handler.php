@@ -5,9 +5,11 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use  App\Services\ApiServer\ApiResponse;
 
 class Handler extends ExceptionHandler
 {
+    protected $responseObj = null;
     /**
      * A list of the exception types that should not be reported.
      *
@@ -44,7 +46,6 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-
         return parent::render($request, $exception);
     }
 
@@ -58,9 +59,16 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         if ($request->expectsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], 401);
+            $response = $this->getResponseObj();
+            return  $response->withUnauthorized();
         }
 
         return redirect()->guest(route('login'));
+    }
+
+    protected function getResponseObj() 
+    {
+        $responseObj = new ApiResponse();
+        return $responseObj;
     }
 }

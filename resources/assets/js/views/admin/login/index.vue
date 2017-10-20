@@ -79,12 +79,12 @@ export default {
             })
             .then(function(response) {
               that.loading = false
-              console.log('asdasda');
-          })
-          .catch(function(error) {
-            that.loading = false;
-            stack_error(error);
-          });
+               that.$router.push({ path: '/admin' })
+           })
+           .catch(function(error) {
+             that.loading = false;
+             stack_error(error);
+           });
         } else {
           console.log('error submit!!')
           return false

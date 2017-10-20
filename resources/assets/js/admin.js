@@ -13,6 +13,9 @@ import routes from './admin-routes.js';
 import ElementUI from 'element-ui';
 import App from './App.vue';
 import store from './store';
+import axios from 'axios'
+import NProgress from 'nprogress' // Progress 进度条
+
 
 Vue.use(VueRouter);
 Vue.use(ElementUI);
@@ -58,6 +61,41 @@ const router = new VueRouter({
     linkActiveClass: 'active',
     routes: routes
 });
+
+router.beforeEach((to, from, next) => {
+   
+        // if (!window.User) {
+        //     return next('/admin/login')
+        // }
+    
+    NProgress.start() // 开启Progress
+    var url = '/admin/checkAcl', path =to.path;
+    axios({
+        method:'GET',
+            url:url,
+            responseType:'json',
+            params :{
+                path:path,
+                _token : Laravel.csrfToken
+            }
+       })
+      .then(function(response) {
+            NProgress.done() // 结束Progress
+            let {data} = response;
+            let responseData = data.data;
+
+            if(!responseData.status) {
+                return next({ path: '/admin/error'});
+            }
+      })
+     .catch(function(error) {
+         NProgress.done() // 结束Progress
+         return next({ path: '/admin/login' });
+     });
+    
+        return next();
+    });
+    
 
 // 4. 创建和挂载根实例。
 // 记得要通过 router 配置参数注入路由，

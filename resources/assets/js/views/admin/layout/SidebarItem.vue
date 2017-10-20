@@ -1,5 +1,16 @@
 <template>
 	<div class="menu-wrapper">
+			<!-- <li class="header">栏目导航</li> -->
+			<!--Optionally  -->
+			<!-- <li><a href="/admin"><i class="fa fa-dashboard"></i><span>控制面板</span></a></li> -->
+		
+			<router-link :to="index">
+					<el-menu-item index="index">
+							<i class="el-icon-setting"></i>
+							<span slot="title">控制面板</span>
+					</el-menu-item>
+			</router-link>
+			
 		<template v-for="item in routes">
 
 			<!-- 处理无下拉框menu -->
@@ -38,6 +49,11 @@ export default {
     routes: {
 			type: Object
     }
+	},
+	data() {
+		return {
+			index : "/admin/dashboard"
+		}
 	},
 	created(){
        console.log('asda')
