@@ -15,18 +15,14 @@ use Illuminate\Support\Facades\DB;
 class Admin extends Authenticatable implements Transformable
 {
     use TransformableTrait;
-    
+
     use Notifiable;
     
     protected $table = 'admin';
     protected $admin_user_role = 'admin_user_role';
     protected $admin_venue     = 'admin_venue';
     protected $dates = ['created_at', 'updated_at'];
-    
-    protected $permissions = [];
-    
-    protected  $userRoles = [];
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -35,7 +31,7 @@ class Admin extends Authenticatable implements Transformable
     protected $fillable = [
         'username','name','email','password','picture','phone'
     ];
-    
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -44,17 +40,17 @@ class Admin extends Authenticatable implements Transformable
     protected $hidden = [
         'password', 'remember_token',
     ];
-    
-    
-    /**
+
+
+     /**
      * 属于该用户的身份。
      */
     public function roles()
     {
         return $this->belongsToMany(Role::class,'admin_user_role','user_id','role_id');
     }
-    
-    
+
+
     /**
      * 查询该用户所属的道馆
      *
@@ -63,8 +59,8 @@ class Admin extends Authenticatable implements Transformable
     {
         return $this->belongsToMany(Venue::class,'admin_venue','admin_id','venue_id');
     }
-    
-    
+
+
     /**
      *  判断用户是具有某权限
      *
@@ -72,71 +68,35 @@ class Admin extends Authenticatable implements Transformable
      * @return boolean
      * @author RddBo
      */
-    public function hasPermission($permission)
+    public function hasPermission($permisson) 
     {
-        if(is_string($permission))
-        {
-            $permissionRoles = $this->getPermissionRoles();
-            if(isset($permissionRoles[$permission]))
-            {
-                $permission = $permissionRoles[$permission];
-            }
-            if(!$permission) return false;
+        if(is_string($permisson)){
+            $permisson = Permission::where('name', $permisson)->first();
+            if(!$permisson) return false;
         }
-        return $this->hasRole($permission->roles);
+        return $this->hasRole($permisson->roles);
     }
-    
-    
-    protected  function getPermissionRoles()
-    {
-        
-        if(isset($this->permissions[$this->id]))
-        {
-            $permissionRoles = $this->permissions[$this->id];
-        }
-        else
-        {
-            $permissions = Permission::with('roles')->get();
-            $permissionRoles = $permissions->mapWithKeys( function($item) {
-                return [$item['name'] => $item];
-            });
-            $this->permissions[$this->id] = $permissionRoles;
-        }
-        return $permissionRoles;
-    }
+
     /**
      * 判断的用户是否具有某个群权限
-     *
+     * 
      * @param [type] $role
      * @return boolean
      * @author RddBo
      */
-    public function hasRole($role)
-    {
-        $userRoles = $this->getUserRoles();
-        if(is_string($role))
+    public function hasRole($role) 
+    {       
+       
+        if(is_string($role)) 
         {
-            return $userRoles->contains('name',$role);
+            return $this->roles->contains('name',$ole);
         }
-        return !!$role->intersect($userRoles)->count();
+
+        return !!$role->intersect($this->roles)->count();
     }
-    
-    protected  function  getUserRoles()
-    {
-        if(isset($this->userRoles[$this->id]))
-        {
-            $roles =  $this->userRoles[$this->id];
-        }
-        else
-        {
-            $roles = $this->roles;
-            $this->userRoles[$this->id] = $roles;
-        }
-        return $roles;
-    }
-    
-    
-    
+
+
+
     /**
      * 角色整体添加与修改
      *
@@ -158,7 +118,7 @@ class Admin extends Authenticatable implements Transformable
         DB::table($this->admin_user_role)->insert($admin_roles);
         return true;
     }
-    
+
     /**
      * 给用户分配权限
      * @param  mixed  $role 角色数据对象
@@ -168,7 +128,7 @@ class Admin extends Authenticatable implements Transformable
     {
         return $this->roles()->save($role);
     }
-    
+
     public function giveVenueTo(array $venueId)
     {
         $this->venues()->detach();
@@ -184,12 +144,12 @@ class Admin extends Authenticatable implements Transformable
         DB::table($this->admin_venue)->insert($admin_venues);
         return true;
     }
-    
+
     public function assignVenue($venue)
     {
         $this->venues()->save($venue);
     }
-    
+
     public function getPictureAttribute($pic)
     {
         $manager = app('uploader');
@@ -197,7 +157,7 @@ class Admin extends Authenticatable implements Transformable
         {
             return $pic;
         }
-        if ($pic)
+        if ($pic) 
         {
             return $manager->fileWebPath($pic);
         }
@@ -206,5 +166,5 @@ class Admin extends Authenticatable implements Transformable
             return $manager->fileWebPath('files/avatar/default.png');
         }
     }
-    
+
 }
