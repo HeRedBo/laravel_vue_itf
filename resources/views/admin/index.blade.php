@@ -16,8 +16,7 @@
 			'csrfToken' => csrf_token(),
 			]) !!}
 		window.Name = '{!! config('app.name','Laravel') !!}';
-		window.User = {!!$user!!}
-		// window.User = {!! auth('admin')->user() !!};
+		window.User = {!! $user or "{}" !!};
 	</script>
 </head>
 <body class="sidebar-mini skin-purple-light" style="background-color: rgb(228, 232, 239);" >

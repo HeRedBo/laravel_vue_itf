@@ -9,10 +9,12 @@ export default [
         path: '/admin',
         component : Layout,
         redirect: '/admin/dashboard',
-        name: '首页',
+        name: '',
         children : [
             {
-               path: 'dashboard', component : () => import('views/admin/dashboard/index.vue'),
+               name : '控制面板',
+               path: 'dashboard', component : () => import('views/admin/dashboard/index.vue')
+               
             },
             {
                 path : 'venue',
@@ -109,7 +111,19 @@ export default [
                         component : () => import('views/admin/user/Index.vue')
                     },
                 ]
-            }
+            },
+            {
+                path : 'error',
+                component:Parent,
+                name : '错误',
+                children : [
+                    {
+                        path: '403',
+                        name : '403错误',
+                        component : () => import('views/admin/errorPage/error403.vue')
+                    }
+                ]
+            },
 
         ]
     }

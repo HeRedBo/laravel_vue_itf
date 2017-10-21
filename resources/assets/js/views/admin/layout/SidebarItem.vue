@@ -4,26 +4,26 @@
 			<!--Optionally  -->
 			<!-- <li><a href="/admin"><i class="fa fa-dashboard"></i><span>控制面板</span></a></li> -->
 		
-			<router-link :to="index">
+			<!-- <router-link :to="index">
 					<el-menu-item index="index">
 							<i class="el-icon-setting"></i>
 							<span slot="title">控制面板</span>
 					</el-menu-item>
-			</router-link>
+			</router-link> -->
 			
 		<template v-for="item in routes">
 
 			<!-- 处理无下拉框menu -->
-			    <!-- <router-link v-if="item.is_show&&item.children.length==1" :to="item.children[0].url">
-	        	<el-menu-item :index="item.children[0].path" class='submenu-title-noDropdown'>
-	          		<icon-svg v-if='item.icon' :icon-class="item.icon"></icon-svg>
-							  <i class="fa" v-if='item.icon' v-bind:class="item.icon"></i> 
-	          		<span>{{item.children[0].display_name}}</span>
+			    <router-link v-if="item.is_show&&item.children.length==0" :to="item.url">
+	        	<el-menu-item :index="item.url" class='submenu-title-noDropdown'>
+								<i class="fa" v-if='item.icon' v-bind:class="item.icon"></i> 
+								<span>{{item.display_name}}</span>
 	        	</el-menu-item>
-      		</router-link> -->
+      		</router-link>
+
 
 				<!-- 处理有下拉框的menu数据 -->
-      		<el-submenu :index="item.name" v-if="item.is_show">
+      		<el-submenu :index="item.name" v-if="item.is_show&&item.children.length>0">
 		        <template slot="title">
 		        	<i class="fa" v-bind:class="item.icon" ></i> <span>{{ item.display_name}}</span>
 		        </template>

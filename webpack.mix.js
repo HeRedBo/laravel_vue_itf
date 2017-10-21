@@ -24,6 +24,7 @@ mix.webpackConfig({
       'views': 'assets/js/views',
       'styles': 'assets/js/styles',
       'utils': 'assets/js/utils',
+      'images': 'assets/images',
     },
     modules: [
       'node_modules',
@@ -44,5 +45,4 @@ mix.js('resources/assets/js/admin.js', 'public/js/admin/admin.js').combine([
   'node_modules/sweetalert2/dist/sweetalert2.min.css',
 	'node_modules/nprogress/nprogress.css',
   'resources/assets/sass/app.scss',
-	'resources/assets/styles/index.scss'
 	],'public/css/admin.css');

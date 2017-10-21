@@ -26,15 +26,16 @@ class Menu
 
     protected function getMenu() 
     {
+        Cache::forget('menus');
         $data = Cache::store(config('cache.default','file'))->get('menus', function() {
             $data   = [];
             $uid    = Auth::guard('admin')->user()->id;
             $user   = Admin::find($uid);
-            $level0 = Permission::where('parent_id','0')->orderBy('order_num','desc')->get()->toArray();
+            $level0 = Permission::where('parent_id','0')->orderBy('order_num','ASC')->get()->toArray();
             $parentIds  =  array_unique(array_column($level0,'id'));
             $subPermissions = Permission::whereIn('parent_id',$parentIds)
                               ->where('is_show',1)
-                              ->orderBy('order_num','desc')
+                              ->orderBy('order_num','ASC')
                               ->get()
                               ->toArray();
     
@@ -43,9 +44,11 @@ class Menu
             {
                 $subLevels[$val['parent_id']][] = $val;
             }
-    
+            
+
             foreach ($level0 as $key => $val) 
             {
+              
                 $subLevel = isset($subLevels[$val['id']]) ? $subLevels[$val['id']] : [];
                 foreach ($subLevel as $k => $v)
                 {
@@ -54,12 +57,19 @@ class Menu
                         unset($subLevel[$k]);
                     }
                 }
+
+                $val['url'] =  '/' .str_replace('.', '/', $val['name']);
+
+                $data[$val['name']] = $val;
+                $data[$val['name']]['children'] = [];
+
                 if(!empty($subLevel)) {
-                    $data[$val['name']] = $val;
                     $data[$val['name']]['children'] = $subLevel;
                 }
             }
-            Cache::put('menus', $data, 4000);
+           
+
+            Cache::put('menus', $data);
             return $data;
             
         });
