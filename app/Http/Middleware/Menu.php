@@ -8,7 +8,6 @@ use App\Models\Admin\Permission;
 use App\Models\Admin\Role;
 use Auth, Cache;
 
-
 class Menu
 {
     /**
@@ -67,8 +66,6 @@ class Menu
                     $data[$val['name']]['children'] = $subLevel;
                 }
             }
-           
-
             Cache::put('menus', $data);
             return $data;
             

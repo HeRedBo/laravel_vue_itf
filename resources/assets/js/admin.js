@@ -64,12 +64,17 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
    
-        // if (!window.User) {
-        //     return next('/admin/login')
-        // }
+    if (!window.User) {
+        return next('/admin/login')
+    }
+
     
     NProgress.start() // 开启Progress
     var url = '/admin/checkAcl', path =to.path;
+
+    if(path == '/admin/login')
+        return next();
+        
     axios({
         method:'GET',
             url:url,

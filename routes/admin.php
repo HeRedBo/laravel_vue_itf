@@ -1,26 +1,26 @@
 <?php
 //Route::get('/', 'IndexController@index');
 
-Route::post('/login', 'LoginController@login');
+Route::post('/login', ['as' => 'admin.login','uses' => 'LoginController@login']);
 Route::get('/logout', 'LoginController@logout'); //退出系统
 Route::get('/ApiTest/api-test', 'ApiTestController@ApiTest');
 Route::get('/ApiTest/up-base64-img', 'ApiTestController@uploadBase64Img');
+
+
+
+Route::group(['middleware' => ['auth:admin','menu']], function() {
+    Route::get('/', 'IndexController@index');
+    Route::any('/menu', ['as' => 'admin.menu', 'uses' => 'IndexController@menu']);
+    Route::get('/checkAcl', ['as' => 'admin.acl', 'uses' => 'IndexController@checkAcl']);
+});
+
 
 if (!Request::ajax()) {
     Route::get('{path?}', ['uses' => 'IndexController@index'])->where('path', '[\/\w\.-]*');
 }
 
 
-Route::group(['middleware' => ['auth:admin','menu']], function() {
-    Route::get('/', 'IndexController@index');
-    Route::get('/menu', ['as' => 'admin.menu', 'uses' => 'IndexController@menu']);
-});
-
-
-Route::group(['middleware' => ['auth:admin']], function() {
-   
-    Route::get('/checkAcl', ['as' => 'admin.acl', 'uses' => 'IndexController@checkAcl']);
-   
+Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     Route::get('venue/edit ', ['as' => 'admin.venue.edit', 'uses' => 'VenueController@edit']);
     Route::get('venue/getVenues ', ['as' => 'admin.venue.getVenues', 'uses' => 'VenueController@getVenueOptions']);
     Route::get('venue/checkName ', ['as' => 'admin.venue.checkName', 'uses' => 'VenueController@checkVenueName']);
@@ -42,6 +42,7 @@ Route::group(['middleware' => ['auth:admin']], function() {
     Route::get('role/checkName ', ['as' => 'admin.role.checkName', 'uses' => 'RolesController@checkRoleName']);
     Route::resource('role', 'RolesController');
 
+
     // permission
     Route::get('permission/edit ', ['as' => 'admin.permission.edit', 'uses' => 'PermissionsController@edit']);
     Route::resource('permission', 'PermissionsController');
@@ -53,5 +54,9 @@ Route::group(['middleware' => ['auth:admin']], function() {
     Route::get('user/checkUserName', ['as' => 'admin.user.role', 'uses' => 'AdminController@checkUserName']);
 
     Route::resource('user', 'AdminController');
-    
+
+    // classes
+    Route::resource('classes', 'ClassesController');
+
+
 });

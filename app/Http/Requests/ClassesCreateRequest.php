@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PermissionCreateRequest extends FormRequest
+class ClassesCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,9 @@ class PermissionCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'         => 'required|unique:admin_permissions|max:225',
-            'display_name' => 'required|max:225',
-           
+            'name' => 'required|unique:classes|min:3|max:255',
+            'venue_id' => 'required'
         ];
+
     }
 }

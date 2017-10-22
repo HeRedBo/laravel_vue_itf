@@ -16,10 +16,12 @@ class CreateClassesTable extends Migration
         Schema::create('classes', function(Blueprint $table)
         {
             $table->increments('id')->comment('主键ID');
+            $table->integer('venue_id')->default('0')->comment('道馆ID');
             $table->string('name', 50)->default('')->comment('班级名称');
             $table->string('remark', 255)->comment('班级备注信息');
             $table->integer('operator_id')->unsigned()->default('0')->comment('操作人ID');
             $table->timestamps();
+            $table->index('name');
             $table->index('operator_id');
         });
     }

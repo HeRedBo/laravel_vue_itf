@@ -25,7 +25,14 @@ class Venue extends Model implements Transformable
     {
         return $this->belongsToMany(Admin::class,'admin_venue','venue_id','admin_id');
     }
-    
+
+
+    public  function  classes()
+    {
+        return $this->hasMany(Classes::class,'id','venue_id');
+    }
+
+
     public function operator()
     {
         return $this->hasOne(Admin::class, 'id', 'operator_id');

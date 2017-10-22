@@ -39,7 +39,7 @@ class ApiTestController extends ApiController
 
         $disk = QiniuStorage::disk('qiniu');
         $res = upBase64Img($base_64);
-        echo "<img>"
+        echo "<img>";
         echo  $disk->downloadUrl($res);    
     }
 }

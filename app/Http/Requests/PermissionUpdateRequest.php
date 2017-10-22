@@ -26,7 +26,8 @@ class PermissionUpdateRequest extends FormRequest
         return [
             'name'         => 'required|unique:admin_permissions,name,'.$this->get('id').'|max:225',
             'display_name' => 'unique:admin_permissions,display_name,'.$this->get('id').'|max:225',
-            'parent_id'    => 'required|int'
+            'parent_id'    => 'required|int',
+            
         ];
     }
 }

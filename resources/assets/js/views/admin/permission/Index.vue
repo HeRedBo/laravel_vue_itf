@@ -25,7 +25,8 @@
                                       </el-option>
                                     </el-select>
                                 </el-form-item>
-                      
+                                
+                            
                                 <el-form-item label="权限名称" prop="display_name">
                                       <el-input v-model="permissionForm.display_name"></el-input>
                                 </el-form-item>
@@ -97,9 +98,13 @@ export default {
                         { required: true, message: '请输入权限别名', trigger: 'blur'},
                         { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' },
                     ],
-                },
+                    method: [
+                        { required: true, message: '请选择请求方式', trigger: 'blur'},
+                       
+                    ],
                 }
-            },
+            }
+        },
             watch : {
                 treeData() {
                     $.jstree.reference(this.treeDom).settings.core.data = this.treeData;
@@ -176,7 +181,7 @@ export default {
                                 return {
                                     "create" : {
                                         "separator_before":false,
-                                        "separator_after": true,
+                                        "separator_after": false,
                                         "label" : "添加子权限",
                                         "action": function(obj) {
                                             that.addUI(node.id, node.next)
@@ -206,7 +211,9 @@ export default {
                 },
                 addUI: function(id, next) {
                     var that = this;
-                    var $refs = this.$refs;
+                    //var $refs = this.$refs;
+                    that.permissionForm = {
+                    };
                     this.permissionForm.parent_id = id;
                 },
                 edtiUI : function(id) {
