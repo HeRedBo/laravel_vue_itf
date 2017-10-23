@@ -14,4 +14,6 @@ interface ClassesRepository extends RepositoryInterface
     public  function createClass(array  $data);
 
     public  function  updateClass(array $data, $id);
+    
+    public  function  deleteClasses($id);
 }

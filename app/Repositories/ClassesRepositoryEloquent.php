@@ -21,6 +21,10 @@ class ClassesRepositoryEloquent extends BaseRepository implements ClassesReposit
         'remark' => '',
         'operator_id' => 0,
     ];
+    
+    protected $fieldSearchable = [
+        'name'=>'like'
+    ];
     /**
      * Specify Model class name
      *
@@ -97,5 +101,30 @@ class ClassesRepositoryEloquent extends BaseRepository implements ClassesReposit
         {
             return error('数据不存在');
         }
+    }
+    
+    /**
+     * 删除课程数据 课程被启用 不能被删除
+     * @param $id
+     * @author Red-Bo
+     */
+    public  function  deleteClasses($id)
+    {
+        $classes = $this->find($id);
+        try
+        {
+            if($classes)
+            {
+                // 这里以后需要添加 课程是否被引用的判断
+                $res = $this->delete($id);
+                if($res !== false)
+                    return success('数据删除成功');
+            }
+        }catch (\Exception $e)
+        {
+            logResult('【课程删除服务器错误】'.$e->__toString());
+            return error($e->getMessage());
+        }
+        return error('数据不存在 无法删除');
     }
 }

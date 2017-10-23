@@ -38,16 +38,18 @@ class ClassesController extends ApiController
     public function index()
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $classes = $this->repository->all();
-
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'data' => $classes,
-            ]);
+        try
+        {
+            $classes = $this->repository
+                            ->with(['venues','operator'])
+                            ->paginate(20)
+                            ->toArray();
+            return $this->response->withData($classes);
         }
-
-        return view('classes.index', compact('classes'));
+        catch (\Exception $e)
+        {
+            return $this->response->withInternalServer($e->getMessage());
+        }
     }
 
     /**
@@ -139,15 +141,15 @@ class ClassesController extends ApiController
      */
     public function destroy($id)
     {
-        $deleted = $this->repository->delete($id);
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'message' => 'Classes deleted.',
-                'deleted' => $deleted,
-            ]);
+        $res = $this->repository->deleteClasses($id);
+        if (request()->ajax())
+        {
+            if($res['status'] == 1)
+                return $this->response->withSuccess($res['msg']);
+            else
+                return $this->response->withInternalServer($res['msg']);
         }
 
-        return redirect()->back()->with('message', 'Classes deleted.');
+        echo '123';
     }
 }

@@ -28,4 +28,6 @@ class AdminCreateRequest extends FormRequest
             'password' => 'required|min:6|max:50'
         ];
     }
+    
+    
 }

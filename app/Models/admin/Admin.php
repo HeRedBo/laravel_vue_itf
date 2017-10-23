@@ -64,7 +64,7 @@ class Admin extends Authenticatable implements Transformable
         return $this->belongsToMany(Venue::class,'admin_venue','admin_id','venue_id');
     }
     
-    
+
     /**
      *  判断用户是具有某权限
      *

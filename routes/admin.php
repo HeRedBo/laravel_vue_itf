@@ -58,5 +58,8 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     // classes
     Route::resource('classes', 'ClassesController');
 
+    // card 卡券
+    Route::resource('card', 'CardsController');
+    
 
 });

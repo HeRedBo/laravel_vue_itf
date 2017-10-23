@@ -39,6 +39,8 @@ class PermissionsController extends ApiController
         $data['tree'] =  $this->repository->getTreeData();
         $data['select'] = $this->repository->getSelectList();
         return $this->response->withData($data);
+        
+        
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
         $permissions = $this->repository->all();
 

@@ -16,11 +16,16 @@ class Classes extends Model implements Transformable
     protected $fillable = [
         'venue_id','name','remark','operator_id'
     ];
-
+    
+    
     public  function  venues()
     {
         return $this->belongsTo(Venue::class,'venue_id','id');
-
+    }
+    
+    public  function  operator()
+    {
+        return $this->belongsTo(Admin::class,'venue_id','id');
     }
 
 }
