@@ -177,12 +177,9 @@
                
                this.$refs.userForm.validate(valid => {
                   var that = this;
-                  console.log(valid);
                   if (valid) {
                     let url = '/user' + (this.userForm.id ? '/' + this.userForm.id : '')
                     let method = this.userForm.id ? 'put' : 'post';
-                    console.log(13123);
-                    console.log(this.userForm);
                     this.$http({
                       method :method,
                       url : url,

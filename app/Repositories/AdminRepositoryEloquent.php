@@ -230,4 +230,15 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
         }
            
     }
+    
+    public  function  getUserVenues($uid)
+    {
+        $user = $this->find($uid);
+        $user_venues = [];
+        if($user)
+        {
+            $user_venues = $user->venues->toArray();
+        }
+        return success('ok', $user_venues);
+    }
 }

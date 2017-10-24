@@ -14,7 +14,6 @@ Route::group(['middleware' => ['auth:admin','menu']], function() {
     Route::get('/checkAcl', ['as' => 'admin.acl', 'uses' => 'IndexController@checkAcl']);
 });
 
-
 if (!Request::ajax()) {
     Route::get('{path?}', ['uses' => 'IndexController@index'])->where('path', '[\/\w\.-]*');
 }
@@ -50,14 +49,16 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     // admin
     Route::get('user/edit', ['as' => 'admin.user.edit', 'uses' => 'AdminController@edit']);
     Route::get('user/role', ['as' => 'admin.user.role', 'uses' => 'AdminController@role']);
-    Route::get('user/venues', ['as' => 'admin.user.role', 'uses' => 'AdminController@venues']);
+    Route::get('user/venues', ['as' => 'admin.user.venues', 'uses' => 'AdminController@venues']);
+    Route::get('user/userVenues', ['as' => 'admin.user.userVenues', 'uses' => 'AdminController@getUserVenues']);
     Route::get('user/checkUserName', ['as' => 'admin.user.role', 'uses' => 'AdminController@checkUserName']);
 
     Route::resource('user', 'AdminController');
 
-    // classes
-    Route::resource('classes', 'ClassesController');
-
+    // class
+    Route::get('class/checkClassName', ['as' => 'admin.class.checkClassName', 'uses' => 'ClassesController@checkClassName']);
+    Route::resource('class', 'ClassesController');
+    
     // card 卡券
     Route::resource('card', 'CardsController');
     

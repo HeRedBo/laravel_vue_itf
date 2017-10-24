@@ -173,7 +173,6 @@ class RolesController extends ApiController
     {
         $name  = $request->get('name');
         $id    = $request->get('id');
-       
         $status = 0;
         $check = $this->repository->checkRoleName($name,$id);
         if($check)

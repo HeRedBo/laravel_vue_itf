@@ -113,7 +113,7 @@ class AdminController extends ApiController
                         ->withSuccess($result['msg']);
         } else
         {
-            return $this->response->withError($res['msg']);
+            return $this->response->withInternalServer($res['msg']);
         }
     }
     
@@ -138,6 +138,18 @@ class AdminController extends ApiController
         $columns  = ['id','name','logo'];
         $venues = $this->venue->all($columns)->toArray();
         return $this->response->withData($venues);
+    }
+    
+    
+    public function getUserVenues()
+    {
+        $uid = auth('admin')->user()->id;
+        $res = $this->repository->getUserVenues($uid);
+        if($res['status'] == 1)
+        {
+            return $this->response->withData($res['data']);
+        }
+        return $this->response->withInternalServer($res['msg']);
     }
         
     /**

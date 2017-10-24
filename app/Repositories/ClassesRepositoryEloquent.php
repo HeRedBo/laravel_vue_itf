@@ -127,4 +127,15 @@ class ClassesRepositoryEloquent extends BaseRepository implements ClassesReposit
         }
         return error('数据不存在 无法删除');
     }
+    
+    public  function  checkClassName($name,$id)
+    {
+        $where = [
+            'name'=> $name,
+        ];
+        if($id > 0) {
+            $where[] = ['id','!=', $id];
+        }
+        return  $this->findWhere($where)->toArray();
+    }
 }

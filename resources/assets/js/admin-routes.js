@@ -112,18 +112,31 @@ export default [
                     },
                 ]
             },
+            // {
+            //     path : 'error',
+            //     component:Parent,
+            //     name : '错误',
+            //     children : [
+            //         {
+            //             path: '403',
+            //             name : '403错误',
+            //             component : () => import('views/admin/errorPage/error403.vue')
+            //         }
+            //     ]
+            // },
             {
-                path : 'error',
-                component:Parent,
-                name : '错误',
+                path: 'class',
+                component : Parent,
+                name : '班级',
                 children : [
-                    {
-                        path: '403',
-                        name : '403错误',
-                        component : () => import('views/admin/errorPage/error403.vue')
-                    }
+                     {
+                        path: 'index',
+                        name: '班级列表',
+                        component : () => import('views/admin/class/Index.vue')
+                     }
+                  
                 ]
-            },
+            }
 
         ]
     }

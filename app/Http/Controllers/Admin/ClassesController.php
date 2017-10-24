@@ -150,6 +150,18 @@ class ClassesController extends ApiController
                 return $this->response->withInternalServer($res['msg']);
         }
 
-        echo '123';
+        return [];
+    }
+    
+    public function  checkClassName(Request $request)
+    {
+        $name  = $request->get('name');
+        $id    = $request->get('id');
+        $status = 0;
+        $check = $this->repository->checkClassName($name,$id);
+        if($check)
+            $status = 1;
+        $result['status'] = $status;
+        return $this->response->withData($result);
     }
 }
