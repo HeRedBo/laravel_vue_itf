@@ -5,7 +5,7 @@
                         <div class="filter-container">
                                 <el-input  style="width: 200px;" class="filter-item" placeholder="班级名称" v-model="searchQuery.name" ></el-input>
                                 <el-button class="filter-item" type="primary" icon="search" @click="loadList">搜索</el-button>
-                            <el-button class="filter-item" style="margin-left: 10px;"  @click="handleCreate" type="primary" icon="edit">
+                            <el-button v-show="showCreateButton" class="filter-item" style="margin-left: 10px;"  @click="handleCreate" type="primary" icon="edit">
                                 添加  
                             </el-button>
                             
@@ -31,7 +31,15 @@
                             sortable="custom"
                             width="80"
                         >
-                    
+                       
+                        </el-table-column>
+
+                        <el-table-column
+                            label="道馆"
+                        >
+                        <template  slot-scope="scope"> 
+                            <span> {{scope.row.venues.name}} </span>
+                        </template>
                         </el-table-column>
                     
                         <el-table-column
@@ -41,20 +49,21 @@
                         </el-table-column>
 
                         <el-table-column
-                            prop="remark"
                             label="班级备注"
                         >
-                    
+                            <template  slot-scope="scope">
+                                    <el-tooltip  placement="right" >
+                                            <div class="remark_content" slot="content">
+                                                    <p>
+                                                            {{scope.row.remark}}
+                                                    </p>
+                                                </div>
+                                        <span class="auto_hidden">{{scope.row.remark}}</span>
+                                    </el-tooltip>
+                            </template>
                         </el-table-column>
 
-                        <el-table-column
-                          
-                            label="操作人"
-                        >
-                        <template  slot-scope="scope"> 
-                            <span> {{scope.row.operator.name}} </span>
-                        </template>
-                        </el-table-column>
+                        
                     
                         <el-table-column
                             prop="created_at"
@@ -62,6 +71,23 @@
                             sortable="custom"
                         >
                         </el-table-column>
+
+
+                        <el-table-column
+                        prop="updated_at"
+                        label="最新更新时间"
+                    
+                        >
+                        </el-table-column>
+
+                        <el-table-column
+                        
+                          label="操作人"
+                      >
+                      <template  slot-scope="scope"> 
+                          <span> {{scope.row.operator.name}} </span>
+                      </template>
+                      </el-table-column>
                     
                         <el-table-column label="操作" width="250">
                         <template slot-scope="scope">
@@ -159,10 +185,11 @@ export default {
             listLoading: true,
             dialogFormVisible : false,
             selectItemVisible : false,
+            showCreateButton : false,
             dialogTitle : '创建班级',
             ClassForm : {
                 name : '',
-                venue_id : 0,
+                venue_id : '',
                 remark : '',
             },
 
@@ -177,13 +204,18 @@ export default {
         }
     },
     created() {
-          
+        this.getUserVenus();
        
     },
     methods : {
         handleCreate () {
+            var venue_id = this.ClassForm.venue_id;
             this.ClassForm = {};
-            this.getUserVenus();
+            if(venue_id)
+            {
+                this.ClassForm.venue_id = venue_id;
+            }
+            
             this.dialogFormVisible = true;
             
         },
@@ -196,8 +228,9 @@ export default {
                 method :'GET',
                 url : url
            })
-           .then(function(response) {
-            
+           .then(function(response) 
+           {
+
                 let {data} = response;
                 var  respondata = data.data
                 var options = [];
@@ -215,6 +248,7 @@ export default {
                 {
                     that.selectItemVisible = true;
                 }
+                that.showCreateButton = true;
              })
             .catch(function(error) {
                 console.log(error);
@@ -399,4 +433,16 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss">
  @import "resources/assets/styles/index";
+</style>
+
+<style>
+    .auto_hidden {
+        overflow:hidden; 
+        text-overflow:ellipsis;
+        white-space: nowrap;
+        width:160px;
+    }
+    .remark_content {
+        max-width: 300px;
+    }
 </style>
