@@ -101,4 +101,15 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
         
        
     }
+
+    public  function  checkCardName($name,$id)
+    {
+        $where = [
+            'name'=> $name,
+        ];
+        if($id > 0) {
+            $where[] = ['id','!=', $id];
+        }
+        return  $this->findWhere($where)->toArray();
+    }
 }

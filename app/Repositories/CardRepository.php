@@ -11,4 +11,6 @@ use Prettus\Repository\Contracts\RepositoryInterface;
 interface CardRepository extends RepositoryInterface
 {
     public function createCard(array $data);
+    
+    public function checkCardName($name,$id);
 }

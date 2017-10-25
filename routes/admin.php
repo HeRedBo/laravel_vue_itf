@@ -60,6 +60,8 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     Route::resource('class', 'ClassesController');
     
     // card 卡券
+    
+    Route::get('card/checkCardName', ['as' => 'admin.class.checkCardName', 'uses' => 'CardsController@checkCardName']);
     Route::resource('card', 'CardsController');
     
 

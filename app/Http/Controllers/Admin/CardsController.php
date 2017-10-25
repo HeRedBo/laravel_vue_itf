@@ -11,6 +11,7 @@ use App\Http\Requests\CardCreateRequest;
 use App\Http\Requests\CardUpdateRequest;
 use App\Repositories\CardRepository;
 use App\Validators\CardValidator;
+use App\Services\Common\Dictionary;
 
 
 class CardsController extends ApiController
@@ -44,11 +45,24 @@ class CardsController extends ApiController
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
         try
         {
-            $classes = $this->repository
+            $cards = $this->repository
                 ->with(['venues','operator'])
                 ->paginate(20)
                 ->toArray();
-            return $this->response->withData($classes);
+            
+            
+            if($cards['data'])
+            {
+                $data = $cards['data'];
+                foreach($data as $k => &$val) {
+                    
+                    $val['unit_str'] = Dictionary::UnitOptions($val['unit']);
+                }
+                $cards['data'] = $data;
+            }
+            
+            
+            return $this->response->withData($cards);
         }
         catch (\Exception $e)
         {
@@ -172,5 +186,18 @@ class CardsController extends ApiController
         }
 
         return redirect()->back()->with('message', 'Card deleted.');
+    }
+
+
+    public function  checkCardName(Request $request)
+    {
+        $name  = $request->get('name');
+        $id    = $request->get('id');
+        $status = 0;
+        $check = $this->repository->checkCardName($name,$id);
+        if($check)
+            $status = 1;
+        $result['status'] = $status;
+        return $this->response->withData($result);
     }
 }

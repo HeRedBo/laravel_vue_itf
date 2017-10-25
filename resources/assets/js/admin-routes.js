@@ -136,6 +136,19 @@ export default [
                      }
                   
                 ]
+            },
+            {
+                path: 'card',
+                component : Parent,
+                name : '卡券',
+                children : [
+                     {
+                        path: 'index',
+                        name: '卡券列表',
+                        component : () => import('views/admin/card/Index.vue')
+                     }
+                  
+                ]
             }
 
         ]
