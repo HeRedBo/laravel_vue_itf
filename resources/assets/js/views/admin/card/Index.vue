@@ -14,7 +14,6 @@
                     
                         <el-table
                             :data="tableData"
-                            border
                             stripe
                             fit highlight-current-row
                             style="width: 100%"
@@ -23,7 +22,55 @@
                             v-loading="listLoading"
                             element-loading-text="拼命加载中"
                         >
-                    
+
+                        <el-table-column type="expand">
+                            <template slot-scope="props">
+                              <el-form label-position="left" inline class="demo-table-expand">
+                               
+                                <el-form-item label="卡券ID">
+                                    <span>{{ props.row.id }}</span>
+                                  </el-form-item>
+                                <el-form-item label="卡券名称">
+                                  <span>{{ props.row.name }}</span>
+                                </el-form-item>
+
+                                <el-form-item label="计算数量">
+                                  <span>{{ props.row.number}}</span>
+                                </el-form-item>
+
+                                <el-form-item label="计算单位">
+                                  <span>{{ props.row.unit_str}}</span>
+                                </el-form-item>
+                                <el-form-item label="道馆">
+                                    <span>{{ props.row.venues.name }}</span>
+                                  </el-form-item>
+
+                                  
+                                <el-form-item label="卡券价格">
+                                  <span>{{ props.row.card_price}}</span>
+                                </el-form-item>
+
+                                <el-form-item label="启用状态">
+                                    <el-tooltip class="item" effect="dark" :content="props.row.status==1 ? '启用':'未启用'" placement="top">
+                                        <i :class="['fa','fa-circle',props.row.status==1?'text-success':'text-danger']"></i>
+                                    </el-tooltip>
+                                </el-form-item>
+
+                                <el-form-item label="创建时间">
+                                    <span>{{ props.row.created_at }}</span>
+                                </el-form-item>
+
+                                <el-form-item label="最近更新时间">
+                                    <span>{{ props.row.updated_at }}</span>
+                                </el-form-item>
+
+                                <el-form-item label="操作人">
+                                    <span>{{ props.row.operator.name }}</span>
+                                </el-form-item>
+                              </el-form>
+                            </template>
+                          </el-table-column>
+
                         <el-table-column 
                             align="center" 
                             label="ID" 
@@ -74,8 +121,11 @@
                         <el-table-column
                             label="启用状态"
                         >
+
                             <template  slot-scope="scope"> 
-                                    <i :class="['fa','fa-circle',scope.row.status==1?'text-success':'text-danger']"></i>
+                                <el-tooltip class="item" effect="dark" :content="scope.row.status==1 ? '启用':'未启用'" placement="top">
+                                    <i @click="changeStatus(scope.row,scope.$index)" :class="['fa','fa-circle',scope.row.status==1?'text-success':'text-danger']"></i>
+                                </el-tooltip>
                             </template>
                         </el-table-column>
 
@@ -217,7 +267,7 @@ export default {
           this.validateCardName(value, function(status) {
            if(status == 1)
            {
-                callback(new Error('道馆名称已存在'))
+                callback(new Error('卡券名称已存在'))
            } else {
                 callback()
            }
@@ -531,11 +581,65 @@ export default {
       },
 
       handleUpdate(row) {
-      this.CardForm = Object.assign({}, row)
-      this.dialogTitle = '更新班级';
-      this.dialogFormVisible = true
+        this.CardForm = Object.assign({}, row)
+        this.dialogTitle = '更新班级';
+        this.dialogFormVisible = true
 
-    },
+     },
+     changeStatus(row,index) {
+       
+        var status = row.status;
+        var id = row.id;
+        if(status == 0) {
+            var that = this;
+            swal({
+            title: '是否开启卡券?',
+            text: '卡券一经启用无法之后无法修改 你是否要继续执行该操作!',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '确认',
+            cancelButtonText: '取消'
+            }).then(function() {
+
+              var url =  '/card/changeStatus',changeStatus = 1;
+              that.$http({
+                method :'POST',
+                url : url,
+                data : {
+                    id : id,
+                    status : changeStatus
+                }
+              })
+              .then(function(response) {
+                let {data} = response;
+                that.tableData[index].status = changeStatus;
+                
+                that.$message({
+                    showClose: true,
+                    message: data.message,
+                    type: 'success'
+                });
+            })
+            .catch(function(error) {
+                stack_error(error);
+            });
+            }, function(dismiss) {
+                // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
+                that.$message({
+                    showClose: true,
+                    message: '你已取消修改数据状态',
+                });
+                // if (dismiss === 'cancel') {
+                //     swal(
+                //     'Cancelled',
+                //     'Your imaginary file is safe :)',
+                //     'error'
+                //     )
+                // }
+            })
+        }
+        
+     }
 
 
     }
@@ -563,4 +667,18 @@ export default {
     .el-dialog__wrapper{
         z-index: 250 !important;
     }
+
+
+.demo-table-expand {
+    font-size: 0;
+  }
+  .demo-table-expand label {
+    width: 90px;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
 </style>

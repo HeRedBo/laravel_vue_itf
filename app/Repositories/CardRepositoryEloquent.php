@@ -112,4 +112,24 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
         }
         return  $this->findWhere($where)->toArray();
     }
+
+
+    public  function  updateStatus($id, $status)
+    {
+        $card = $this->find($id);
+        if($card)
+        {
+            if($card->status != $status)
+            {
+                $card->status = $status;
+                $res = $card->save();
+                if($res == false)
+                {
+                    return error('卡卷修改失败');
+                }
+            }
+            return success('卡卷修改成功');
+        }
+        return error('数据不存在');
+    }
 }

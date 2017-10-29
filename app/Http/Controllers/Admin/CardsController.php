@@ -200,4 +200,23 @@ class CardsController extends ApiController
         $result['status'] = $status;
         return $this->response->withData($result);
     }
+
+    public function  changeStatus(Request $request)
+    {
+        $id = $request->get('id');
+        $status = $request->get('status');
+        $res = $this->repository->updateStatus($id, $status);
+        if($res['status'] == 1)
+            return $this->response->withSuccess($res['msg']);
+        else
+            return $this->response->withInternalServer($res['msg']);
+    }
+
+    public function getCardOptions()
+    {
+        $fields = ['id','name','card_price','unit','number'];
+        $data = $this->repository->all($fields)->toArray();
+        $data = array_column($data,NULL,'id');
+        return $this->response->withData($data);
+    }
 }

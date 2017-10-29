@@ -164,4 +164,11 @@ class ClassesController extends ApiController
         $result['status'] = $status;
         return $this->response->withData($result);
     }
+
+    public  function  getClassOptions()
+    {
+        $fields = ['id','name'];
+        $data = $this->repository->all($fields)->toArray();
+        return $this->response->withData($data);
+    }
 }

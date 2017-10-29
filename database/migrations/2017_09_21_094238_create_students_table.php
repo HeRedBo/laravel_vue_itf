@@ -24,16 +24,19 @@ class CreateStudentsTable extends Migration
             $table->string('id_card')->default('')->comment('身份证');
             $table->string('school')->default('')->comment('学校');
             $table->integer('province_code')->unsigned()->default('0')->comment('省份_code');
+            $table->string('province',100)->default('')->comment('省份');
             $table->integer('city_code')->unsigned()->default('0')->comment('市区_code');
-            $table->integer('district_code')->unsigned()->default('0')->comment('区域code');
+            $table->string('city',100)->default('0')->comment('市区');
+            $table->integer('area_code')->unsigned()->default('0')->comment('区域code');
+            $table->string('area',100)->default('')->comment('区域code');
             $table->string('address',255)->comment('家庭详细地址');
             $table->dateTime('sign_up_at')->commnet('报名时间');
             $table->integer('venue_id')->unsigned()->comment('道馆ID');
             $table->integer('class_id')->unsigned()->comment('班级ID');
             $table->tinyInteger('status')->default('0')->comment('学生状态 0草稿，1正式');
             $table->timestamps();
-            $table->index(['venue_id','class_id']);
-            $table->index(['province_code', 'city_code','district_code']);
+            $table->index(['venue_id']);
+            $table->index(['province_code', 'city_code','area_code']);
         });
     }
 

@@ -149,7 +149,29 @@ export default [
                      }
                   
                 ]
-            }
+            },
+            {
+                path : 'student',
+                component:Parent,
+                name : '学习管理',
+                children : [
+                    {
+                        path: 'create',
+                        name : '学生新增',
+                        component : () => import('views/admin/student/Create.vue')
+                    },
+                    // {
+                    //     path: 'update/:id',
+                    //     name : '学生信息编辑',
+                    //     component : () => import('views/admin/student/Update.vue')
+                    // },
+                    // {
+                    //     path: 'index',
+                    //     name : '用户列表',
+                    //     component : () => import('views/admin/user/Index.vue')
+                    // },
+                ]
+            },
 
         ]
     }

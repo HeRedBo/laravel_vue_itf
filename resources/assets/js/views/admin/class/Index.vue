@@ -47,8 +47,14 @@
                             label="班级名称"
                             width="180">
                         </el-table-column>
-
+                        
                         <el-table-column
+                        prop="remark"
+                        label="班级名称"
+                        show-overflow-tooltip
+                        width="180">
+                    </el-table-column>
+                        <!-- <el-table-column
                             label="班级备注"
                         >
                             <template  slot-scope="scope">
@@ -61,7 +67,7 @@
                                         <span class="auto_hidden">{{scope.row.remark}}</span>
                                     </el-tooltip>
                             </template>
-                        </el-table-column>
+                        </el-table-column> -->
 
                         
                     
@@ -444,5 +450,8 @@ export default {
     }
     .remark_content {
         max-width: 300px;
+    }
+    .el-tooltip__popper{
+        max-width: 500px;
     }
 </style>

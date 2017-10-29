@@ -57,11 +57,13 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
 
     // class
     Route::get('class/checkClassName', ['as' => 'admin.class.checkClassName', 'uses' => 'ClassesController@checkClassName']);
+    Route::get('class/classOptions', ['as' => 'admin.class.classOptions', 'uses' => 'ClassesController@getClassOptions']);
     Route::resource('class', 'ClassesController');
     
     // card 卡券
-    
-    Route::get('card/checkCardName', ['as' => 'admin.class.checkCardName', 'uses' => 'CardsController@checkCardName']);
+    Route::get('card/checkCardName', ['as' => 'admin.card.checkCardName', 'uses' => 'CardsController@checkCardName']);
+    Route::get('card/cardOptions', ['as' => 'admin.card.cardOptions', 'uses' => 'CardsController@getCardOptions']);
+    Route::post('card/changeStatus', ['as' => 'admin.card.changeStatus', 'uses' => 'CardsController@changeStatus']);
     Route::resource('card', 'CardsController');
     
 
