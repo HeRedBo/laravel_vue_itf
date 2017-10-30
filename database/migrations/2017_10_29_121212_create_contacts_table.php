@@ -16,6 +16,7 @@ class CreateContactsTable extends Migration
         Schema::create('contacts', function(Blueprint $table)
         {
             $table->increments('id')->comment('主键ID');
+            $table->integer('student_id')->unsigned()->comment('学生ID');
             $table->integer('relation_id')->unsigned()->comment('关联联系人ID');
             $table->char('contact_name', 60)->default('')->comment('联系人姓名');
             $table->string('contact_phone',15)->comment('联系人手机号码');
