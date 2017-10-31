@@ -66,18 +66,24 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
         {
             $student->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
         }
-    
+        
+        dd($student->toArray());
         //unset($student->use_contacts);
         //unset($student->user_cards);
         //保存用户信息
         $student->save();
         $studentContacts = $data['use_contacts'];
         $studentCards    = $data['user_cards'];
+        $classId         = $data['class_id'];
+        $sign_up_at    = $data['sign_up_at'];
         
-        //
-        
-    
-    
+        // 保存用户课程信息
+        $student->giveClass($classId);
+        // 保存用户联系人
+        $student->giveContactsTo($studentContacts);
+        // 保存用户购买的卡券想你想
+        $student->giveCardTo($studentCards,$sign_up_at);
+        return success('学生信息创建成功');
     }
 
     public  function  getRelationOptions()

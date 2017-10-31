@@ -14,6 +14,7 @@ class Student extends Model implements Transformable
     
     protected  $tb_student_contacts = 'student_contacts';
     protected  $tb_student_card = 'student_card';
+    protected  $tb_student_class = 'student_class';
     
     /**
      * 属于该学生的联系人
@@ -30,6 +31,13 @@ class Student extends Model implements Transformable
         return $this->hasMany(StudentContacts::class,'student_id');
     }
     
+    public  function classes()
+    {
+        return $this->belongsToMany(Classes::class,'student_class','student_id','class_id');
+    }
+    
+    
+    
     /**
      * 学生联系人添加
      * @param array $contacts
@@ -37,7 +45,7 @@ class Student extends Model implements Transformable
      * @return  bool
      * @author Red-Bo
      */
-    public  function  giveContactsTo(array $contacts, $student_id)
+    public  function  giveContactsTo(array $contacts)
     {
         
         // 删旧添新
@@ -48,7 +56,7 @@ class Student extends Model implements Transformable
         foreach($contacts as $v)
         {
             $student_contacts[] = [
-                'student_id'    => $student_id,
+                'student_id'    => $this->id,
                 'relation_id'   => $v['relation_id'],
                 'contact_name'   => $v['contact_name'],
                 'contact_phone'  => $v['contact_phone'],
@@ -66,7 +74,7 @@ class Student extends Model implements Transformable
      * @param  int $student_id
      * @author Red-Bo
      */
-    public  function giveCardTo(array $cards, $student_id, $sign_up_time)
+    public  function giveCardTo(array $cards, $sign_up_time)
     {
         $student_card = [];
         $card_id_arr = array_column($cards,'id');
@@ -80,7 +88,7 @@ class Student extends Model implements Transformable
             $end_time = strtotime($sign_up_time)  + strtotime("$number $unit");
             $end_time = date("Y-m-d H:i:s", $end_time);
             $student_card[] = [
-                'student_id' => $student_id,
+                'student_id' => $this->id,
                 'card_id' => $card->id,
                 'number' => $user_card['number'],
                 'start_time' => $sign_up_time,
@@ -90,6 +98,30 @@ class Student extends Model implements Transformable
             ];
         }
         DB::table($this->tb_student_card)->insert($student_card);
+        return true;
+    }
+    
+    /**
+     * 学生班级增加与修改
+     * @param array $classId
+     * @return bool
+     * @author Red-Bo
+     */
+    public function  giveClassTo(array $classId)
+    {
+        
+        $this->classes()->detach();
+        $classes = Claess::whereIn('id', $classId)->get();
+        $student_class = [];
+        foreach($classes as $v)
+        {
+            $student_class[] = [
+                'student_id' => $this->id,
+                'class_id'  => $v->id
+            ];
+        }
+        DB::table($this->tb_student_class)->insert($student_class);
+        return true;
     }
     
     

@@ -540,8 +540,6 @@
 
                     this.studentForm.user_cards   = this.userCards;
                     this.studentForm.use_contacts = this.userContacts;
-
-                     console.log(this.studentForm); return;
                     let url = '/student' + (this.studentForm.id ? '/' + this.studentForm.id : '')
                     let method = this.studentForm.id ? 'put' : 'post';
                     this.$http({

@@ -63,8 +63,11 @@ class StudentsController extends ApiController
     public function store(StudentCreateRequest $request)
     {
 
-        try {
+        try
+        {
+            logResult($request->all());
             $student = $this->repository->createStudent($request->all());
+            
             $response = [
                 'message' => 'Student created.',
                 'data'    => $student->toArray(),
