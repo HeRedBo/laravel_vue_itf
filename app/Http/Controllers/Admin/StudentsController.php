@@ -64,11 +64,7 @@ class StudentsController extends ApiController
     {
 
         try {
-
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
-
-            $student = $this->repository->create($request->all());
-
+            $student = $this->repository->createStudent($request->all());
             $response = [
                 'message' => 'Student created.',
                 'data'    => $student->toArray(),

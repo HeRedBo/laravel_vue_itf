@@ -10,7 +10,14 @@ use Prettus\Repository\Contracts\RepositoryInterface;
  */
 interface StudentRepository extends RepositoryInterface
 {
-    //
-
+    /**
+     * create a student
+     * @param array $data student info
+     * @return mixed
+     * @author Red-Bo
+     */
+    public  function createStudent(array $data);
+    
+    
     public  function getRelationOptions();
 }

@@ -172,14 +172,7 @@
                           style="min-width: 650px;margin-bottom: 20px;"
                           align="cneter"
                         >
-                        <!-- 
-                            <el-table-column
-                                prop="id"
-                                label="卡券ID"
-                                align="cneter"
-                                width="120">
-                            </el-table-column> -->
-
+              
                             <el-table-column
                               prop="contact_name"
                               label="联系人姓名"
@@ -545,7 +538,11 @@
                       return;
                     }
 
-                    let url = '/user' + (this.studentForm.id ? '/' + this.studentForm.id : '')
+                    this.studentForm.user_cards   = this.userCards;
+                    this.studentForm.use_contacts = this.userContacts;
+
+                     console.log(this.studentForm); return;
+                    let url = '/student' + (this.studentForm.id ? '/' + this.studentForm.id : '')
                     let method = this.studentForm.id ? 'put' : 'post';
                     this.$http({
                       method :method,
@@ -561,7 +558,7 @@
                           type: 'success'
                         });
                       // 跳转到列表页
-                      that.$router.push({ path: '/admin/user/index' })
+                      //that.$router.push({ path: '/admin/student/index' })
                     })
                     .catch(function(error) {
                       stack_error(error);

@@ -13,7 +13,7 @@ class StudentCreateRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,24 @@ class StudentCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+             'name'           => 'required|min:4|max:255',
+             'sex'            => 'required',
+             'birthday'       => 'required|date',
+             'sign_up_at'     => 'required|date',
+             'venue_id'       => 'required',
+             'use_contacts'   => 'required',
+        ];
+    }
+    
+    public  function  attributes()
+    {
+        return [
+            'name'           => '学生姓名',
+            'sex'            => '性别',
+            'birthday'       => '学生生日',
+            'sign_up_at'     => '报名时间',
+            'venue_id'       => '道馆ID',
+            'use_contacts'   => '联系人信息',
         ];
     }
 }

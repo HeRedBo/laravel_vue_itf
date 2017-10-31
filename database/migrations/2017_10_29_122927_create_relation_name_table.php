@@ -19,6 +19,7 @@ class CreateRelationNameTable extends Migration
             $table->increments('id')->comment('关联关系ID');
             $table->char('name', 60)->default('')->comment('关联关系名称');
             $table->timestamp('created_at')->nullable()->comment('创建时间');
+            $table->timestamp('updated_at')->nullable()->comment('更新时间');
         });
     }
 
