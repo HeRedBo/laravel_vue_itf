@@ -42,9 +42,9 @@
                         <el-form-item label="出生日期" prop="birthday">
                             <el-date-picker
                                 v-model="studentForm.birthday"
-                                type="datetime"
+                                type="date"
                                 format="yyyy-MM-dd"
-
+                                value-format="yyyy-MM-dd"
                                 placeholder="选择出生日期"
                                 default-value="">
                              </el-date-picker>
@@ -99,7 +99,10 @@
                             <el-date-picker
                                 v-model="studentForm.sign_up_at"
                                 type="datetime"
-                                placeholder="选择报名时间">
+                                placeholder="选择报名时间"
+                                format="yyyy-MM-dd HH:mm:ss"
+                                value-format="yyyy-MM-dd HH:mm:ss"
+                                >
                             </el-date-picker>
                         </el-form-item>
 
@@ -121,7 +124,7 @@
             						  align="cneter"
                         >
                             <el-table-column
-                                prop="id"
+                                prop="card_id"
                                 label="卡券ID"
                                 align="cneter"
                                 width="120">
@@ -275,7 +278,7 @@
       
       import PanThumb from 'components/Panthumb';
       import ImageCropper from 'components/ImageCropper';
-      import {stack_error,isMobile} from 'config/helper';
+      import {stack_error,isMobile,parseTime} from 'config/helper';
       import VDistpicker from 'v-distpicker'
       export default 
       {
@@ -496,6 +499,8 @@
             },
             selectCard(value) {
                 var card = this.cardOptions[value];
+                card.card_id = card.id;
+                card.id = 0; // 新增数据 id 置为 0 
                 var that = this; 
                 this.$prompt('请输入卡券数量', '卡券数量', {
                     confirmButtonText: '确定',
@@ -518,7 +523,7 @@
 
             onSubmit() 
             {
-               
+                var studentForm = this.studentForm;
                this.$refs.studentForm.validate(valid => {
                   var that = this;
                   if (valid) {
@@ -538,14 +543,17 @@
                       return;
                     }
 
-                    this.studentForm.user_cards   = this.userCards;
-                    this.studentForm.use_contacts = this.userContacts;
+                    studentForm.user_cards   = this.userCards;
+                    studentForm.user_contacts = this.userContacts;
+                    studentForm.birthday = parseTime(studentForm.birthday,'{y}-{m}-{d}');
+                    studentForm.sign_up_at = parseTime(studentForm.sign_up_at);
+                    console.log(studentForm);
                     let url = '/student' + (this.studentForm.id ? '/' + this.studentForm.id : '')
                     let method = this.studentForm.id ? 'put' : 'post';
                     this.$http({
                       method :method,
                       url : url,
-                      data : that.studentForm
+                      data : studentForm
                     })
                     .then(function(response) {
                         

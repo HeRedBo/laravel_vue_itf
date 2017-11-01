@@ -47,7 +47,6 @@ class Student extends Model implements Transformable
      */
     public  function  giveContactsTo(array $contacts)
     {
-        
         // 删旧添新
         $this->contacts()->delete();
         $student_contacts = [];
@@ -60,7 +59,8 @@ class Student extends Model implements Transformable
                 'relation_id'   => $v['relation_id'],
                 'contact_name'   => $v['contact_name'],
                 'contact_phone'  => $v['contact_phone'],
-                'contact_email' => $v['contact_email'],
+                'contact_email' => isset($v['contact_email']) ? $v['contact_email'] : '',
+                'created_at' => date("Y-m-d H:i:s")
             ];
         }
         DB::table($this->tb_student_contacts)->insert($student_contacts);
@@ -77,27 +77,45 @@ class Student extends Model implements Transformable
     public  function giveCardTo(array $cards, $sign_up_time)
     {
         $student_card = [];
-        $card_id_arr = array_column($cards,'id');
-        $cards = array_column($cards,NULL,'id');
-        $card_data = Card::whereIn('id', $card_id_arr)->get();
+        $card_id_arr = array_column($cards,'card_id');
+        $card_data = Card::whereIn('id', $card_id_arr)->get()->toArray();
+        $card_data = array_column($card_data,NUll,'id');
         foreach ($cards as $card)
         {
-            $user_card =$cards[$card->id];
-            $unit   = $user_card['unit'];
-            $number = $user_card['number'];
-            $end_time = strtotime($sign_up_time)  + strtotime("$number $unit");
-            $end_time = date("Y-m-d H:i:s", $end_time);
-            $student_card[] = [
-                'student_id' => $this->id,
-                'card_id' => $card->id,
-                'number' => $user_card['number'],
-                'start_time' => $sign_up_time,
-                'end_time' => $end_time,
-                'status' => 1,
-                'operator_id' =>  auth('admin')->user()->id,
-            ];
+            $card_info = isset($card_data[$card['card_id']]) ?$card_data[$card['card_id']] : [];
+            if($card_info)
+            {
+                $unit   = $card_info['unit'];
+                $number = $card_info['number'];
+                $end_time =  strtotime("$number $unit", strtotime($sign_up_time));
+                $end_time =  date("Y-m-d H:i:s", $end_time);
+                $now      = date("Y-m-d H:i:s");
+                $card_tmp = [
+                    'student_id' => $this->id,
+                    'card_id' => $card['card_id'],
+                    'number' => $card['number'],
+                    'start_time' => $sign_up_time,
+                    'end_time' => $end_time,
+                    'status' => 1,
+                    'operator_id' =>  auth('admin')->user()->id,
+                    'updated_at' => $now,
+                ];
+                if($card['id'])
+                {
+                    $id = $card['id'];
+                    DB::table($this->tb_student_card)->where('id','=', $id)->update($card_tmp);
+                }
+                else
+                {
+                    $card_tmp['created_at'] = $now;
+                    $student_card[] = $card_tmp;
+                }
+                
+            }
         }
-        DB::table($this->tb_student_card)->insert($student_card);
+        if($student_card)
+            DB::table($this->tb_student_card)->insert($student_card);
+        
         return true;
     }
     
@@ -111,7 +129,7 @@ class Student extends Model implements Transformable
     {
         
         $this->classes()->detach();
-        $classes = Claess::whereIn('id', $classId)->get();
+        $classes = Classes::whereIn('id', $classId)->get();
         $student_class = [];
         foreach($classes as $v)
         {

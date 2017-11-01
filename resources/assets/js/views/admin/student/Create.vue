@@ -16,6 +16,8 @@ export default {
 				phone : '',
 				email : '',
                 picture : '',
+                birthday : '',
+
                 venues: []
             },
             select: {}

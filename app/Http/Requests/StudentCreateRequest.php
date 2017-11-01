@@ -24,12 +24,13 @@ class StudentCreateRequest extends FormRequest
     public function rules()
     {
         return [
-             'name'           => 'required|min:4|max:255',
+             'name'           => 'required|min:2|max:255',
              'sex'            => 'required',
              'birthday'       => 'required|date',
              'sign_up_at'     => 'required|date',
              'venue_id'       => 'required',
-             'use_contacts'   => 'required',
+             'class_id'       => 'required',
+             'user_contacts'   => 'required',
         ];
     }
     
@@ -41,7 +42,8 @@ class StudentCreateRequest extends FormRequest
             'birthday'       => '学生生日',
             'sign_up_at'     => '报名时间',
             'venue_id'       => '道馆ID',
-            'use_contacts'   => '联系人信息',
+            'user_contacts'   => '联系人信息',
+            'class_id'       => '归属班级',
         ];
     }
 }

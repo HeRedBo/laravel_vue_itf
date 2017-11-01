@@ -18,6 +18,9 @@ interface StudentRepository extends RepositoryInterface
      */
     public  function createStudent(array $data);
     
+    public  function  updateStudent(array $data, $id);
     
     public  function getRelationOptions();
+    
+    
 }

@@ -62,32 +62,20 @@ class StudentsController extends ApiController
      */
     public function store(StudentCreateRequest $request)
     {
-
         try
         {
-            logResult($request->all());
-            $student = $this->repository->createStudent($request->all());
-            
-            $response = [
-                'message' => 'Student created.',
-                'data'    => $student->toArray(),
-            ];
-
-            if ($request->wantsJson()) {
-
-                return response()->json($response);
-            }
-
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'error'   => true,
-                    'message' => $e->getMessageBag()
-                ]);
-            }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
+            $data = array_merge($request->all(),
+                ['operator_id' => auth('admin')->user()->id]
+            );
+            $res = $this->repository->createStudent($data);
+            if($res['status'] == 1)
+                return $this->response->withCreated($res['msg']);
+            else
+                return $this->response->withInternalServer($res['msg']);
+        }
+        catch (\Exception $e)
+        {
+            return $this->response->withInternalServer($e->getMessage());
         }
     }
 
@@ -140,35 +128,20 @@ class StudentsController extends ApiController
      */
     public function update(StudentUpdateRequest $request, $id)
     {
-
-        try {
-
-
-
-            $student = $this->repository->update($request->all(), $id);
-
-            $response = [
-                'message' => 'Student updated.',
-                'data'    => $student->toArray(),
-            ];
-
-            if ($request->wantsJson()) {
-
-                return response()->json($response);
-            }
-
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-
-            if ($request->wantsJson()) {
-
-                return response()->json([
-                    'error'   => true,
-                    'message' => $e->getMessageBag()
-                ]);
-            }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
+        try
+        {
+            $data = array_merge($request->all(),[
+                'operator_id'      => auth('admin')->user()->id,
+            ]);
+            $res = $this->repository->updateStudent($data, $id);
+            if($res['status'] == 1)
+                return $this->response->withSuccess($res['msg']);
+            else
+                return $this->response->withInternalServer($res['msg']);
+        }
+        catch (\Exception $e)
+        {
+            return $this->response->withInternalServer($e->getMessage());
         }
     }
 
