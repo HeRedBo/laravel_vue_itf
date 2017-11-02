@@ -22,5 +22,6 @@ interface StudentRepository extends RepositoryInterface
     
     public  function getRelationOptions();
     
+    public  function  getStudentInfo($student_id);
     
 }

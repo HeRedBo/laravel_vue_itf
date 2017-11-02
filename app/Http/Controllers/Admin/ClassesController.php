@@ -122,7 +122,7 @@ class ClassesController extends ApiController
     {
 
         $data = array_merge($request->all(), [
-            'operator_id'      => auth('admin')->user()->id,
+            'operator_id'     => auth('admin')->user()->id,
         ]);
         $res = $this->repository->updateClass($data,$id);
         if($res['status'] == 1)
@@ -164,11 +164,11 @@ class ClassesController extends ApiController
         $result['status'] = $status;
         return $this->response->withData($result);
     }
-
-    public  function  getClassOptions()
+    public  function  getClassOptions(Request $request)
     {
-        $fields = ['id','name'];
-        $data = $this->repository->all($fields)->toArray();
+        $venue_id = $request->get('venue_id','0');
+        $fields = ['id','venue_id','name'];
+        $data = $this->repository->findWhere(['venue_id' => $venue_id],$fields)->toArray();
         return $this->response->withData($data);
     }
 }

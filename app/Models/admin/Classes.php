@@ -25,7 +25,7 @@ class Classes extends Model implements Transformable
     
     public  function  operator()
     {
-        return $this->belongsTo(Admin::class,'venue_id','id');
+        return $this->belongsTo(Admin::class,'operator_id','id');
     }
 
 }

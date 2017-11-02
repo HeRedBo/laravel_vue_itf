@@ -28,7 +28,7 @@ class Student extends Model implements Transformable
     
     public  function  cards()
     {
-        return $this->hasMany(StudentContacts::class,'student_id');
+        return $this->hasMany(StudentCard::class,'student_id');
     }
     
     public  function classes()
@@ -142,7 +142,20 @@ class Student extends Model implements Transformable
         return true;
     }
     
-    
-
-
+    public function getPictureAttribute($pic)
+    {
+        $manager = app('uploader');
+        if(\Request::method() == 'PUT' || \Request::method() == "DELETE")
+        {
+            return $pic;
+        }
+        if ($pic)
+        {
+            return $manager->fileWebPath($pic);
+        }
+        else
+        {
+            return $manager->fileWebPath('files/avatar/default.png');
+        }
+    }
 }

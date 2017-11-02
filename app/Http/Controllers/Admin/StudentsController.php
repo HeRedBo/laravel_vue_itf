@@ -111,10 +111,16 @@ class StudentsController extends ApiController
      */
     public function edit($id)
     {
-
-        $student = $this->repository->find($id);
-
-        return view('students.edit', compact('student'));
+        $result = $this->repository->getStudentInfo($id);
+        if($result['status'] == 1)
+        {
+            return $this->response->setResponseData($result['data'])
+                ->withSuccess($result['msg']);
+        }
+        else
+        {
+            return $this->response->withInternalServer($result['msg']);
+        }
     }
 
 

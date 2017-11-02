@@ -16,8 +16,8 @@
                         <!-- 性别 -->
                         <el-form-item label="性别" prop="sex">
                             <el-radio-group v-model="studentForm.sex">
-                                <el-radio label="0">女</el-radio>
-                                <el-radio label="1">男</el-radio>
+                                <el-radio :label="0">女</el-radio>
+                                <el-radio :label="1">男</el-radio>
                             </el-radio-group>
                         </el-form-item>
 
@@ -57,7 +57,7 @@
 
                         <!-- 区域 -->
                         <el-form-item label="区域">
-                            <v-distpicker  @selected="onSelected"  :province="select.province" :city="select.city" :area="select.area" ></v-distpicker>
+                            <v-distpicker  @selected="onSelected"  :province="studentForm.province" :city="studentForm.city" :area="studentForm.area" ></v-distpicker>
                         </el-form-item>
 
                         <!-- 详细地址 -->
@@ -72,12 +72,14 @@
 
                         <!-- 道馆 -->
                         <el-form-item label="道馆" v-show="selectItemVisible" prop="venue_id" >
-                                <el-select v-model="studentForm.venue_id" placeholder="请选择道馆" style="width:100%" >
+                                <el-select v-model="studentForm.venue_id" placeholder="请选择道馆" style="width:100%" @change="venueChange">
                                   <el-option
                                      v-for="item in venueOptions"
                                      :key="item.value"
                                      :label="item.label"
-                                     :value="item.value">
+                                     :value="item.value"
+                                      
+                                     >
                                   </el-option>
                                 </el-select>
                         </el-form-item>
@@ -95,7 +97,7 @@
                         </el-form-item>
                         
                         <!-- 报名时间 -->
-                        <el-form-item label="报名时间" prop="sign_up_at">
+                        <!-- <el-form-item label="报名时间" prop="sign_up_at">
                             <el-date-picker
                                 v-model="studentForm.sign_up_at"
                                 type="datetime"
@@ -104,7 +106,7 @@
                                 value-format="yyyy-MM-dd HH:mm:ss"
                                 >
                             </el-date-picker>
-                        </el-form-item>
+                        </el-form-item> -->
 
                         <!-- 卡券种类 -->
                         <el-form-item label="购卡类型">
@@ -332,9 +334,10 @@
               roleOptions :  [],
               venueOptions: [],
               classOptions: [],
+              userVenueClass:[],
               cardOptions : [],
               relationOptions : [],
-              selectItemVisible : true,
+              selectItemVisible : false,
               dialogContactsFormVisible: false,
               studentRules: {
                 name: [
@@ -397,9 +400,8 @@
 
           created() {
             // this.getRole();
-            this.getVenues();
             this.getUserVenus();
-            this.getClasses();
+            //this.getClasses();
             this.getCards();
             this.getRelationOptions();
           },
@@ -426,14 +428,16 @@
                             options.push({value : respondata[i].id , label: label});
                         }
                         that.venueOptions = options;
-                        // if(options.length == 1)
-                        // {
-                        //     that.studentForm.venue_id =  options[0].value;
-                        // } 
-                        // else
-                        // {
-                        //     that.selectItemVisible = true;
-                        // }
+                        if(options.length == 1)
+                        {
+                            var venue_id =  options[0].value;
+                            that.studentForm.venue_id =  venue_id;
+                            that.getClasses(venue_id);
+                        } 
+                        else
+                        {
+                            that.selectItemVisible = true;
+                        }
                         // that.showCreateButton = true;
                     })
                     .catch(function(error) {
@@ -442,11 +446,14 @@
                     });
             },
 
-            getClasses() {
+            getClasses(venue_id) {
                 var url = '/class/classOptions', that = this;
                 this.$http({
                    method :"GET",
                    url : url,
+                   params : {
+                    venue_id : venue_id
+                   }
                 })
                 .then(function(response) {
                   var responseJson = response.data,data = responseJson.data
@@ -630,25 +637,7 @@
                 }); 
             },
 
-            getVenues() {
-                var url = '/user/venues', that = this;
-                this.$http({
-                   method :"GET",
-                   url : url,
-                })
-                .then(function(response) {
-                  var responseJson = response.data,data = responseJson.data
-                  var options = [];
-                  for (var i in data ) {
-                    let label =  data[i].name;
-                    options.push({value : data[i].id , label: label});
-                  }	
-                  that.venueOptions = options;
-                })
-                .catch(function(error) {
-                  stack_error(error);
-                }); 
-            },
+           
             checkUserName(name,callback) 
             {   
                 var url = 'user/checkUserName',that = this;
@@ -702,6 +691,10 @@
             deleteUserContact(index)
             {
               this.userContacts.splice(index, 1)
+            },
+            venueChange(value) {
+
+              this.getClasses(value)
             }
 
 

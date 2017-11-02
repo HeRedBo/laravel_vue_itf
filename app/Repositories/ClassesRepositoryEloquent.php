@@ -8,6 +8,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\ClassesRepository;
 use App\Models\Admin\Classes;
 use App\Validators\ClassesValidator;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class ClassesRepositoryEloquent
@@ -25,6 +26,10 @@ class ClassesRepositoryEloquent extends BaseRepository implements ClassesReposit
     protected $fieldSearchable = [
         'name'=>'like'
     ];
+    
+    protected  $tb_admin = 'admin';
+    protected  $tb_admin_venue = 'admin_venue';
+    protected  $tb_class = 'classes';
     /**
      * Specify Model class name
      *
@@ -137,5 +142,16 @@ class ClassesRepositoryEloquent extends BaseRepository implements ClassesReposit
             $where[] = ['id','!=', $id];
         }
         return  $this->findWhere($where)->toArray();
+    }
+    
+    /**
+     * 获取用户归属道馆的下拉框
+     * @param $venue_id
+     * @author Red-Bo
+     */
+    public function  getVenueClassOptions($venue_id)
+    {
+        // 获取用户
+     
     }
 }

@@ -152,4 +152,33 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
     {
         return  RelationName::all(['id','name'])->toArray();
     }
+    
+    /**
+     * get student info
+     * @param integer  $id student_id
+     * @author Red-Bo
+     */
+    public  function  getStudentInfo($id)
+    {
+        $student = $this->with(['classes','cards','contacts'])->find($id);
+        if($student)
+        {
+            // 获取数据归属的班级
+            $class = $student->classes;
+            $classIds = array_column($class->toArray(),'id');
+            $student['class_id'] = $classIds;
+            // 获取用户卡券
+            $student['userCards'] = $student->cards->toArray();
+            $student['user_contacts'] = $student->contacts->toArray();
+            $student = $student->toArray();
+            unset($student['cards']);
+            unset($student['contacts']);
+            unset($student['classes']);
+            return success('数据获取成功', $student);
+        }
+        else
+        {
+            return error('学生信息不存在');
+        }
+    }
 }
