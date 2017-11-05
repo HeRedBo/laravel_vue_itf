@@ -35,9 +35,9 @@ export default {
             .then(function(response) {
                 var responseJson = response.data;
                 var data = responseJson.data;
-                console.log(data);
+                data.birthday = new Date( data.birthday);
+                data.sign_up_at = new Date( data.sign_up_at);
                 that.studentForm = data;
-                // that.image  = data.picture;
             })
             .catch(function(error) {
                 console.log('load  user data error')

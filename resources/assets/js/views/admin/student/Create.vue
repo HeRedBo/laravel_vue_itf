@@ -9,16 +9,15 @@ export default {
     data() {
         return {
             studentForm : {
-                name : '',
                 id : '',
-				password : '',
-				name :'',
+                name : '',
+                sex : '',
+                picture : '',
 				phone : '',
 				email : '',
-                picture : '',
                 birthday : '',
-
-                venues: []
+                user_cards : [],
+                user_contacts : []
             },
             select: {}
         }

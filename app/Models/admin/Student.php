@@ -11,6 +11,7 @@ class Student extends Model implements Transformable
 {
     use TransformableTrait;
     protected $fillable = [];
+    protected $appends = ['age'];
     
     protected  $tb_student_contacts = 'student_contacts';
     protected  $tb_student_card = 'student_card';
@@ -26,7 +27,7 @@ class Student extends Model implements Transformable
         return $this->hasMany(StudentContacts::class,'student_id');
     }
     
-    public  function  cards()
+    public  function cards()
     {
         return $this->hasMany(StudentCard::class,'student_id');
     }
@@ -35,9 +36,28 @@ class Student extends Model implements Transformable
     {
         return $this->belongsToMany(Classes::class,'student_class','student_id','class_id');
     }
-    
-    
-    
+
+    public function operator()
+    {
+        return $this->hasOne(Admin::class, 'id', 'operator_id');
+    }
+
+    public  function  venues() {
+        return $this->hasOne(Venue::class, 'id', 'venue_id');
+    }
+
+
+    public function getAgeAttribute($value)
+    {
+        $age = strtotime($this->birthday);
+        list($y1,$m1,$d1) = explode("-",date("Y-m-d",$age));
+        list($y2,$m2,$d2) = explode("-",date("Y-m-d"));
+        $age = $y2 - $y1;
+        if((int)($m2.$d2) < (int)($m1.$d1))
+            $age -= 1;
+        return $age;
+    }
+
     /**
      * 学生联系人添加
      * @param array $contacts

@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Requests\StudentCreateRequest;
 use App\Http\Requests\StudentUpdateRequest;
 use App\Repositories\StudentRepository;
-use App\Validators\StudentValidator;
+use App\Services\Common\Dictionary;
 
 
 class StudentsController extends ApiController
@@ -21,10 +20,7 @@ class StudentsController extends ApiController
      */
     protected $repository;
 
-    /**
-     * @var StudentValidator
-     */
-    protected $validator;
+
 
     public function __construct(StudentRepository $repository)
     {
@@ -38,19 +34,19 @@ class StudentsController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $students = $this->repository->all();
-
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'data' => $students,
-            ]);
+        try
+        {
+            $student = $this->repository->studentList($request);
+            return $this->response->withData($student);
         }
-
-        return view('students.index', compact('students'));
+        catch (\Exception $e)
+        {
+            logResult('【学生信息查询错误】'.$e->__toString(),'error');
+            return $this->response->withInternalServer($e->getMessage());
+        }
     }
 
     /**
@@ -181,4 +177,9 @@ class StudentsController extends ApiController
         return $this->response->withData($data);
     }
 
+    public function sexOptions()
+    {
+        $sexMap = Dictionary::SexOptions();
+        return $this->response->withData($sexMap);
+    }
 }

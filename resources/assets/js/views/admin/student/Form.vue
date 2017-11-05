@@ -19,6 +19,8 @@
                                 <el-radio :label="0">女</el-radio>
                                 <el-radio :label="1">男</el-radio>
                             </el-radio-group>
+                            <!-- <el-radio class="radio" v-model="studentForm.sex" label="0">女</el-radio>
+                            <el-radio class="radio" v-model="studentForm.sex" label="1">男</el-radio> -->
                         </el-form-item>
 
                         <!-- 头像 -->
@@ -44,7 +46,6 @@
                                 v-model="studentForm.birthday"
                                 type="date"
                                 format="yyyy-MM-dd"
-                                value-format="yyyy-MM-dd"
                                 placeholder="选择出生日期"
                                 default-value="">
                              </el-date-picker>
@@ -97,16 +98,15 @@
                         </el-form-item>
                         
                         <!-- 报名时间 -->
-                        <!-- <el-form-item label="报名时间" prop="sign_up_at">
+                        <el-form-item label="报名时间" prop="sign_up_at">
                             <el-date-picker
                                 v-model="studentForm.sign_up_at"
                                 type="datetime"
                                 placeholder="选择报名时间"
                                 format="yyyy-MM-dd HH:mm:ss"
-                                value-format="yyyy-MM-dd HH:mm:ss"
                                 >
                             </el-date-picker>
-                        </el-form-item> -->
+                        </el-form-item>
 
                         <!-- 卡券种类 -->
                         <el-form-item label="购卡类型">
@@ -121,7 +121,7 @@
                         </el-form-item> 
 
                         <el-table
-            					    :data="userCards"
+            					    :data="studentForm.user_cards"
             					    style="min-width: 650px;margin-bottom: 20px;"
             						  align="cneter"
                         >
@@ -159,6 +159,7 @@
                                 width="120">
                             <template slot-scope="scope">
                                 <el-button
+                                v-show="scope.row.id==0"
                                 size="small"
                                 type="danger"
                                 @click="deleteUserCard(scope.$index)">删除</el-button>
@@ -173,7 +174,7 @@
                     </el-form-item>
 
                      <el-table
-                          :data="userContacts"
+                          :data="studentForm.user_contacts"
                           style="min-width: 650px;margin-bottom: 20px;"
                           align="cneter"
                         >
@@ -209,6 +210,7 @@
                                 width="120">
                             <template slot-scope="scope">
                                 <el-button
+                                v-show="scope.row.id==0"
                                 size="small"
                                 type="danger"
                                 @click="deleteUserContact(scope.$index)">删除</el-button>
@@ -218,7 +220,7 @@
 
                       <el-form-item>
                         <el-button type="primary" @click="onSubmit"> {{ studentForm.id ? '更新' : '立即创建' }}</el-button>
-                        <router-link :to="{path:'/admin/user/index'}"> 
+                        <router-link :to="{path:'/admin/student/index'}"> 
                        
                             <el-button>取消</el-button>
                     </router-link>
@@ -320,16 +322,11 @@
                     callback(new Error('手机格式输入有误'));
                 }
             },
-            validatePass = (rule, value, callback) => {
-                if(!this.studentForm.id) {
-                    if(value == ''){
-                        callback(new Error('请输入密码'));
-                    } else if(value.length < 2 || value.length > 50) {
-                        callback(new Error('长度在 6 到 50 个字符'));
-                    }
-                }
+            validateBirthday = (rule, value, callback) => {
+                console.log(typeof value);
                 callback();
             };
+
             return {
               roleOptions :  [],
               venueOptions: [],
@@ -344,12 +341,12 @@
                     { required: true, message: '请输入学生姓名', trigger: 'blur'},
                     { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
                 ],
-
                 sex: [
-                    { required: true, message: '请选择学生性别', trigger: 'blur'},
+                    { required: true, type: 'number', message: '请选择学生性别', trigger: 'blur'},
                 ],
                 birthday: [
-                    { required: true, type: 'date', message: '请选择学生生日', trigger: 'change'}
+                    {  type: 'date',required: true , message: '请选择学生生日', trigger: 'change'}
+                    
                 ],
                 venue_id: [
                     { required: true, type: 'number', message: '请选择学生归属道馆', trigger: 'blur'}
@@ -360,7 +357,7 @@
                 ],
 
                 sign_up_at : [
-                    { required: true, type: 'date', message: '请选择学生报名时间', trigger: 'change' }
+                    {  type: 'date', required: true,message: '请选择学生报名时间', trigger: 'change' }
                 ]
               },
 
@@ -518,8 +515,7 @@
                     card.buy_number = value;
                     card.total_price = parseFloat(card.card_price * value).toFixed(2);
                     console.log(card);
-                    that.userCards.push(card);
-                    console.log(that.userCards);
+                    that.studentForm.user_cards.push(card);
                 }).catch(() => {
                     this.$message({
                         type: 'info',
@@ -531,10 +527,11 @@
             onSubmit() 
             {
                 var studentForm = this.studentForm;
+                console.log(this.studentForm);
                this.$refs.studentForm.validate(valid => {
                   var that = this;
                   if (valid) {
-                    if(this.userCards.length ==0) {
+                    if(that.studentForm.user_cards.length ==0) {
                       this.$notify.error({
                         title: '错误',
                         message: '卡券信息不能为空'
@@ -542,16 +539,15 @@
                       return;
                     }
 
-                    if(this.userContacts.length ==0) {
+                    if(this.studentForm.user_contacts.length ==0) {
                       this.$notify.error({
                         title: '错误',
                         message: '学生联系人信息不能为空'
                       });
                       return;
                     }
-
-                    studentForm.user_cards   = this.userCards;
-                    studentForm.user_contacts = this.userContacts;
+                    // studentForm.user_cards   = this.userCards;
+                    // studentForm.user_contacts = this.userContacts;
                     studentForm.birthday = parseTime(studentForm.birthday,'{y}-{m}-{d}');
                     studentForm.sign_up_at = parseTime(studentForm.sign_up_at);
                     console.log(studentForm);
@@ -571,7 +567,7 @@
                           type: 'success'
                         });
                       // 跳转到列表页
-                      //that.$router.push({ path: '/admin/student/index' })
+                     that.$router.push({ path: '/admin/student/index' })
                     })
                     .catch(function(error) {
                       stack_error(error);
@@ -670,7 +666,7 @@
                 this.studentForm.area          = data.area.value;
             },
             deleteUserCard(index) {
-                this.userCards.splice(index, 1)
+                this.studentForm.user_cards.splice(index, 1)
             },
 
             showNewContactsForm() 
@@ -682,15 +678,14 @@
             hanaleAddContacts()
             {
               this.Contacts.relation_name = this.relationOptions[this.Contacts.relation_id].name;
-
-              this.userContacts.push(this.Contacts);
+              this.studentForm.user_contacts.push(this.Contacts);
               console.log(this.userContacts);
               this.Contacts = {};
               this.dialogContactsFormVisible = false;
             },
             deleteUserContact(index)
             {
-              this.userContacts.splice(index, 1)
+              this.studentForm.user_contacts.splice(index, 1)
             },
             venueChange(value) {
 

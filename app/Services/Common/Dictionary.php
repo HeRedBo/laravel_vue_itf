@@ -16,4 +16,18 @@ class Dictionary
             return $unitOptions[$index];
         return $unitOptions;
     }
+
+    public  static  function  SexOptions($index = false )
+    {
+        $sexOptions = [
+            -1  => '全部',
+            0 => '女',
+            1 => '男',
+
+        ];
+
+        if($index != false && isset($sexOptions[$index]))
+            return $sexOptions[$index];
+        return $sexOptions;
+    }
 }

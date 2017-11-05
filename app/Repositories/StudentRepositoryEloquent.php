@@ -6,8 +6,11 @@ use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\StudentRepository;
 use App\Models\Admin\Student;
+use App\Models\Admin\Card;
 use App\Models\Admin\RelationName;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+
 
 /**
  * Class StudentRepositoryEloquent
@@ -18,7 +21,7 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
     protected $fields = [
         'name'          => '',
         'native_place'  => '',
-        'sex'           => 1,
+        'sex'           => '',
         'picture'       => '',
         'birthday'      => '',
         'id_card'       => '',
@@ -35,6 +38,16 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
         'status'        => 1,
         'operator_id'   => 0
     ];
+
+    protected $fieldSearchable = [
+        'name'=>'like',
+        'sex',
+        'venue_id',
+    ];
+
+    protected $pageSize = 15;
+
+
     /**
      * Specify Model class name
      *
@@ -53,7 +66,20 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
-    
+
+
+    public  function  studentList(Request $request)
+    {
+        $pageSize = $request->get('pageSize') ?: $this->pageSize;
+
+        $data =   $this->with(['operator','venues','classes' => function($query) {
+            //$query->where('name','like','%2017 秋季高级版%');
+        }])
+            ->paginate($pageSize)
+            ->toArray();
+
+        return $data;
+    }
     /**
      * create a new student record
      * @param array $data
@@ -70,7 +96,7 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
             // 设置字段默认值
             foreach(array_keys($this->fields) as $field)
             {
-                $student->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
+                $student->$field = is_null($data[$field]) ? $this->fields[$field] : $data[$field];
             }
             //保存用户信息
             $student->save();
@@ -117,10 +143,25 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
         {
             DB::beginTransaction();
             // 设置字段默认值
+            $old_picture = $student->picture;
             foreach(array_keys($this->fields) as $field)
             {
-                $student->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
+                if($field == 'picture')
+                {
+                    if(strrpos($data[$field],'http:') !== false) {
+                        continue;
+                    }
+                }
+                $student->$field = is_null($data[$field]) ? $this->fields[$field] : $data[$field];
             }
+
+            if($old_picture != $data['picture'])
+            {
+                // 删除旧图
+                $manager = app('uploader');
+                $manager->deleteFile($old_picture);
+            }
+
             //修改用户信息
             $student->save();
             $studentContacts = $data['user_contacts'];
@@ -163,17 +204,44 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
         $student = $this->with(['classes','cards','contacts'])->find($id);
         if($student)
         {
+
+//            $student['birthday'] = DateTimeToGmt($student['birthday']);
+//            $student['sign_up_at'] = DateTimeToGmt($student['sign_up_at']);
             // 获取数据归属的班级
             $class = $student->classes;
             $classIds = array_column($class->toArray(),'id');
             $student['class_id'] = $classIds;
             // 获取用户卡券
-            $student['userCards'] = $student->cards->toArray();
-            $student['user_contacts'] = $student->contacts->toArray();
+            $student_cards = $student->cards->toArray();
+            $card_ids = array_column($student_cards,'card_id');
+            $cards_info = Card::whereIn('id',$card_ids)->get()->toArray();
+            $cards_info = array_column($cards_info,NULL, 'id');
+
+            foreach ($student_cards as &$student_card) {
+                $card_info = $cards_info[$student_card['card_id']];
+                $student_card['name'] = $card_info['name'];
+                $student_card['buy_number'] = $student_card['number'];
+                $student_card['card_price'] = $card_info['card_price'];
+                $student_card['total_price'] = $student_card['number'] * $card_info['card_price'];
+            }
+
+            $contacts =  $student->contacts->toArray();
+            $relations_ids = array_column($contacts,'relation_id');
+            $relation_names = RelationName::whereIn('id', $relations_ids)->get()->toArray();
+            $relation_names = array_column($relation_names,NULL,'id');
+
+            foreach ($contacts as &$contact) {
+                $contact['relation_name'] = $relation_names[$contact['relation_id']]['name'];
+            }
+            $student['user_cards'] = $student_cards;
+            $student['user_contacts'] = $contacts;
             $student = $student->toArray();
             unset($student['cards']);
             unset($student['contacts']);
             unset($student['classes']);
+
+
+
             return success('数据获取成功', $student);
         }
         else

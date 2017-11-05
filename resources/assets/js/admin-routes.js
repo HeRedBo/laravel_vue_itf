@@ -165,11 +165,11 @@ export default [
                         name : '学生信息编辑',
                         component : () => import('views/admin/student/Update.vue')
                     },
-                    // {
-                    //     path: 'index',
-                    //     name : '用户列表',
-                    //     component : () => import('views/admin/user/Index.vue')
-                    // },
+                    {
+                        path: 'index',
+                        name : '用户列表',
+                        component : () => import('views/admin/student/Index.vue')
+                    },
                 ]
             },
 

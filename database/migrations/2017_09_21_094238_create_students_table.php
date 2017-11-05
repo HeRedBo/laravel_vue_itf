@@ -32,7 +32,6 @@ class CreateStudentsTable extends Migration
             $table->string('address',255)->comment('家庭详细地址');
             $table->dateTime('sign_up_at')->commnet('报名时间');
             $table->integer('venue_id')->unsigned()->comment('道馆ID');
-            $table->integer('class_id')->unsigned()->comment('班级ID');
             $table->tinyInteger('status')->default('0')->comment('学生状态 0草稿，1正式');
             $table->timestamps();
             $table->index(['venue_id']);

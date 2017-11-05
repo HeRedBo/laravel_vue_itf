@@ -95,3 +95,33 @@ if(!function_exists('success'))
     }
 }
 
+
+if(!function_exists('UnixToGmt')) {
+
+    /**
+     * 把时间戳转换为格林威治时间
+     *
+     * 建议使用php自带的 gmdate / date
+     */
+    function UnixToGmt($UnixTime = 0, $format_string = "l d F Y H:i:s")
+    {
+        $UnixTime = $UnixTime ?: time();
+        return @gmdate($format_string,$UnixTime)." GMT";;
+    }
+
+}
+
+
+if(!function_exists('DateTimeToGmt')) {
+    /**
+     * 时间日期格式转换成格林时间
+     * @param int $datetime 日期时间
+     * @param string $format_string 转换的格林数据格式
+     * @return string
+     */
+    function DateTimeToGmt($datetime = 0, $format_string = "l d F Y H:i:s")
+    {
+        $unix_time = $datetime ? strtotime($datetime) : time();
+        return @gmdate($format_string, $unix_time)." GMT";
+    }
+}
