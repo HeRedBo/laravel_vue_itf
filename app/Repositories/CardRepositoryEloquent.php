@@ -16,6 +16,7 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
 {
     protected $fields = [
         'venue_id'      => 0,
+        'type'          => 1,
         'name'          => '',
         'number'        => 0,
         'unit'          => '',
@@ -112,7 +113,6 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
         }
         return  $this->findWhere($where)->toArray();
     }
-
 
     public  function  updateStatus($id, $status)
     {

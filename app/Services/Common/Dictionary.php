@@ -30,4 +30,17 @@ class Dictionary
             return $sexOptions[$index];
         return $sexOptions;
     }
+
+    static  function  CardTyeMap($index = false)
+    {
+        $cardType = [
+            0  => '全部',
+            1  => '期卡',
+            2  => '次卡'
+        ];
+
+        if($index != false && isset($cardType[$index]))
+            return $cardType[$index];
+        return $cardType;
+    }
 }

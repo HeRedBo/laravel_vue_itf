@@ -54,9 +54,11 @@ class CardsController extends ApiController
             if($cards['data'])
             {
                 $data = $cards['data'];
+                $unit_options = Dictionary::UnitOptions();
                 foreach($data as $k => &$val) {
                     
-                    $val['unit_str'] = Dictionary::UnitOptions($val['unit']);
+                    $val['unit_str'] = isset($unit_options[$val['unit']]) ? $unit_options[$val['unit']] : '次';
+                    $val['type_str'] = Dictionary::CardTyeMap($val['type']);
                 }
                 $cards['data'] = $data;
             }

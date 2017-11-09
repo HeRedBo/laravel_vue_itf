@@ -29,9 +29,17 @@
                                
                                 <el-form-item label="卡券ID">
                                     <span>{{ props.row.id }}</span>
-                                  </el-form-item>
+                                </el-form-item>
+
+                                <el-form-item label="卡券类型">
+                                    <span>{{ props.row.type_str }}</span>
+                                </el-form-item>
+
                                 <el-form-item label="卡券名称">
                                   <span>{{ props.row.name }}</span>
+                                </el-form-item>
+                                <el-form-item label="道馆">
+                                    <span>{{ props.row.venues.name }}</span>
                                 </el-form-item>
 
                                 <el-form-item label="计算数量">
@@ -41,15 +49,12 @@
                                 <el-form-item label="计算单位">
                                   <span>{{ props.row.unit_str}}</span>
                                 </el-form-item>
-                                <el-form-item label="道馆">
-                                    <span>{{ props.row.venues.name }}</span>
-                                  </el-form-item>
+                                
 
                                   
                                 <el-form-item label="卡券价格">
                                   <span>{{ props.row.card_price}}</span>
                                 </el-form-item>
-
                                 <el-form-item label="启用状态">
                                     <el-tooltip class="item" effect="dark" :content="props.row.status==1 ? '启用':'未启用'" placement="top">
                                         <i :class="['fa','fa-circle',props.row.status==1?'text-success':'text-danger']"></i>
@@ -59,8 +64,7 @@
                                 <el-form-item label="创建时间">
                                     <span>{{ props.row.created_at }}</span>
                                 </el-form-item>
-
-                                <el-form-item label="最近更新时间">
+                                <el-form-item label="更新时间">
                                     <span>{{ props.row.updated_at }}</span>
                                 </el-form-item>
 
@@ -81,6 +85,12 @@
                        
                         </el-table-column>
 
+                        <el-table-column label="卡类型">
+                            <template slot-scope="scope">
+                                <span> {{scope.row.type_str}} </span>
+                            </template>
+                        </el-table-column>
+
                         <el-table-column
                             prop="name"
                             label="卡券名称"
@@ -96,7 +106,7 @@
                             </template>
                         </el-table-column>
 
-                        <el-table-column
+                        <!-- <el-table-column
                             prop="number"
                             label="计算数量"
                          >
@@ -109,7 +119,7 @@
                         <template  slot-scope="scope"> 
                             <span> {{scope.row.unit_str}} </span>
                         </template>
-                        </el-table-column>
+                        </el-table-column> -->
 
                        
                         <el-table-column
@@ -175,7 +185,7 @@
                         <el-table-column label="操作">
                         <template slot-scope="scope">
                             <div class="btn-group">
-                                <button class="btn bg-orange btn-xs" @click="handleUpdate(scope.row)">编辑</button>
+                                <button v-show="scope.row.status == 0" class="btn bg-orange btn-xs" @click="handleUpdate(scope.row)">编辑</button>
                                 <!-- <a @click="handleDelete(scope.row.id)" class="btn btn-danger btn-xs">删除</a> -->
                             </div>
                         </template>
@@ -183,7 +193,7 @@
                     
                     </el-table>
                     
-                        <div v-show="!listLoading" class="pagination-container">
+                        <div v-show="!listLoading"  v-if="totalRows>initPage" class="pagination-container">
                             <el-pagination
                             @size-change="handleSizeChange"
                             @current-change="handleCurrentChange"
@@ -205,6 +215,14 @@
                                 label-width="80px"
                                 style='width: 400px; margin-left:50px;'
                             >
+
+                            <el-form-item label="卡类型" prop="type">
+                                <el-radio-group v-model="CardForm.type">
+                                    <el-radio :label="1" >期卡</el-radio>
+                                    <el-radio :label="2" >次卡</el-radio>
+                                </el-radio-group>
+                            </el-form-item>
+
                               <el-form-item label="卡券名称" prop="name">
                                 <el-input v-model="CardForm.name" auto-complete="off" ></el-input>
                               </el-form-item>
@@ -220,7 +238,7 @@
                                 </el-select>
                              </el-form-item>
 
-                             <el-form-item label="计算单位" prop="unit" inline>
+                             <el-form-item  v-if="CardForm.type == 1" label="计算单位" prop="unit" inline>
                                     <el-select v-model="CardForm.unit" placeholder="单位" >
                                       <el-option
                                          v-for="item in unitOptions"
@@ -229,10 +247,10 @@
                                          :value="item.value">
                                       </el-option>
                                     </el-select>
-                                 </el-form-item>
-                             <el-form-item label="数量" prop="number">
+                            </el-form-item>
+
+                            <el-form-item :label="CardForm.type == 1 ? '数量':'次数'" prop="number">
                                 <el-input-number v-model="CardForm.number" ></el-input-number>
-                              
                             </el-form-item>
 
                             <el-form-item label="价格" prop="card_price">
@@ -279,6 +297,7 @@ export default {
             currentPage : 1,
             pageSizes : [15,20, 50, 100, 200],
             perPage : 15,
+            initPage: 15,
             layouts : 'total, sizes, prev, pager, next, jumper',
             totalRows : 0,
             params : {
@@ -307,6 +326,9 @@ export default {
                     { required: true, message: '请输入班级名称', trigger: 'blur'},
                     { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' },
                     { validator: validateCardName, trigger: 'blur' }
+                ],
+                type: [
+                        { required: true, message: '卡券类型必选' }
                 ],
                 number:[
                     { required: true, message: '数量不能为空'},
@@ -337,7 +359,9 @@ export default {
     methods : {
         handleCreate () {
             var venue_id = this.CardForm.venue_id;
-            this.CardForm = {};
+            this.CardForm = {
+                type: 1
+            };
             if(venue_id)
             {
                 this.CardForm.venue_id = venue_id;
@@ -582,7 +606,7 @@ export default {
 
       handleUpdate(row) {
         this.CardForm = Object.assign({}, row)
-        this.dialogTitle = '更新班级';
+        this.dialogTitle = '更新卡券';
         this.dialogFormVisible = true
 
      },
