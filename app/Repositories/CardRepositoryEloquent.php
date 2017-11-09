@@ -25,6 +25,11 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
         'status'        => 0,
         'operator_id'   => 0,
     ];
+
+    protected $fieldSearchable = [
+        'name'=>'like',
+        'venue_id',
+    ];
     /**
      * Specify Model class name
      *
