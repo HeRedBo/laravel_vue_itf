@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use itbdw\QiniuStorage\QiniuStorage;
+use App\Services\Logs\OperationLogServices;
 
 class ApiTestController extends ApiController
 {
@@ -41,5 +42,27 @@ class ApiTestController extends ApiController
         $res = upBase64Img($base_64);
         echo "<img>";
         echo  $disk->downloadUrl($res);    
+    }
+    
+    /**
+     * 保存用户数据操作日志
+     * @author Red-Bo
+     */
+    public  function saveOperatorLog()
+    {
+        $services = new OperationLogServices();
+        $logData = [
+            'type' => 'card',
+            'data' => [
+                'type_id' => 23,
+                'log' => [
+                    "operation" => 'operation',
+                    "field"     => 'card_price',
+                    "oldValue"  => 2000,
+                    "newValue"  => 3000,
+                ],
+            ]
+        ];
+        $result   = $services->saveLog($logData);
     }
 }

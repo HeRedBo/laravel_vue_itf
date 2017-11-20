@@ -5,6 +5,7 @@ Route::post('/login', ['as' => 'admin.login','uses' => 'LoginController@login'])
 Route::get('/logout', 'LoginController@logout'); //退出系统
 Route::get('/ApiTest/api-test', 'ApiTestController@ApiTest');
 Route::get('/ApiTest/up-base64-img', 'ApiTestController@uploadBase64Img');
+Route::get('/ApiTest/save-operator-log', 'ApiTestController@saveOperatorLog');
 
 
 

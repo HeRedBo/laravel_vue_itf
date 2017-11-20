@@ -20,6 +20,7 @@ class CreateStudentCardTable extends Migration
             $table->integer('number_card_id')->default('0')->comment('会员卡记录ID');
             $table->integer('card_id')->default('0')->comment('卡券ID');
             $table->integer('number')->default('1')->comment('购买数量');
+            $table->decimal('card_price', 10, 2)->default('0')->comment('卡券价格');
             $table->integer('total_class_number')->default('0')->comment('课堂总数');
             $table->integer('residue_class_number')->default('0')->comment('已上课程数');
             $table->dateTime('start_time')->commnet('卡券有效期开始时间');
