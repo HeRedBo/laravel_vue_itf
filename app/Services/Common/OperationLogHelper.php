@@ -9,10 +9,10 @@ class OperationLogHelper
      * @return  mixed
      * @author Red-Bo
      */
-    public  function  getLogStructure($type)
+    public static function  getLogStructure($type)
     {
         $mapping = self::getLogMapping($type);
-        if(empty( $mapping) )
+        if(empty($mapping) )
             return false;
         $structure = self::_parseMapping($mapping);
         return $structure;
@@ -38,6 +38,7 @@ class OperationLogHelper
     {
         if(!is_array($set) || !isset($set['properties']))
             return $field;
+
         $node = [];
         foreach ($set['properties'] as $key => $value) {
             $node[$key] = self::parseMappingNode($key, $value);

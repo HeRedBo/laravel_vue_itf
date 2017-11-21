@@ -29,6 +29,7 @@ class OperationLogServices
     {
         $type = $this->getLogType($logData);
         $result = $this->validateLog($logData, $type);
+        dd($result);
     }
     
     
@@ -39,7 +40,7 @@ class OperationLogServices
             $this->setMessage('日志类型错误',0);
             return false;
         }
-        $structure = OperationLogHelper::getLogMapping($type);
+        $structure = OperationLogHelper::getLogStructure($type);
         if(empty($structure))
         {
             $this->setMessage("缺少日志[{$type}]校验的mapping",0);
@@ -48,13 +49,46 @@ class OperationLogServices
         
         if(empty($log['data']) || !is_array($log['data']))
         {
-            $this->setMessage('');
+            $this->setMessage('没有日志或日志格式不正确',0);
         }
-        
-        
-        
-        
+
+        // 校验数据格式
+        $result = true;
+        foreach ($log['data'] as $field => $value) {
+            $result = $result && $this->validateField($field, $value, $structure);
+            if(!$result)
+                return false;
+        }
+        return true;
     }
+
+     protected  function  validateField($field, $value, $structure)
+     {
+         $fieldPass = isset($structure[$field]);
+         if(!$fieldPass)
+         {
+             $this->setMessage('日志结构校验失败,请检查日志数据结构:'. $field, -1);
+             return false;
+         }
+
+         $isMultiRow = is_array(    $structure[$field]);
+         $result = true;
+         if($isMultiRow && is_array($value))
+         {
+             foreach ($value as $k => $row)
+             {
+                 if(!is_array($row)) {
+                     $this->setMessage("日志数据校验失败,请检查日志数据结构: {$k} - {$row}", 0);
+                     return false;
+                 }
+
+                 foreach ($row as  $key => $val) {
+                     $result = $result && $this->validateField($key, $val, $structure[$field]);
+                 }
+             }
+         }
+         return $result;
+     }
     
     
     protected function  getLogType($logData)
