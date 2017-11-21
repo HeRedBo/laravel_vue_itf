@@ -51,18 +51,25 @@ class ApiTestController extends ApiController
     public  function saveOperatorLog()
     {
         $services = new OperationLogServices();
+        $type = 'card';
+        $card_logs = $services->searchLog($type, 20);
+        dd($card_logs);
+        
         $logData = [
             'type' => 'card',
             'data' => [
                 'type_id' => 23,
                 'log' => [
-                    "operation" => 'operation',
-                    "field"     => 'card_price',
-                    "oldValue"  => 2000,
-                    "newValue"  => 3000,
+                    [
+                        "operation" => '修改卡使用状态',
+                        "field"     => '卡状态',
+                        "oldValue"  => '未使用',
+                        "newValue"  => '使用中',
+                    ]
                 ],
             ]
         ];
         $result   = $services->saveLog($logData);
+        dd($result);
     }
 }
