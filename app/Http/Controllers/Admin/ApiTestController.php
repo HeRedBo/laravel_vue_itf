@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use itbdw\QiniuStorage\QiniuStorage;
 use App\Services\Logs\OperationLogServices;
+use App\Services\Logs\CardOperationLogServices;
 
 class ApiTestController extends ApiController
 {
@@ -54,22 +55,30 @@ class ApiTestController extends ApiController
         $type = 'card';
         $card_logs = $services->searchLog($type, 20);
         dd($card_logs);
+        //
+        //$logData = [
+        //    'type' => 'card',
+        //    'data' => [
+        //        'type_id' => 23,
+        //        'log' => [
+        //            [
+        //                "operation" => '修改卡使用状态',
+        //                "field"     => '卡状态',
+        //                "oldValue"  => '未使用',
+        //                "newValue"  => '使用中',
+        //            ]
+        //        ],
+        //    ]
+        //];
         
+        $services = new CardOperationLogServices();
         $logData = [
-            'type' => 'card',
-            'data' => [
-                'type_id' => 23,
-                'log' => [
-                    [
-                        "operation" => '修改卡使用状态',
-                        "field"     => '卡状态',
-                        "oldValue"  => '未使用',
-                        "newValue"  => '使用中',
-                    ]
-                ],
-            ]
+            'card_id' => 1,
+            'operation' => '新增卡券',
+            'newValue' => '名称：成人卡 ID：12 '
+            ,
         ];
-        $result   = $services->saveLog($logData);
+        $result   = $services->addCardLog($logData);
         dd($result);
     }
 }

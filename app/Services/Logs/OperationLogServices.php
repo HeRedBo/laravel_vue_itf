@@ -58,6 +58,16 @@ class OperationLogServices
         return $this->getResponseObj();
     }
     
+    /**
+     * 搜索数据操作日志
+     *
+     * @param string $type 日志类型
+     * @param int $page_size 页码
+     * @param array $where 查询条件
+     * @param array $orderBy 排序规则
+     * @return mixed
+     * @author Red-Bo
+     */
     public  function  searchLog($type, $page_size = 20, array $where = [], array $orderBy = [])
     {
         $DB = DB::table($this->table);
@@ -68,6 +78,12 @@ class OperationLogServices
                 $DB->where($v[0], $v[1], $v[2]);
             }
         }
+        if(empty($orderBy))
+        {
+            $orderBy = [
+                ['id','desc']
+            ];
+        }
         
         if($orderBy)
         {
@@ -75,6 +91,7 @@ class OperationLogServices
                 $DB->orderBy($v[0], $v[1]);
             }
         }
+        
         return $DB->paginate($page_size)->toArray();
     }
     
@@ -143,7 +160,6 @@ class OperationLogServices
         {
             $this->setMessage('没有日志或日志格式不正确',0);
         }
-
         // 校验数据格式
         $result = true;
         foreach ($log['data'] as $field => $value) {
