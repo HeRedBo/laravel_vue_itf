@@ -1,6 +1,7 @@
 <?php
 namespace App\Services\Logs;
 
+
 class CardOperationLogServices extends  OperationLogServices
 {
     protected  $table = 'admin_data_operate_logger';
