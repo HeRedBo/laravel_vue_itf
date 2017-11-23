@@ -68,7 +68,7 @@ class OperationLogServices
      * @return mixed
      * @author Red-Bo
      */
-    public  function  searchLog($type, $page_size = 20, array $where = [], array $orderBy = [])
+    public  function  searchLog($type, array $where = [], array $orderBy = [], $page_size = 20)
     {
         $DB = DB::table($this->table);
         $DB->where('type','=', $type);

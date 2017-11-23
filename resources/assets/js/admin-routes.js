@@ -146,7 +146,12 @@ export default [
                         path: 'index',
                         name: '卡券列表',
                         component : () => import('views/admin/card/Index.vue')
-                     }
+                     },
+                     {
+                        path: 'logger',
+                        name: '操作日志',
+                        component: () => import('views/admin/card/Logger.vue')
+                    }
                   
                 ]
             },

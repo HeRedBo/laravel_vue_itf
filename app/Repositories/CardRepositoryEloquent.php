@@ -41,6 +41,8 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
         'name'=>'like',
         'venue_id',
     ];
+
+    const LOGGER_TYPE = 'card';
     /**
      * Specify Model class name
      *
@@ -180,7 +182,18 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
         }
         return error('数据不存在');
     }
-    
+
+
+    public function  getCardLogger($request)
+    {
+        $type_id = $request->get('card_id');
+        $where = [];
+        if($type_id) {
+            $where[] = ['type_id','=', $type_id];
+        }
+        $cardLogServices = new CardOperationLogServices();
+        return $cardLogServices->searchLog(self::LOGGER_TYPE, $where);
+    }
     protected function buildCardLogData(array $oldData, array $newData)
     {
         foreach ($oldData as $k => $v)

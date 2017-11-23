@@ -178,9 +178,7 @@ class CardsController extends ApiController
     public function destroy($id)
     {
         $deleted = $this->repository->delete($id);
-
         if (request()->wantsJson()) {
-
             return response()->json([
                 'message' => 'Card deleted.',
                 'deleted' => $deleted,
@@ -220,5 +218,14 @@ class CardsController extends ApiController
         $data = $this->repository->all($fields)->toArray();
         $data = array_column($data,NULL,'id');
         return $this->response->withData($data);
+    }
+
+
+    public  function  cardLogger(Request $request)
+    {
+
+        $data = $this->repository->getCardLogger($request);
+        dd($data);
+
     }
 }

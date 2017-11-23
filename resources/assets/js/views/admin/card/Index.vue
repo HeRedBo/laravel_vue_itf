@@ -49,8 +49,6 @@
                                 <el-form-item label="计算单位">
                                   <span>{{ props.row.unit_str}}</span>
                                 </el-form-item>
-                                
-
                                   
                                 <el-form-item label="卡券价格">
                                   <span>{{ props.row.card_price}}</span>
