@@ -35,8 +35,14 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
         'unit' => '卡券计算单位',
         'card_price' => '卡券价格',
         'explain' => '卡券说明',
-        'status' => '卡券说明',
+        'status' => '卡券启用状态',
     ];
+    
+    protected $cardStatusMap = [
+        '0' => '未启用',
+        '1' => '启用',
+    ];
+    
     protected $fieldSearchable = [
         'name'=>'like',
         'venue_id',
@@ -135,7 +141,12 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
             $res = $card->save();
             if($res)
             {
-                //$log_data = $this->buildCardLogData($old_card_data, $data);
+                $log_data = $this->buildCardLogData($old_card_data, $data);
+                if($log_data)
+                {
+                    $card_log_services =  new CardOperationLogServices();
+                    $card_log_services->addCardLog($log_data);
+                }
                 return success('卡券修改成功');
                 
             }
@@ -183,14 +194,32 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
     
     protected function buildCardLogData(array $oldData, array $newData)
     {
+        $field = $newValues = $oldValues =[];
         foreach ($oldData as $k => $v)
         {
-            if($newData[$k] != $v) {
+            if($newData[$k] != $v)
+            {
+                if($k == 'status')
+                {
+                    $oldData['status'] = $this->cardStatusMap[$v];
+                    $newData['status'] = $this->cardStatusMap[$newData[$k]];
+                }
+                
                 if(isset($this->attributeValue[$k]))
                 {
-                    
+                    $field[] = $this->attributeValue[$k];
+                    $oldValues[] = $oldData[$k];
+                    $newValues[] = $newData[$k];
                 }
             }
         }
+        $params = [
+            'card_id'   => $oldData['id'],
+            'operation' => '编辑卡券',
+            'field'     => $field,
+            'oldValue'  => $oldValues,
+            'newValue'  => $newValues,
+        ];
+        return !empty($params['field']) ? $params : [];
     }
 }
