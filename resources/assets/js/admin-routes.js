@@ -172,7 +172,7 @@ export default [
                     },
                     {
                         path: 'index',
-                        name : '用户列表',
+                        name : '学生列表',
                         component : () => import('views/admin/student/Index.vue')
                     },
                 ]
