@@ -202,8 +202,13 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
         if($type_id) {
             $where[] = ['type_id','=', $type_id];
         }
+        $orderBy = $request->get('orderBy')?:'id';
+        $sortBy  = $request->get('sortedBy')?:'desc';
+        $order_by = [
+            [$orderBy,$sortBy]
+        ];
         $cardLogServices = new CardOperationLogServices();
-        return $cardLogServices->searchLog(self::LOGGER_TYPE, $where);
+        return $cardLogServices->searchLog(self::LOGGER_TYPE, $where,$order_by);
     }
     protected function buildCardLogData(array $oldData, array $newData)
     {

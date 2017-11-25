@@ -1,14 +1,13 @@
 <template>
     <div class="box-body tablew-responsive no-padding">
         
-        <table :class="['table dataTable',stripped?'table-striped':'',hover?'table-hober':'']">
+        <table :class="['table table-bordered dataTable',stripped?'table-striped':'',hover?'table-hover':'']">
             <thead>
                 <tr>
                     <th v-if="checkbox"></th>
-                    <th v-for="field,key in fields"  
-                        @click="headClick(field,key)"
+                    <th @click="headClick(field,key)"
                         :class="[field.sortable?'sorting':null,sort===key?'sorting_'+(sortDesc?'desc':'asc'):'']"
-
+                        v-for="field,key in fields"  
                     >
                     {{field.label}}
                     </th>
@@ -32,11 +31,14 @@
         </div>
     </div>
 </template>
+
 <script>
 
-// require('admin-lte/plugins/datatables/datatables.bootstrap.css');
+require('admin-lte/plugins/datatables/dataTables.bootstrap.css');
 require('icheck/skins/minimal/_all.css');
+import {stack_error} from 'config/helper';
 export default {
+
     props : {
         sortable: {
             type: Boolean,
@@ -67,6 +69,15 @@ export default {
             type: Boolean,
             default: false
         },
+        ajax_url : {
+            type: String,
+            default: null
+        },
+        perPage: {
+            type: Number,
+            default: null
+        }
+
     },
     data () {
         return {
@@ -75,40 +86,15 @@ export default {
             currentPage:1,
             sort: null,
             sortDesc: true,
-
-                tableData: [{
-                    date: '2016-05-02',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄',
-                    tag: '家'
-                  }, {
-                    date: '2016-05-04',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1517 弄',
-                    tag: '公司'
-                  }, {
-                    date: '2016-05-01',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1519 弄',
-                    tag: '家'
-                  }, {
-                    date: '2016-05-03',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1516 弄',
-                    tag: '公司'
-                  }],
-            sort: null,
-            listLoading : true,
-            currentPage4: 1
+            sort: null
         }
     },
     created() {
-        this.listLoading = false
-        console.log('23234534')
-        //console.log(this.fields)
-    
+        this.loadList(); 
     },
+
     computed:{
+
         _items() {
             if(!this.items)
                 return []
@@ -123,24 +109,63 @@ export default {
         }
     },
     methods :{
-        formatter(row, column) {
-        return row.address;
-      },
-      filterTag(value, row) {
-        return row.tag === value;
-      },
+        
+        loadList : function() {
+            var that = this;
+            var url = this.ajax_url;
+            var orderBy = this.sort;
+            var sortedBy = this.sortDesc?'desc':'asc';
+            var params = { perPage:this.perPage,page:this.currentPage, orderBy:orderBy,sortedBy:sortedBy}
+            if(typeof this.params !== 'undefined') {
+                params = Object.assign(params, this.params);
+            }
 
-      handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-      },
-      handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-      },
-      handleClick(row,key) {
-        console.log(row);
-        console.log('asdfasd')
-        console.log(key);
-      }
+            this.$http({
+                method :'GET',
+                url : url,
+                params:params
+           })
+           .then(function(response) {
+                let {data} = response;
+                let responseData = data.data;
+                that.total = responseData.total;
+                that.items = responseData.data;
+               
+            })
+            .catch(function(error) 
+            {
+                console.log(error);
+                stack_error(error);
+            });
+
+        },
+
+
+        headClick(field,key) {
+            if (!field.sortable) {
+                return;
+            }
+            if (key === this.sort) {
+                this.sortDesc = !this.sortDesc;
+            }
+            this.sort = key;
+            this.loadList();
+        },
+
+        formatter(row, column) {
+            return row.address;
+        },
+
+        filterTag(value, row) {
+            return row.tag === value;
+        },
+
+        handleSizeChange(val) {
+            console.log(`每页 ${val} 条`);
+        },
+        handleCurrentChange(val) {
+            console.log(`当前页: ${val}`);
+        },
     }
     
 }

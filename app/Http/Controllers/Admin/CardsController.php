@@ -223,9 +223,8 @@ class CardsController extends ApiController
 
     public  function  cardLogger(Request $request)
     {
-
         $data = $this->repository->getCardLogger($request);
-        dd($data);
+        return $this->response->withData($data);
 
     }
 }

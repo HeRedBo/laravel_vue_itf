@@ -10,7 +10,7 @@
     "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
   },
   "dependencies": {
-    "admin-lte": "^2.4.2",
+    "admin-lte": "^2.3.11",
     "axios": "^0.16.2",
     "babel-core": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
@@ -21,6 +21,7 @@
     "cross-env": "^5.0.1",
     "css-loader": "^0.26.1",
     "element-ui": "^1.4.9",
+    "icheck": "^1.0.2",
     "img-loader": "^2.0.0",
     "jquery": "^3.1.1",
     "js-cookie": "^2.1.4",

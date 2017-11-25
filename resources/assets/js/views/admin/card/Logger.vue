@@ -44,12 +44,14 @@
                 items: [],
                 fields: {
                     id: {label: 'ID', sortable: true},
-                    username: {label: '用户名',need:'users'},
-                    url: {label: 'url'},
-                    intro: {label: '内容'},
-                    created_at:{label:'操作时间', sortable: true}
+                    operator_name: {label: '操作人'},
+                    created_at:{label:'操作时间', sortable: true},
+                    operation: {label: '操作'},
+                    field: {label: '字段'},
+                    oldValue: {label: '旧值'},
+                    newValue: {label: '新值'}
                 },
-                ajax_url: "/admin/user/logger",
+                ajax_url: "/card/cardLogger",
                 params: {keyword: ''},
                 currentPage: 1,
                 perPage: 15,
