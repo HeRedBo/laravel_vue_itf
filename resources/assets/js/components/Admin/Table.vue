@@ -25,9 +25,18 @@
                 </tr>
             </tbody>            
         </table>
-        <div class="col-sm-7">
-
+        <div class="col-sm-7 pagination-container" v-if="totalRows>initPage" style="margin-bottom:15px;">
           <!-- 分页组件  -->
+            <el-pagination 
+                @size-change="handleSizeChange" 
+                @current-change="handleCurrentChange" 
+                :current-page="currentPage" 
+                :page-sizes="pageSizes"
+                :page-size="pageSize" 
+                :layout="layouts" 
+                :total="totalRows"
+            >
+            </el-pagination>
         </div>
     </div>
 </template>
@@ -82,15 +91,22 @@ export default {
     data () {
         return {
             items:[],
-            total:0,
-            currentPage:1,
             sort: null,
             sortDesc: true,
-            sort: null
+            currentPage: 1,
+            pageSizes: [15, 20, 50, 100, 200],
+            pageSize: 15,
+            initPage : 15,
+            layouts: 'total, sizes, prev, pager, next, jumper',
+            totalRows: 0,
+            params: {},
         }
     },
     created() {
+        
         this.loadList(); 
+        this.pageSize = this.perPage;
+        this.initPage = this.perPage;
     },
 
     computed:{
@@ -115,7 +131,7 @@ export default {
             var url = this.ajax_url;
             var orderBy = this.sort;
             var sortedBy = this.sortDesc?'desc':'asc';
-            var params = { perPage:this.perPage,page:this.currentPage, orderBy:orderBy,sortedBy:sortedBy}
+            var params = { pageSize :this.pageSize, page:this.currentPage, orderBy:orderBy,sortedBy:sortedBy}
             if(typeof this.params !== 'undefined') {
                 params = Object.assign(params, this.params);
             }
@@ -123,14 +139,14 @@ export default {
             this.$http({
                 method :'GET',
                 url : url,
-                params:params
+                params : params
            })
            .then(function(response) {
                 let {data} = response;
                 let responseData = data.data;
-                that.total = responseData.total;
-                that.items = responseData.data;
-               
+                that.totalRows = responseData.total;
+                that.pageSize  =  parseInt(responseData.per_page);
+                that.items     = responseData.data;
             })
             .catch(function(error) 
             {
@@ -159,11 +175,13 @@ export default {
         filterTag(value, row) {
             return row.tag === value;
         },
-
         handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
+            this.params.pageSize = val;
+            this.loadList();
         },
         handleCurrentChange(val) {
+            this.params.page = val;
+            this.loadList();
             console.log(`当前页: ${val}`);
         },
     }

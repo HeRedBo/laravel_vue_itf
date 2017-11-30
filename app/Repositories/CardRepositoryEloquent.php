@@ -49,6 +49,7 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
     ];
 
     const LOGGER_TYPE = 'card';
+    const DEFAULT_PAGE_SIZE = 15;
     /**
      * Specify Model class name
      *
@@ -204,11 +205,12 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
         }
         $orderBy = $request->get('orderBy')?:'id';
         $sortBy  = $request->get('sortedBy')?:'desc';
+        $pageSize = $request->get('pageSize') ?: self::DEFAULT_PAGE_SIZE;
         $order_by = [
             [$orderBy,$sortBy]
         ];
         $cardLogServices = new CardOperationLogServices();
-        return $cardLogServices->searchLog(self::LOGGER_TYPE, $where,$order_by);
+        return $cardLogServices->searchLog(self::LOGGER_TYPE, $where,$order_by,$pageSize);
     }
     protected function buildCardLogData(array $oldData, array $newData)
     {
