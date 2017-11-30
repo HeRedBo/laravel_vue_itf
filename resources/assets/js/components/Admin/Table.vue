@@ -1,7 +1,10 @@
 <template>
     <div class="box-body tablew-responsive no-padding">
         
-        <table :class="['table table-bordered dataTable',stripped?'table-striped':'',hover?'table-hover':'']">
+        <table :class="['table table-bordered dataTable',stripped?'table-striped':'',hover?'table-hover':'']"
+                v-loading="listLoading" 
+                element-loading-text="拼命加载中"
+        >
             <thead>
                 <tr>
                     <th v-if="checkbox"></th>
@@ -25,7 +28,7 @@
                 </tr>
             </tbody>            
         </table>
-        <div class="col-sm-7 pagination-container" v-if="totalRows>initPage" style="margin-bottom:15px;">
+        <div v-show="!listLoading" class="col-sm-7 pagination-container" v-if="totalRows>initPage" style="margin-bottom:15px;">
           <!-- 分页组件  -->
             <el-pagination 
                 @size-change="handleSizeChange" 
@@ -100,6 +103,7 @@ export default {
             layouts: 'total, sizes, prev, pager, next, jumper',
             totalRows: 0,
             params: {},
+            listLoading: true,
         }
     },
     created() {
@@ -135,13 +139,14 @@ export default {
             if(typeof this.params !== 'undefined') {
                 params = Object.assign(params, this.params);
             }
-
+            this.listLoading = true;
             this.$http({
                 method :'GET',
                 url : url,
                 params : params
            })
            .then(function(response) {
+                that.listLoading = false
                 let {data} = response;
                 let responseData = data.data;
                 that.totalRows = responseData.total;
@@ -150,6 +155,7 @@ export default {
             })
             .catch(function(error) 
             {
+                that.listLoading = false
                 console.log(error);
                 stack_error(error);
             });
