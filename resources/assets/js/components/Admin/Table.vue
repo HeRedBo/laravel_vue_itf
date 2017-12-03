@@ -88,7 +88,12 @@ export default {
         perPage: {
             type: Number,
             default: null
-        }
+        },
+         params: {
+                type: Object,
+                default: () => {
+              }
+        },
 
     },
     data () {
@@ -102,7 +107,6 @@ export default {
             initPage : 15,
             layouts: 'total, sizes, prev, pager, next, jumper',
             totalRows: 0,
-            params: {},
             listLoading: true,
         }
     },

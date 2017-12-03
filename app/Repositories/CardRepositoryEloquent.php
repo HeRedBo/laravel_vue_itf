@@ -206,6 +206,19 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
         $orderBy = $request->get('orderBy')?:'id';
         $sortBy  = $request->get('sortedBy')?:'desc';
         $pageSize = $request->get('pageSize') ?: self::DEFAULT_PAGE_SIZE;
+        $operator_name  = $request->get('operator_name');
+        $search_time   = $request->get('search_time');
+
+        if($operator_name)
+        {
+            $where[] = ['operator_name','like',"%{$operator_name}%"];
+        }
+        if($search_time && is_array($search_time))
+        {
+            $where[] = ['created_at','>=', $search_time[0]];
+            $where[] = ['created_at','<=', $search_time[1]];
+        }
+
         $order_by = [
             [$orderBy,$sortBy]
         ];
