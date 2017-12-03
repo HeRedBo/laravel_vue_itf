@@ -148,7 +148,7 @@ export default [
                         component : () => import('views/admin/card/Index.vue')
                      },
                      {
-                        path: 'logger',
+                        path: 'logger/:id',
                         name: '操作日志',
                         component: () => import('views/admin/card/Logger.vue')
                     }

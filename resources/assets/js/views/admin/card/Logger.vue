@@ -1,6 +1,5 @@
 <template>
     <div class="row">
-        
         <div class="col-md-12">
             <div class="box">
                 <div class="box-header">
@@ -31,7 +30,7 @@
                                 <button type="submit" class="btn btn-primary" @click="$refs.table.loadList()"><i class="fa fa-search"></i>
                                 </button>
 
-                                <a href="#" class="btn btn-warning" @click="reset"><i class="fa fa-undo"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-warning" @click="reset"><i class="fa fa-undo"></i></a>
                             </div>
 
                         </div>
@@ -115,6 +114,9 @@
                 }]
               },
             }
+        },
+        created() {
+          this.params.card_id = this.$route.params.id
         },
         methods: {  
             convertSearchTime: function(){ 

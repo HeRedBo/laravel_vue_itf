@@ -184,6 +184,9 @@
                         <template slot-scope="scope">
                             <div class="btn-group">
                                 <button v-show="scope.row.status == 0" class="btn bg-orange btn-xs" @click="handleUpdate(scope.row)">编辑</button>
+                           
+                                <router-link target="_blank"  :to="{path:'logger/'+ scope.row.id}" class="btn bg-info btn-xs">操作日志</router-link>
+
                                 <!-- <a @click="handleDelete(scope.row.id)" class="btn btn-danger btn-xs">删除</a> -->
                             </div>
                         </template>
