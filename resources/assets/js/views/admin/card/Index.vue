@@ -78,9 +78,7 @@
                             label="ID" 
                             prop="id"
                             sortable="custom"
-                            width="80"
                         >
-                       
                         </el-table-column>
 
                         <el-table-column label="卡类型">
@@ -88,11 +86,12 @@
                                 <span> {{scope.row.type_str}} </span>
                             </template>
                         </el-table-column>
-
+                        
                         <el-table-column
                             prop="name"
                             label="卡券名称"
                         >
+
                         </el-table-column>
 
 
@@ -103,22 +102,6 @@
                                 <span> {{scope.row.venues.name}} </span>
                             </template>
                         </el-table-column>
-
-                        <!-- <el-table-column
-                            prop="number"
-                            label="计算数量"
-                         >
-                        </el-table-column>
-
-
-                        <el-table-column
-                            label="计算单位"
-                        >
-                        <template  slot-scope="scope"> 
-                            <span> {{scope.row.unit_str}} </span>
-                        </template>
-                        </el-table-column> -->
-
                        
                         <el-table-column
                         prop="card_price"
@@ -127,7 +110,7 @@
                         </el-table-column>
                        
                         <el-table-column
-                            label="启用状态"
+                            label="状态"
                         >
 
                             <template  slot-scope="scope"> 
@@ -135,26 +118,7 @@
                                     <i @click="changeStatus(scope.row,scope.$index)" :class="['fa','fa-circle',scope.row.status==1?'text-success':'text-danger']"></i>
                                 </el-tooltip>
                             </template>
-                        </el-table-column>
-
-                       
-                        <!-- <el-table-column
-                            label="卡券说明"
-                        >
-                            <template  slot-scope="scope">
-                                    <el-tooltip  placement="right" >
-                                            <div class="remark_content" slot="content">
-                                                    <p>
-                                                            {{scope.row.explain}}
-                                                    </p>
-                                                </div>
-                                        <span class="auto_hidden">{{scope.row.explain}}</span>
-                                    </el-tooltip>
-                            </template>
-                        </el-table-column> -->
-
-                        
-                    
+                        </el-table-column>   
                         <el-table-column
                             prop="created_at"
                             label="创建时间"
@@ -162,29 +126,18 @@
                         >
                         </el-table-column>
 
-
-                        <!-- <el-table-column
-                        prop="updated_at"
-                        label="更新时间"
-                        sortable="custom"
-                    
-                        >
-                        </el-table-column> -->
-
                         <el-table-column
-                        
                           label="操作人"
-                      >
-                      <template  slot-scope="scope"> 
-                          <span> {{scope.row.operator.name}} </span>
-                      </template>
-                      </el-table-column>
+                        >
+                            <template  slot-scope="scope"> 
+                                <span> {{scope.row.operator.name}} </span>
+                            </template>
+                        </el-table-column>
                     
                         <el-table-column label="操作">
                         <template slot-scope="scope">
                             <div class="btn-group">
                                 <button v-show="scope.row.status == 0" class="btn bg-orange btn-xs" @click="handleUpdate(scope.row)">编辑</button>
-                           
                                 <router-link target="_blank"  :to="{path:'logger/'+ scope.row.id}" class="btn bg-info btn-xs">操作日志</router-link>
 
                                 <!-- <a @click="handleDelete(scope.row.id)" class="btn btn-danger btn-xs">删除</a> -->

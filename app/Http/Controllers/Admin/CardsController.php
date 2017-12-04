@@ -49,8 +49,6 @@ class CardsController extends ApiController
                 ->with(['venues','operator'])
                 ->paginate(20)
                 ->toArray();
-            
-            
             if($cards['data'])
             {
                 $data = $cards['data'];
