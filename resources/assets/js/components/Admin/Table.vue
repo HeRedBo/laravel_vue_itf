@@ -16,8 +16,22 @@
                     </th>
                 </tr>
             </thead>
-            <tbody>
-                <tr v-for="item in _items" :key="items_key" :class="[item.state?'table-'+item.state:null]">
+            <tbody> 
+            <tr v-if="_items.length==0">
+                <td :colspan="[checkbox?1+Object.keys(fields).length:Object.keys(fields).length]" class="td-empty">
+                    <slot name="empty">{{empty_text}}</slot>
+                </td>
+            </tr>
+
+            <tr  v-else v-for="item in _items" :key="items_key" :class="[item.state?'table-'+item.state:null]">
+                <td v-if="checkbox"><input type="checkbox"/></td>
+                <td v-for="(field,key) in fields">
+                <slot :name="key" :value="field.need?item[field.need][key]:item[key]" :item="item">{{field.need?item[field.need][key]:item[key]}}</slot>
+                </td>
+            </tr>
+
+
+                <!-- <tr v-for="item in _items" :key="items_key" :class="[item.state?'table-'+item.state:null]">
                     <td v-if="checkbox"><input type="checkbox" /></td>
                     <td v-for="(field,key) in fields">
                         <slot :name="key" :value="field.need?item[field.need][key]:item[key]" :item="item" >
@@ -25,7 +39,7 @@
                         </slot>
                         
                     </td>
-                </tr>
+                </tr> -->
             </tbody>            
         </table>
         <div v-show="!listLoading" class="col-sm-7 pagination-container" v-if="totalRows>initPage" style="margin-bottom:15px;">
@@ -48,7 +62,8 @@
 
 require('admin-lte/plugins/datatables/dataTables.bootstrap.css');
 require('icheck/skins/minimal/_all.css');
-import {stack_error,parseSearchParam} from 'config/helper';
+import {stack_error,parseSearchParam,isEmpty} from 'config/helper';
+
 export default {
 
     props : {
@@ -97,6 +112,10 @@ export default {
         searchType : {
             type: Number,
             default: 1
+        },
+        empty_text : {
+            type: String,
+            default : '暂无数据'
         }
 
     },
@@ -112,6 +131,7 @@ export default {
             layouts: 'total, sizes, prev, pager, next, jumper',
             totalRows: 0,
             listLoading: true,
+            
         }
     },
     created() {
@@ -137,7 +157,7 @@ export default {
         }
     },
     methods :{
-        
+       
         loadList : function() {
             var that = this;
             var url = this.ajax_url;
@@ -213,3 +233,8 @@ export default {
     
 }
 </script>
+<style>
+    .td-empty {
+        text-align: center;
+    }
+</style>

@@ -1,124 +1,82 @@
 <template>
-    <div class="box">
-            <div class="app-container calendar-list-container">
-                    
-                        <div class="filter-container">
-                                <el-input  style="width: 200px;" class="filter-item" placeholder="班级名称" v-model="searchQuery.name" ></el-input>
-                                <el-button class="filter-item" type="primary" icon="search" @click="loadList">搜索</el-button>
-                            <el-button v-show="showCreateButton" class="filter-item" style="margin-left: 10px;"  @click="handleCreate" type="primary" icon="edit">
-                                添加  
-                            </el-button>
-                            
-                        </div>
-                    
-                    
-                        <el-table
-                            :data="tableData"
-                            border
-                            stripe
-                            fit highlight-current-row
-                            style="width: 100%"
-                            :default-sort = "{prop: 'id', order:'descending'}"
-                            @sort-change="sortChange"
-                            v-loading="listLoading"
-                            element-loading-text="拼命加载中"
-                        >
-                    
-                        <el-table-column 
-                            align="center" 
-                            label="ID" 
-                            prop="id"
-                            sortable="custom"
-                            width="80"
-                        >
-                       
-                        </el-table-column>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                 <div class="box-header">
+                        <span>
+                            <button v-show="showCreateButton"  @click="handleCreate" type="button" class="btn btn-sm btn-success">添加卡券</button>
+                        </span>
 
-                        <el-table-column
-                            label="道馆"
-                        >
-                        <template  slot-scope="scope"> 
-                            <span> {{scope.row.venues.name}} </span>
-                        </template>
-                        </el-table-column>
-                    
-                        <el-table-column
-                            prop="name"
-                            label="班级名称"
-                            width="180">
-                        </el-table-column>
-                        
-                        <el-table-column
-                        prop="remark"
-                        label="班级名称"
-                        show-overflow-tooltip
-                        width="180">
-                    </el-table-column>
-                        <!-- <el-table-column
-                            label="班级备注"
-                        >
-                            <template  slot-scope="scope">
-                                    <el-tooltip  placement="right" >
-                                            <div class="remark_content" slot="content">
-                                                    <p>
-                                                            {{scope.row.remark}}
-                                                    </p>
-                                                </div>
-                                        <span class="auto_hidden">{{scope.row.remark}}</span>
-                                    </el-tooltip>
-                            </template>
-                        </el-table-column> -->
+                        <div class="form-inline pull-right">
 
-                        
-                    
-                        <el-table-column
-                            prop="created_at"
-                            label="创建时间"
-                            sortable="custom"
-                        >
-                        </el-table-column>
-
-
-                        <el-table-column
-                        prop="updated_at"
-                        label="最新更新时间"
-                    
-                        >
-                        </el-table-column>
-
-                        <el-table-column
-                        
-                          label="操作人"
-                      >
-                      <template  slot-scope="scope"> 
-                          <span> {{scope.row.operator.name}} </span>
-                      </template>
-                      </el-table-column>
-                    
-                        <el-table-column label="操作" width="250">
-                        <template slot-scope="scope">
-                            <div class="btn-group">
-                                <button class="btn bg-orange btn-xs" @click="handleUpdate(scope.row)">编辑</button>
-                                <!-- <a @click="handleDelete(scope.row.id)" class="btn btn-danger btn-xs">删除</a> -->
+                           <!--  数据搜索框 -->
+                           <div class="input-group input-group-sm" >
+                                <el-input 
+                                    placeholder="请输入班级名称" 
+                                    v-model="params.name"
+                                    size="small"
+                                >
+                                </el-input>
+                           </div>
+                           <!--  按钮分组 -->
+                            <div class="btn-group btn-group-sm">
+                                <button type="submit" class="btn btn-primary" @click="$refs.table.loadList()"><i class="fa fa-search"></i>
+                                </button>
+                                <a href="javascript:void(0)" class="btn btn-warning" @click="reset"><i class="fa fa-undo"></i></a>
                             </div>
-                        </template>
-                        </el-table-column>
-                    
-                    </el-table>
-                    
-                        <div v-show="!listLoading" class="pagination-container">
-                            <el-pagination
-                            @size-change="handleSizeChange"
-                            @current-change="handleCurrentChange"
-                            :current-page="currentPage"
-                            :page-sizes="pageSizes"
-                            :page-size="perPage"
-                            :layout="layouts"
-                            :total="totalRows">
-                            </el-pagination>
                         </div>
+
+                 </div>
+
+                 <vTable ref="table"
+                        stripped
+                        hover
+                        :searchType=2
+                        :ajax_url="ajax_url"
+                        :params="params"
+                        :items="items"
+                        :fields="fields"
+                        :current-page="currentPage"
+                        :per-page="perPage"
+                        :del="del"
+                >
+                 <!-- 道馆名称 -->
+                     <template slot="venue_name" slot-scope="item">
+                        <span>{{item.item.venues.name}}</span>
+                    </template>
                     
-                        <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" >
+                     <template slot="remark" slot-scope="item">
+                        <!-- <div class="remark_content" slot="content">
+                            <p>
+                                    {{scope.row.remark}}
+                            </p>
+                      </div>  -->
+                        <div class="auto_hidden inline-block" data-toggle="tooltip" data-placement="top" :title="item.item.remark">
+                            {{item.item.remark}}
+                        </div>
+                        <!-- <span class="auto_hidden" >     
+                        </span> -->
+
+                    </template>
+                    
+
+                     <!-- 操作 -->
+                    <template slot="actions" slot-scope="item">
+                        <div class="btn-group">
+                           <!--  <a href="javascript:;" @click="view(item.item)" class="btn btn-success btn-xs">查看</a> -->
+                            <!-- v-show="item.item.status == 0"  -->
+                           <!--  <button class="btn bg-orange btn-xs" @click="handleUpdate(scope.row)">编辑</button> -->
+                            <button class="btn bg-orange btn-xs" @click="handleUpdate(item.item)">编辑</button>
+                            <!-- <router-link target="_blank"  :to="{path:'logger/'+ item.item.id}" class="btn bg-info btn-xs">操作日志</router-link>
+                             -->
+                            <!-- <a href="#"  @click.prevent="$refs.table.onDel(item.item.id)"  class="btn btn-danger btn-xs">删除</a> -->
+                        </div>
+                    </template>
+                </vTable>
+            </div>
+        </div>
+
+         <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" >
                     
                             <el-form class="small-space" 
                                 ref="ClassForm" 
@@ -154,14 +112,18 @@
                               <el-button type="primary" @click="handleClass">确 定</el-button>
                             </div>
                           </el-dialog>
-                          
-                      </div>
     </div>
-
-
 </template>
 
 <script>
+
+$(function() {
+    $('.box').tooltip({
+        selector: '[data-toggle="tooltip"]'
+    });
+});
+
+
 import {stack_error,parseSearchParam} from 'config/helper';
 export default {
     data() {
@@ -177,18 +139,21 @@ export default {
       }
 
         return {
-            tableData: [],
-            currentPage : 1,
-            pageSizes : [15,20, 50, 100, 200],
-            perPage : 15,
-            layouts : 'total, sizes, prev, pager, next, jumper',
-            totalRows : 0,
-            params : {
-                orderBy:'id',
-                sortedBy: 'desc'    
+            items: [],
+            fields : {
+                id: {label: 'ID', sortable: true},
+                venue_name: {label: '道馆', need: 'venues'},
+                name: {label: '课程名称'},
+                remark: {label: '课程课程备注'},
+                created_at:{label:'创建时间', sortable: true},
+                updated_at:{label:'更新时间', sortable: true},
+                username : {label:'最新操作人', need:'operator'},
+                actions : {label: '操作'}
             },
-            searchQuery : {},
-            listLoading: true,
+            ajax_url: "/class",
+            params: {},
+            currentPage: 1,
+            perPage: 15,
             dialogFormVisible : false,
             selectItemVisible : false,
             showCreateButton : false,
@@ -206,12 +171,13 @@ export default {
                     { validator: validateClassName, trigger: 'blur' }
                 ],
             },
-            venueOptions : []
+            venueOptions : [],
+            del: {url:'/admin/user',title:'确定要删除用户吗?',successText:'删除后台用户成功!'},
         }
     },
+
     created() {
         this.getUserVenus();
-       
     },
     methods : {
         handleCreate () {
@@ -283,7 +249,7 @@ export default {
                         message: data.message,
                         type: 'success'
                     });
-                    that.loadList();
+                    that.$refs.table.loadList();
                     // 跳转到列表页
                 })
                 .catch(function(error) {
@@ -319,58 +285,6 @@ export default {
                 stack_error(error);
             }); 
         },
-
-        handleSizeChange(val) {
-            this.params.pageSize = val;
-            this.loadList();
-      },
-
-      handleCurrentChange(val) {
-        this.params.page = val;
-        this.loadList();
-      },
-
-      loadList() {
-        let url = 'class',that =this;
-        var search_query = parseSearchParam(that.searchQuery);
-          that.params.search = search_query;
-          this.listLoading = true;
-          this.$http({
-            method :'GET',
-            url : url,
-            params : that.params
-          })
-          .then(function(response) {
-            that.listLoading = false
-            let {data} = response;
-            let responseData = data.data;
-            that.totalRows = responseData.total;
-            that.perPage = responseData.per_page;
-            console.log(data.data.data);
-            that.tableData = data.data.data;
-            
-          })
-          .catch(function(error) {
-            that.listLoading = false;
-            stack_error(error);
-          });
-
-      },
-
-      sortChange(val) {
-        this.params.orderBy = val.prop;
-        if(val.order == 'ascending')
-        {
-            this.params.sortedBy = 'ASC';
-        } 
-
-        if(val.order == 'descending')
-        {
-            this.params.sortedBy = 'DESC';
-        }
-        this.loadList();
-      },
-
       handleDelete(id) {
         var that = this;
         swal({
@@ -398,7 +312,8 @@ export default {
                     message: data.message,
                     type: 'success'
                 });
-                that.loadList();
+
+                that.$refs.table.loadList();
               
                 
             })
@@ -428,18 +343,15 @@ export default {
       this.ClassForm = Object.assign({}, row)
       this.dialogTitle = '更新班级';
       this.dialogFormVisible = true
-
     },
-
-
+    reset() 
+    {
+            this.params = {};
+    },
+    
     }
 }
-
 </script>
-
-<style rel="stylesheet/scss" lang="scss">
- @import "resources/assets/styles/index";
-</style>
 
 <style>
     .auto_hidden {
@@ -447,6 +359,9 @@ export default {
         text-overflow:ellipsis;
         white-space: nowrap;
         width:160px;
+    }
+    .inline-block {
+        display: inline-block;
     }
     .remark_content {
         max-width: 300px;

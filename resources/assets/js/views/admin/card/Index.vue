@@ -3,13 +3,12 @@
         <div class="col-md-12">
             <div class="box">
                 <div class="box-header">
+
                         <span>
                             <button v-show="showCreateButton"  @click="handleCreate" type="button" class="btn btn-sm btn-success">添加卡券</button>
                         </span>
                        
                         <div class="form-inline pull-right">
-
-                            
                             <div class="input-group input-group-sm">
                                 <el-select style="width:100px" size="small"  v-model="params.card_type" class="filter-item" placeholder="卡券类型">
                                     <el-option
@@ -37,9 +36,9 @@
                                 </button>
                                 <a href="javascript:void(0)" class="btn btn-warning" @click="reset"><i class="fa fa-undo"></i></a>
                             </div>
-
                         </div>
                 </div>
+
                 <vTable ref="table"
                         stripped
                         hover
@@ -55,7 +54,7 @@
                     
                     <!-- 道馆名称 -->
                      <template slot="venue_name" slot-scope="item">
-                        <span>{{item.item.name}}</span>
+                        <span>{{item.item.venues.name}}</span>
                     </template>
 
                     <!-- 状态 -->
@@ -140,11 +139,10 @@
                     <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6}" v-model="CardForm.explain"></el-input>
                 </el-form-item>
             </el-form>
-            <div slot="footer" class="dialog-footer">
 
+            <div slot="footer" class="dialog-footer">
               <el-button @click="dialogFormVisible = false">取 消</el-button>
               <el-button type="primary" @click="handleCard">确 定</el-button>
-
             </div>
         </el-dialog>
 
@@ -167,6 +165,7 @@
                         <th>道馆</th>
                         <td>{{card.venues.name}}</td>
                     </tr>
+
                     <tr>
                         <th>计算单位</th>
                         <td>{{card.unit_str}}</td>
@@ -174,6 +173,7 @@
                         <th>计算数量</th>
                         <td>{{card.number}}</td>
                     </tr>
+                    
                     <tr>
                    
                         <th>卡券价格</th>
@@ -247,7 +247,7 @@ export default {
                 card_price:{label:'卡券价格'},
                 status:{label:'状态'},
                 created_at:{label:'创建时间', sortable: true},
-                username : {label:'创建时间', need:'operator'},
+                username : {label:'操作人', need:'operator'},
                 actions : {label: '操作'}
             },
             ajax_url: "/card",
