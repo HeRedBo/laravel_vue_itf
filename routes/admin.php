@@ -66,6 +66,7 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     Route::get('card/cardOptions', ['as' => 'admin.card.cardOptions', 'uses' => 'CardsController@getCardOptions']);
     Route::post('card/changeStatus', ['as' => 'admin.card.changeStatus', 'uses' => 'CardsController@changeStatus']);
     Route::get('card/cardLogger', ['as' => 'admin.card.cardLogger', 'uses' => 'CardsController@cardLogger']);
+    Route::get('card/cardTypeOptions', ['as' => 'admin.card.cardTypeOptions', 'uses' => 'CardsController@cardTypeOptions']);
     Route::resource('card', 'CardsController');
 
 
