@@ -150,7 +150,7 @@
 
                                 <div class="btn-group">
                                         <!-- <router-link :to="{path:'setacl/'+ scope.row.id}" class="btn bg-purple btn-xs">设置权限</router-link> -->
-                                        <a href="#" @click.prevent="view(scope.row.id)" class="btn btn-success btn-xs">查看</a>
+                                       <!--  <a href="#" @click.prevent="view(scope.row.id)" class="btn btn-success btn-xs">查看</a> -->
                                         <router-link :to="{path:'update/'+  scope.row.id}" class="btn bg-orange btn-xs">编辑</router-link>
 
                                         <!-- <a @click="handleDelete(scope.row.id)" class="btn btn-danger btn-xs">删除</a> -->

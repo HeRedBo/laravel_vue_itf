@@ -152,12 +152,7 @@ export default [
                         name: '操作日志',
                         component: () => import('views/admin/card/Logger.vue')
                     },
-                    {
-                        path: 'new_index',
-                        name: '新卡券列表',
-                        component: () => import('views/admin/card/new_index.vue')
-                    }
-                  
+                   
                 ]
             },
             {

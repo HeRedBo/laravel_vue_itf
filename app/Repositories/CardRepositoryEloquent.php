@@ -45,6 +45,7 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
     
     protected $fieldSearchable = [
         'name'=>'like',
+        'type',
         'venue_id',
     ];
 

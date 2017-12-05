@@ -48,7 +48,7 @@
 
 require('admin-lte/plugins/datatables/dataTables.bootstrap.css');
 require('icheck/skins/minimal/_all.css');
-import {stack_error} from 'config/helper';
+import {stack_error,parseSearchParam} from 'config/helper';
 export default {
 
     props : {
@@ -89,11 +89,15 @@ export default {
             type: Number,
             default: null
         },
-         params: {
-                type: Object,
+        params: {
+            type: Object,
                 default: () => {
-              }
+            }
         },
+        searchType : {
+            type: Number,
+            default: 1
+        }
 
     },
     data () {
@@ -140,9 +144,20 @@ export default {
             var orderBy = this.sort;
             var sortedBy = this.sortDesc?'desc':'asc';
             var params = { pageSize :this.pageSize, page:this.currentPage, orderBy:orderBy,sortedBy:sortedBy}
-            if(typeof this.params !== 'undefined') {
-                params = Object.assign(params, this.params);
+            if(this.searchType == 1)
+            {
+                if(typeof this.params !== 'undefined') {
+                    params = Object.assign(params, this.params);
+                }
+            } 
+            else if(this.searchType == 2)
+            {
+                params.searchJoin = 'and';
+                var search_query = parseSearchParam(this.params);
+                params.search = search_query;
+
             }
+            
             this.listLoading = true;
             this.$http({
                 method :'GET',

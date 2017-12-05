@@ -42,7 +42,7 @@ class CardsController extends ApiController
      */
     public function index()
     {
-        $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
+       // $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
         try
         {
             $cards = $this->repository
@@ -223,6 +223,11 @@ class CardsController extends ApiController
     {
         $data = $this->repository->getCardLogger($request);
         return $this->response->withData($data);
+    }
 
+     public function cardTypeOptions()
+    {
+        $cardTypeMap = Dictionary::CardTyeMap();
+        return $this->response->withData($cardTypeMap);
     }
 }
