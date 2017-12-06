@@ -175,6 +175,11 @@ export default [
                         name : '学生列表',
                         component : () => import('views/admin/student/Index.vue')
                     },
+                     {
+                        path: 'new_tab',
+                        name : '学生tag',
+                        component : () => import('views/admin/student/new_tab.vue')
+                    },
                 ]
             },
 
