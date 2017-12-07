@@ -3,12 +3,14 @@
         <div class="col-md-12">
             <div class="box">
                  <div class="box-header">
-                        <span>
-                            <button v-show="showCreateButton"  @click="handleCreate" type="button" class="btn btn-sm btn-success">添加卡券</button>
-                        </span>
-
-                        <div class="form-inline pull-right">
-
+                    <div class="row">
+                        <div class="col-md-2">
+                          <span>
+                            <button v-show="showCreateButton"  @click="handleCreate" type="button" class="btn btn-sm btn-success">添加班级</button>
+                         </span>
+                        </div>
+                        <div class="col-md-10">
+                           <div class="form-inline pull-right">
                            <!--  数据搜索框 -->
                            <div class="input-group input-group-sm" >
                                 <el-input 
@@ -25,6 +27,10 @@
                                 <a href="javascript:void(0)" class="btn btn-warning" @click="reset"><i class="fa fa-undo"></i></a>
                             </div>
                         </div>
+                        </div>
+                    </div>
+                        
+                       
 
                  </div>
 
@@ -109,7 +115,7 @@
                             </el-form>
                             <div slot="footer" class="dialog-footer">
                               <el-button @click="dialogFormVisible = false">取 消</el-button>
-                              <el-button type="primary" @click="handleClass">确 定</el-button>
+                              <el-button type="primary" @click="handleClass" :loading="buttonLoading">确 定</el-button>
                             </div>
                           </el-dialog>
     </div>
@@ -173,6 +179,7 @@ export default {
             },
             venueOptions : [],
             del: {url:'/admin/user',title:'确定要删除用户吗?',successText:'删除后台用户成功!'},
+            buttonLoading: false,
         }
     },
 
@@ -228,14 +235,14 @@ export default {
             });
         },
 
-
         handleClass() {
             this.$refs.ClassForm.validate(valid => {
             var that = this;
             if (valid) 
             {
                 let url = '/class' + (this.ClassForm.id ? '/' + this.ClassForm.id : '')
-                let method = this.ClassForm.id ? 'put' : 'post'
+                let method = this.ClassForm.id ? 'put' : 'post';
+                that.buttonLoading = true;
                 this.$http({
                     method :method,
                     url : url,
@@ -244,6 +251,7 @@ export default {
                 .then(function(response) {
                     var {data} = response; 
                     that.dialogFormVisible = false;
+                    that.buttonLoading = false;
                     that.$message({
                         showClose: true,
                         message: data.message,
@@ -253,6 +261,7 @@ export default {
                     // 跳转到列表页
                 })
                 .catch(function(error) {
+                    that.buttonLoading = false;
                     stack_error(error);
                 });
 

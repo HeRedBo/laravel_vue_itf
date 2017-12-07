@@ -3,9 +3,9 @@
         <div class="col-md-12">
             <div class="box">
                 <div class="box-header">
-
                         <span>
-                            <button v-show="showCreateButton"  @click="handleCreate" type="button" class="btn btn-sm btn-success">添加卡券</button>
+                            <button v-show="showCreateButton"  @click="handleCreate" type="button" class="btn btn-sm btn-success">添加卡券
+                            </button>
                         </span>
                        
                         <div class="form-inline pull-right">
@@ -142,7 +142,7 @@
 
             <div slot="footer" class="dialog-footer">
               <el-button @click="dialogFormVisible = false">取 消</el-button>
-              <el-button type="primary" @click="handleCard">确 定</el-button>
+              <el-button type="primary" @click="handleCard" :loading="buttonLoading">确 定</el-button>
             </div>
         </el-dialog>
 
@@ -180,13 +180,8 @@
                         <td>{{card.card_price}}</td>
                         <th>启用状态</th>
                         <td>
-                         <!--    <a href="javascript:void(0)" data-toggle="tooltip" :title="card.status==1 ? '启用':'未启用'">
-                                <i @click="changeStatus(card)" :class="['fa','fa-circle',card.status==1?'text-success':'text-danger']"></i>
-                            </a> -->
                             {{card.status==1? '启用':'未启用' }}
                         </td>
-
-
                     </tr>
                     <tr>
                         <th>创建时间</th>
@@ -303,6 +298,7 @@ export default {
                 venues : {},
                 operator : {}
             },
+            buttonLoading: false,
         }
     },
     created() {
@@ -372,7 +368,8 @@ export default {
         saveCard() {
                 
                 let url = '/card' + (this.CardForm.id ? '/' + this.CardForm.id : ''), that = this;
-                let method = this.CardForm.id ? 'put' : 'post'
+                let method = this.CardForm.id ? 'put' : 'post';
+                that.buttonLoading = true;
                 this.$http({
                     method :method,
                     url : url,
@@ -381,6 +378,7 @@ export default {
                 .then(function(response) {
                     var {data} = response; 
                     that.dialogFormVisible = false;
+                    that.buttonLoading = false;
                     that.$message({
                         showClose: true,
                         message: data.message,
@@ -390,6 +388,7 @@ export default {
                     that.$refs.table.loadList();
                 })
                 .catch(function(error) {
+                    that.buttonLoading = false;
                     stack_error(error);
                 });
         },
@@ -409,7 +408,6 @@ export default {
                 var  respondata = data.data
                 var options = [];
                 for (var i in respondata ) {
-                   
                     let label =  respondata[i].name;
                     options.push({value : respondata[i].id , label: label});
                 }

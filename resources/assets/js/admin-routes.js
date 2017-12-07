@@ -62,7 +62,6 @@ export default [
                     }
                 ]
                 // component : require('views/admin/venue/Index.vue')
-
             },
             {
                 path : 'role',
@@ -182,7 +181,7 @@ export default [
                         path: 'new_tab',
                         name : '学生tag',
                         component : () => import('views/admin/student/new_tab.vue')
-                    },
+                    }
                 ]
             },
 
