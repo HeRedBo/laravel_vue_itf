@@ -106,8 +106,11 @@ export default {
         },
         params: {
             type: Object,
-                default: () => {
-            }
+            default: () => {}
+        },
+        del: {    
+            type: Object,
+            default: () => {}
         },
         searchType : {
             type: Number,
@@ -157,7 +160,6 @@ export default {
         }
     },
     methods :{
-       
         loadList : function() {
             var that = this;
             var url = this.ajax_url;
@@ -201,6 +203,40 @@ export default {
 
         },
 
+         onDel: function (id) {
+            var that = this;
+            swal({
+                title: "确定要删除?",
+                text: that.del.title,
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonText: "取消",
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: "删除",
+                closeOnConfirm: true
+            }).then(function () {
+                that.listLoading = true
+                var url = that.del.url+'/'+id;
+                console.log(url)
+                that.$http({
+                    method :'DELETE',
+                    url : url,
+                    params : {}
+                })
+              .then(function(response) {
+                that.listLoading = false;
+                let {data} = response;
+                var message = that.del.successText ? that.del.successText : data.message;
+                toastr.success(message);
+                that.loadList();
+            })
+            .catch(function(error) {
+              that.listLoading = false;
+              stack_error(error);
+            });
+            });
+        },
 
         headClick(field,key) {
             if (!field.sortable) {

@@ -26,7 +26,10 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
         'explain'       => '',
         'status'        => 0,
         'operator_id'   => 0,
+        
     ];
+    
+
     
     protected $attributeValue = [
         'type' => '卡券类型',

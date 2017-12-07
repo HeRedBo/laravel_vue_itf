@@ -59,6 +59,7 @@ class VenueController extends ApiController
     {
         $data = array_merge($request->all(), [
             'operator_id'      => auth('admin')->user()->id,
+            'operator_name'      => auth('admin')->user()->name
         ]);
         $res = $this->repository->createVenueData($data);
         if($res['status'] == 1)
@@ -115,6 +116,7 @@ class VenueController extends ApiController
     {
         $data = array_merge($request->all(), [
             'operator_id'      => auth('admin')->user()->id,
+            'operator_name'      => auth('admin')->user()->name
         ]);
         $res = $this->repository->updateVenueData($data, $id);
         

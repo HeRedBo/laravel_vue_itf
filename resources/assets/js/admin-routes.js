@@ -14,7 +14,6 @@ export default [
             {
                name : '控制面板',
                path: 'dashboard', component : () => import('views/admin/dashboard/index.vue')
-               
             },
             {
                 path : 'venue',
@@ -36,7 +35,11 @@ export default [
                         name : '道馆列表',
                         component : () => import('views/admin/venue/Index.vue'),
                     },
-
+                    {
+                        path: 'new_index',
+                        name : '道馆列表',
+                        component : () => import('views/admin/venue/new_index.vue'),
+                    },
                     {
                         path: 'Table',
                         name : '表格',

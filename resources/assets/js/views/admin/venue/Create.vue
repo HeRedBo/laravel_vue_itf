@@ -14,11 +14,8 @@ export default {
             select: {}
         }
     },
-
-    created() {
-       
+    created() {   
     },
-    
     methods : {
     }
 }

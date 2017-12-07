@@ -20,6 +20,7 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         'logo' => '',
         'logo_thumb' => '',
         'parent_id' => '0',
+        'card_prefix' => '',
         'province_code' => '0',
         'province' => '',
         'city' => '',
@@ -29,14 +30,15 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         'address' => '',
         'remark' => '',
         'operator_id' => 0,
+        'operator_name' => '',
     ];
+
     protected $fieldSearchable = [
         'name'=>'like',
         'province',
     ];
+
     protected $pageSize = 15;
-
-
     /**
      * Specify Model class name
      *
@@ -47,8 +49,6 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         return Venue::class;
     }
 
-    
-
     /**
      * Boot up the repository, pushing criteria
      */
@@ -57,8 +57,6 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         $this->pushCriteria(app(RequestCriteria::class));
     }
 
-
-    
     /**
      * 道馆新增
      * @param array $data
@@ -74,7 +72,16 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         {
             $venue->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
         }
-        $venue->save();
+
+        try 
+        {
+            $venue->save();
+        }
+        catch (\Exception $e) 
+        {
+            logResult('【道馆新增失败】'. $e->__toString(),'error');
+            return error($e->getMessage());
+        }
         return success('数据创建成功');
     }
     
@@ -89,7 +96,6 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         $venue = $this->find($id);
         if($venue)
         {
-        if($venue)
             $old_logo = $venue->logo;
             // 设置字段默认值
             foreach(array_keys($this->fields) as $field)
@@ -115,13 +121,13 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         return error('记录不存在，请检查');
     }
     
+
     public function VenueList($request)
     {
         $pageSize = $request->get('pageSize') ?: $this->pageSize;
         return  $this->with('operator')
                     ->paginate($pageSize)
-                    ->toArray();
-        
+                    ->toArray(); 
     }
     public  function checkVenueName($name, $id)
     {
