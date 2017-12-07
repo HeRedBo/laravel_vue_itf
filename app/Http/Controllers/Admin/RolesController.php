@@ -39,7 +39,7 @@ class RolesController extends ApiController
     {
         try
         {
-            $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
+            //$this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
             $roles = $this->repository->paginate(20)->toArray();
             return $this->response->withData($roles);
         }

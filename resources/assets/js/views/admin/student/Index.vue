@@ -12,19 +12,6 @@
 
               <div class="col-md-10">
                 <div class="form-inline pull-right">
-
-                  <!--   <div class="input-group input-group-sm">
-                        <el-select style="width:100px" size="small"  v-model="params.card_type" class="filter-item" placeholder="卡券类型">
-                            <el-option
-                                  v-for="(value, key) in typeOptions"
-                                  :key="key"
-                                  :value="key"
-                                  :label="value"
-                            >
-                            </el-option>
-                        </el-select>
-                    </div> -->
-                    
                     <!-- 学生姓名 -->
                     <div class="input-group input-group-sm" >
                         <el-input  size="small" class="input-group-sm" placeholder="学生姓名" v-model="params.name" ></el-input>       
@@ -45,7 +32,7 @@
                     
                     <!-- 归属道馆 -->
                     <div class="input-group input-group-sm">
-                        <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange">
+                        <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange" size="small">
                             <el-option
                                    v-for="item in venueOptions"
                                    :key="item.value"
