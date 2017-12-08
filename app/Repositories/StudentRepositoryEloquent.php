@@ -104,15 +104,19 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
             $studentCards    = $data['user_cards'];
             $classId         = $data['class_id'];
             $sign_up_at      = $data['sign_up_at'];
-            //
+            $student_id      =   $student->id;
+            
+            // 处理用户会员卡问题
+            
             //$studentContacts = json_decode($studentContacts,true);
             //$studentCards    = json_decode($studentCards,true);
             // 保存用户课程信息
             $student->giveClassTo($classId);
             // 保存用户联系人
             $student->giveContactsTo($studentContacts);
-            //// 保存用户购买的卡券想你想
+            //// 保存用户购买的卡券
             $student->giveCardTo($studentCards,$sign_up_at);
+            
             DB::commit();
             return success('学生信息创建成功');
         }

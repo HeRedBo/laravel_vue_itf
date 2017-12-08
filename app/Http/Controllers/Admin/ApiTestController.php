@@ -6,17 +6,35 @@ use Illuminate\Http\Request;
 use itbdw\QiniuStorage\QiniuStorage;
 use App\Services\Logs\OperationLogServices;
 use App\Services\Logs\CardOperationLogServices;
+use App\Services\Admin\StudentCard;
+
 
 class ApiTestController extends ApiController
 {
+    protected $student_card_service;
+    public  function __construct(StudentCard $student_card)
+    {
+        parent::__construct();
+        $this->student_card_service = $student_card;
+        
+    }
+    
     public function anyCreate()
     {
 
     }
 
-
+    
     public  function  ApiTest()
     {
+        $student_id = 4;
+        $this->student_card_service->createUserCardNumber($student_id);
+ 
+        
+        
+        
+        
+        
         return $this->response->withSuccess('success');
 //        $data_str = '{
 //            "bid": "26842",

@@ -3,9 +3,9 @@
           <div class="col-md-12">
             <div class="box box-primary">
                 <div class="box-body">
-                    <el-form ref="studentForm"  :model="studentForm" :rules="studentRules"  label-width="80px" class="el-form"
-                      style="width: 41%;
-                      margin-left: 10%;
+                    <el-form ref="studentForm"  :model="studentForm" :rules="studentRules"  label-width="130px" class="el-form"
+                      style="width: 60%;
+                      margin-left: 5%;
                       margin-top: 20px;"
                     >
                         <!-- 姓名 -->
@@ -106,6 +106,19 @@
                                 format="yyyy-MM-dd HH:mm:ss"
                                 >
                             </el-date-picker>
+                        </el-form-item>
+                        
+                        <!-- 是否自动创建会员卡号 -->
+                        <el-form-item label="自动创建会员卡号">
+                            <el-radio-group v-model="studentForm.auto_create_number">
+                                <el-radio :label="0">否</el-radio>
+                                <el-radio :label="1">是</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                        
+                         <!-- 学校 -->
+                        <el-form-item label="会员卡号" prop="card_number"  v-show="studentForm.auto_create_number">
+                              <el-input v-model="studentForm.card_number" placeholder="请输入会员卡号"></el-input>
                         </el-form-item>
 
                         <!-- 卡券种类 -->
@@ -315,6 +328,7 @@
                  }
                });
             },
+
             validatePhone = (rule, value, callback) => {
                 if(isMobile(value)){
                     callback();
@@ -322,9 +336,23 @@
                     callback(new Error('手机格式输入有误'));
                 }
             },
+
             validateBirthday = (rule, value, callback) => {
                 console.log(typeof value);
                 callback();
+            },
+            validateCardNumber = (rule, value, callback) =>  {
+                if (this.studentForm.auto_create_number ==1 &&  !value) {
+                  return callback(new Error('学生会员卡不能为空'));
+                }
+                var reg = new RegExp(/^(?![^a-zA-Z]+$)(?!\D+$)/);
+                if (!reg.test(value)) {
+                    return callback(new Error('卡号只能是字母与数字组合'));
+                }
+                if(value.length < 8) {
+                  return callback(new Error('卡号不能小于8位'));
+                }
+                
             };
 
             return {
@@ -346,21 +374,21 @@
                 ],
                 birthday: [
                     {  type: 'date',required: true , message: '请选择学生生日', trigger: 'change'}
-                    
                 ],
                 venue_id: [
                     { required: true, type: 'number', message: '请选择学生归属道馆', trigger: 'blur'}
                 ],
-
                 class_id: [
                     { required: true, type: 'array', message: '请选择学生归属班级', trigger: 'blur' }
                 ],
 
                 sign_up_at : [
                     {  type: 'date', required: true,message: '请选择学生报名时间', trigger: 'change' }
-                ]
+                ],
+                card_number :[
+                  { validator: validateCardNumber, trigger: 'blur' }
+                ],
               },
-
               ContactsRules : {
                 relation_id: [
                     { required: true, message: '请选择联系人关系', trigger: 'blur'}
@@ -580,22 +608,6 @@
               });
              
             },
-
-            changePasswordRule() {
-                if(!this.studentForm.id) {
-                    this.userRules.password =  [
-                    { required: true, message: '请输入密码', trigger: 'blur'},
-                    { min: 6, max: 50, message: '长度在 6 到 50 个字符', trigger: 'blur' },
-                  ]
-                } else { 
-                    delete  this.userRules.password;
-                    
-                }
-                console.log(this.userRules);
-
-
-            },
-      
             cropSuccess(resData) {
               this.imagecropperShow = false;
               this.imagecropperKey = this.imagecropperKey + 1;

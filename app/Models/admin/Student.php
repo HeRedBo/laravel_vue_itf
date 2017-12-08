@@ -45,8 +45,13 @@ class Student extends Model implements Transformable
     public  function  venues() {
         return $this->hasOne(Venue::class, 'id', 'venue_id');
     }
-
-
+    
+    /**
+     * 获取学生年龄字段
+     * @param $value
+     * @return false|int
+     * @author Red-Bo
+     */
     public function getAgeAttribute($value)
     {
         $age = strtotime($this->birthday);
@@ -70,8 +75,6 @@ class Student extends Model implements Transformable
         // 删旧添新
         $this->contacts()->delete();
         $student_contacts = [];
-        //$relation_ids = array_column($contacts,'relation_id');
-        //$relations = RelationName::whereIn(['id',$relation_ids])->get();
         foreach($contacts as $v)
         {
             $student_contacts[] = [
@@ -89,7 +92,7 @@ class Student extends Model implements Transformable
     
   
     /**
-     * 学生卡券添加 卡券不能做新删旧添加 无 添加 有 不需要添加
+     * 学生卡券添加 卡券不能做新删旧添加 无 添加有不需要添加
      * @param array $cards
      * @param  int $student_id
      * @author Red-Bo
@@ -109,7 +112,7 @@ class Student extends Model implements Transformable
                 $number = $card_info['number'];
                 $end_time =  strtotime("$number $unit", strtotime($sign_up_time));
                 $end_time =  date("Y-m-d H:i:s", $end_time);
-                $now      = date("Y-m-d H:i:s");
+                $now      =  date("Y-m-d H:i:s");
                 $card_tmp = [
                     'student_id' => $this->id,
                     'card_id' => $card['card_id'],
@@ -130,7 +133,6 @@ class Student extends Model implements Transformable
                     $card_tmp['created_at'] = $now;
                     $student_card[] = $card_tmp;
                 }
-                
             }
         }
         if($student_card)
@@ -147,8 +149,6 @@ class Student extends Model implements Transformable
      */
     public function  giveClassTo(array $classId)
     {
-        
-        $this->classes()->detach();
         $classes = Classes::whereIn('id', $classId)->get();
         $student_class = [];
         foreach($classes as $v)
@@ -158,10 +158,17 @@ class Student extends Model implements Transformable
                 'class_id'  => $v->id
             ];
         }
+        $this->classes()->detach();
         DB::table($this->tb_student_class)->insert($student_class);
         return true;
     }
     
+    /**
+     * 图片链接地址重组
+     * @param $pic
+     * @return mixed
+     * @author Red-Bo
+     */
     public function getPictureAttribute($pic)
     {
         $manager = app('uploader');
