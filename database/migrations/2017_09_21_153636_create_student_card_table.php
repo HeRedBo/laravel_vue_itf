@@ -24,8 +24,8 @@ class CreateStudentCardTable extends Migration
             $table->decimal('card_price', 10, 2)->default('0')->comment('卡券价格');
             $table->integer('total_class_number')->default('0')->comment('课堂总数');
             $table->integer('residue_class_number')->default('0')->comment('已上课程数');
-            $table->dateTime('start_time')->commnet('卡券有效期开始时间');
-            $table->dateTime('end_time')->commnet('卡券有效期结束时间');
+            $table->dateTime('start_time')->nullable()->commnet('卡券有效期开始时间');
+            $table->dateTime('end_time')->nullable()->commnet('卡券有效期结束时间');
             $table->tinyInteger('status')->default('1')->comment('卡券有效状态 0否 1是');
             $table->integer('operator_id')->unsigned()->default('0')->comment('操作人ID');
             $table->string('operator_name',60)->default('')->comment('操作用户姓名');

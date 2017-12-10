@@ -34,7 +34,7 @@
                     </pan-thumb>
                     <el-button type="primary" icon="upload" style="position: absolute;bottom: 15px;margin-left: 40px;" @click="imagecropperShow=true">修改logo
                     </el-button>
-                    <image-cropper :width="300" :height="300" url="/upload/upAvatar" @close='close' @crop-upload-fail='cropUploadFail' @crop-upload-success="cropSuccess" :key="imagecropperKey" v-show="imagecropperShow"></image-cropper>
+                    <image-cropper :width="900" :height="900" url="/upload/upAvatar" @close='close' @crop-upload-fail='cropUploadFail' @crop-upload-success="cropSuccess" :key="imagecropperKey" v-show="imagecropperShow"></image-cropper>
                 </div>
                 </el-form-item>
       
@@ -172,6 +172,7 @@ export default
         this.imagecropperKey = this.imagecropperKey + 1;
         this.image = resData.data.url;
         this.venueForm.logo = resData.data.real_path;
+        this.venueForm.logo_thumb = resData.data.thumb[0].real_path;
       },
 
       close() {

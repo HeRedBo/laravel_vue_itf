@@ -91,7 +91,7 @@
                     trigger="hover"
                   >
                   <div style="text-align: right; margin: 0">
-                          <img :src="item.item.picture" width="150px" height="150px" class="user-avatar"/>
+                          <img :src="item.item.picture" width="400px" height="400px" class="user-avatar"/>
                   </div>
                   </el-popover>
                   <img :src="item.item.picture" width="40px" height="40px" class="user-avatar img-circle" v-popover:popover />

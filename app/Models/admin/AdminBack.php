@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
 
 
-class Admin extends Authenticatable implements Transformable
+class AdminBack extends Authenticatable implements Transformable
 {
     use TransformableTrait;
 

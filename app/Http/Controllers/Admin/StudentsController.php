@@ -10,6 +10,7 @@ use App\Http\Requests\StudentCreateRequest;
 use App\Http\Requests\StudentUpdateRequest;
 use App\Repositories\StudentRepository;
 use App\Services\Common\Dictionary;
+use App\Services\Admin\StudentCard;
 
 
 class StudentsController extends ApiController
@@ -19,13 +20,14 @@ class StudentsController extends ApiController
      * @var StudentRepository
      */
     protected $repository;
+    protected $student_card_service;
 
 
-
-    public function __construct(StudentRepository $repository)
+    public function __construct(StudentRepository $repository,StudentCard $student_card)
     {
         parent::__construct();
         $this->repository = $repository;
+        $this->student_card_service = $student_card;
     }
 
 
@@ -61,9 +63,10 @@ class StudentsController extends ApiController
         try
         {
             $data = array_merge($request->all(),
-                ['operator_id' => auth('admin')->user()->id]
+                ['operator_id' => auth('admin')->user()->id],
+                ['operator_name' => auth('admin')->user()->name]
             );
-            $res = $this->repository->createStudent($data);
+            $res = $this->repository->createStudent($data ,$this->student_card_service);
             if($res['status'] == 1)
                 return $this->response->withCreated($res['msg']);
             else
@@ -172,7 +175,13 @@ class StudentsController extends ApiController
 
     public  function  relationOptions()
     {
-        $data = $this->repository->getRelationOptions();
+        try{
+            $data = $this->repository->getRelationOptions();
+        }catch (\Exception $e)
+        {
+            dd($e);
+        }
+
         $data = array_column($data, NULL ,'id');
         return $this->response->withData($data);
     }

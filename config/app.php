@@ -185,6 +185,9 @@ return [
         // l5 Repository
         Prettus\Repository\Providers\RepositoryServiceProvider::class,
 
+        //集成图片裁剪功能
+        Intervention\Image\ImageServiceProvider::class
+
     ],
 
     /*
@@ -234,6 +237,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
+        // 图片裁切门面
+        'Image' => Intervention\Image\Facades\Image::class
     ],
 
 ];

@@ -70,7 +70,7 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         // 设置字段默认值
         foreach(array_keys($this->fields) as $field)
         {
-            $venue->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
+            $venue->$field = (!isset($data[$field]) || empty($data[$field])) ? $this->fields[$field] : $data[$field];
         }
 
         try 
@@ -97,10 +97,11 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         if($venue)
         {
             $old_logo = $venue->logo;
+            $old_logo_thumb = $venue->logo_thumb;
             // 设置字段默认值
             foreach(array_keys($this->fields) as $field)
             {
-                if($field == 'logo')
+                if( in_array($field, ['logo','logo_thumb']))
                 {
                     if(strrpos($data[$field],'http:') !== false) {
                         continue;
@@ -109,12 +110,21 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
                 $venue->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
             }
             $logo = $data['logo'];
+            $logo_thumb = $data['logo_thumb'];
+             
+            $manager = app('uploader');
             if($old_logo != $logo)
             {
                 // 删除旧图
-                $manager = app('uploader');
                 $manager->deleteFile($old_logo);
             }
+
+            // 删除旧的缩略图
+            if($old_logo_thumb != $logo_thumb)
+            {
+                $manager->deleteFile($old_logo_thumb);
+            }
+            
             $venue->save();
             return success('数据更新成功');
         }

@@ -10,6 +10,8 @@ class StudentNumberCard extends Model implements Transformable
 {
     use TransformableTrait;
 
+    protected  $table = 'student_number_card';
+
     protected $fillable = [];
 
 }

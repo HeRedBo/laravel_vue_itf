@@ -52,10 +52,10 @@
                         trigger="hover"
                      >
                      <div style="text-align: right; margin: 0">
-                        <img :src="item.item.logo" width="150px" height="150px" class="user-avatar "/>
+                        <img :src="item.item.logo" width="400px" height="400px" class="user-avatar "/>
                      </div>
                     </el-popover>
-                      <img :src="item.item.logo" width="40px" height="40px" class="user-avatar img-circle" v-popover:popover />
+                      <img :src="item.item.logo_thumb" width="40px" height="40px" class="user-avatar img-circle" v-popover:popover />
                 </template>
 
                 <!-- 操作 -->

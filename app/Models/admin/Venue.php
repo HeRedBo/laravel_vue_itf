@@ -54,6 +54,26 @@ class Venue extends Model implements Transformable
         
     }
 
+    public function getLogoThumbAttribute($logo_thumb)
+    {
+
+        $manager = app('uploader');
+        if(\Request::method() == 'PUT' || \Request::method() == "DELETE")
+        {
+            return $logo_thumb;
+        }
+
+        if ($logo_thumb)
+        {
+            return $manager->fileWebPath($logo_thumb);
+
+        } else
+        {
+            return $manager->fileWebPath('files/avatar/default.png');
+        }
+
+    }
+
 
 
 }

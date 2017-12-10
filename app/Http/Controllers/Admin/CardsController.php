@@ -212,8 +212,11 @@ class CardsController extends ApiController
 
     public function getCardOptions()
     {
-        $fields = ['id','name','card_price','unit','number'];
-        $data = $this->repository->all($fields)->toArray();
+        $fields = ['id','name','card_price','unit','status','number'];
+        $where = [
+            ['status' ,'=',1]
+        ];
+        $data = $this->repository->findWhere($where,$fields)->toArray();
         $data = array_column($data,NULL,'id');
         return $this->response->withData($data);
     }

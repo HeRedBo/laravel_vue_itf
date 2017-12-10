@@ -94,10 +94,12 @@ class Student extends Model implements Transformable
     /**
      * 学生卡券添加 卡券不能做新删旧添加 无 添加有不需要添加
      * @param array $cards
-     * @param  int $student_id
+     * @param  int $sign_up_time
+     * @param int $number_card_id 会员开ID
+     * @return bool
      * @author Red-Bo
      */
-    public  function giveCardTo(array $cards, $sign_up_time)
+    public  function giveCardTo(array $cards, $sign_up_time, $number_card_id)
     {
         $student_card = [];
         $card_id_arr = array_column($cards,'card_id');
@@ -108,20 +110,38 @@ class Student extends Model implements Transformable
             $card_info = isset($card_data[$card['card_id']]) ?$card_data[$card['card_id']] : [];
             if($card_info)
             {
-                $unit   = $card_info['unit'];
-                $number = $card_info['number'];
-                $end_time =  strtotime("$number $unit", strtotime($sign_up_time));
-                $end_time =  date("Y-m-d H:i:s", $end_time);
-                $now      =  date("Y-m-d H:i:s");
+                $card_type = $card_info['type'];
+                $unit      = $card_info['unit'];
+                $number    = $card_info['number'];
+                $card_number = 0;
+                $end_time  = '';
+                $now       =  date("Y-m-d H:i:s");
+                if($card['status'] == 1)
+                {
+                    if($card_type == 1)
+                    {
+                        $end_time  =  strtotime("$number $unit", strtotime($sign_up_time));
+                        $end_time  =  date("Y-m-d H:i:s", $end_time);
+                    }
+                }
+                if($card_type ==2)
+                {
+                    $card_number = $card_info['number'];
+                }
+
                 $card_tmp = [
-                    'student_id' => $this->id,
-                    'card_id' => $card['card_id'],
-                    'number' => $card['number'],
-                    'start_time' => $sign_up_time,
-                    'end_time' => $end_time,
-                    'status' => 1,
-                    'operator_id' =>  auth('admin')->user()->id,
-                    'updated_at' => $now,
+                    'student_id'        => $this->id,
+                    'number_card_id'    => $number_card_id,
+                    'card_id'           => $card['card_id'],
+                    'number'            => $card['number'],
+                    'card_price'        => $card_info['card_price'],
+                    'total_class_number' => $card_number,
+                    'start_time'         => $sign_up_time,
+                    'end_time'           => $end_time,
+                    'status'             => $card['status'],
+                    'operator_id'        =>  auth('admin')->user()->id,
+                    'operator_name'      =>  auth('admin')->user()->name,
+                    'updated_at'         => $now,
                 ];
                 if($card['id'])
                 {

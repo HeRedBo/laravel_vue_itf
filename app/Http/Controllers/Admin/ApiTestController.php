@@ -27,15 +27,14 @@ class ApiTestController extends ApiController
     
     public  function  ApiTest()
     {
-        $student_id = 4;
-        $this->student_card_service->createUserCardNumber($student_id);
- 
-        
-        
-        
-        
-        
-        return $this->response->withSuccess('success');
+//        $student_id = 3;
+//        $data  = [];
+//        $data['auto_create_number'] = 1;
+//        $data['operator_id'] = 1;
+//        $data['operator_name'] = "HeRedBo";
+//        $number = $this->student_card_service->saveStudentNumberCard($student_id,$data);
+
+
 //        $data_str = '{
 //            "bid": "26842",
 //            "code": "200",
@@ -59,7 +58,6 @@ class ApiTestController extends ApiController
 
         $disk = QiniuStorage::disk('qiniu');
         $res = upBase64Img($base_64);
-        echo "<img>";
         echo  $disk->downloadUrl($res);    
     }
     

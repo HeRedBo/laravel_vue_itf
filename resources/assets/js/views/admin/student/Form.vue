@@ -4,7 +4,7 @@
             <div class="box box-primary">
                 <div class="box-body">
                     <el-form ref="studentForm"  :model="studentForm" :rules="studentRules"  label-width="130px" class="el-form"
-                      style="width: 60%;
+                      style="width: 70%;
                       margin-left: 5%;
                       margin-top: 20px;"
                     >
@@ -19,8 +19,6 @@
                                 <el-radio :label="0">女</el-radio>
                                 <el-radio :label="1">男</el-radio>
                             </el-radio-group>
-                            <!-- <el-radio class="radio" v-model="studentForm.sex" label="0">女</el-radio>
-                            <el-radio class="radio" v-model="studentForm.sex" label="1">男</el-radio> -->
                         </el-form-item>
 
                         <!-- 头像 -->
@@ -30,11 +28,10 @@
                               </pan-thumb>
                               <el-button type="primary" icon="upload" style="position: absolute;bottom: 15px;margin-left: 40px;" @click="imagecropperShow=true">修改头像
                               </el-button>
-                              <image-cropper :width="300" :height="300" url="/upload/upAvatar" @close='close' @crop-upload-fail='cropUploadFail' @crop-upload-success="cropSuccess" :key="imagecropperKey" v-show="imagecropperShow"></image-cropper>
+                              <image-cropper :width="1000" :height="1000" url="/upload/upAvatar" @close='close' @crop-upload-fail='cropUploadFail' @crop-upload-success="cropSuccess" :key="imagecropperKey" v-show="imagecropperShow"></image-cropper>
                           </div>
                         </el-form-item>
                         
-
                         <!-- 籍贯 -->
                         <el-form-item label="籍贯">
                             <el-input v-model="studentForm.native_place" placeholder="请输入籍贯"></el-input>
@@ -117,7 +114,7 @@
                         </el-form-item>
                         
                          <!-- 学校 -->
-                        <el-form-item label="会员卡号" prop="card_number"  v-show="studentForm.auto_create_number">
+                        <el-form-item label="会员卡号" prop="card_number"  v-show="studentForm.auto_create_number ==0">
                               <el-input v-model="studentForm.card_number" placeholder="请输入会员卡号"></el-input>
                         </el-form-item>
 
@@ -167,6 +164,21 @@
                                 align="cneter"
                                 label="总金额">
                             </el-table-column>
+
+                            <el-table-column
+                              align="cneter"
+                              label="启用状态">
+                                <!-- 状态 -->
+                                <template slot-scope="scope">
+                                  <a href="javascript:void(0)"   @click="changeCardStatus(scope.$index)" data-toggle="tooltip" :title="scope.row.status==1 ?'启用':'未启用'">
+                                      <i :class="['fa','fa-circle',scope.row.status==1?'text-success':'text-danger']"></i>
+                                  </a>
+                                </template>
+                                  
+                            </el-table-column>
+
+                            
+
                             <el-table-column 
                                 label="操作" 
                                 width="120">
@@ -217,6 +229,7 @@
                               align="cneter"
                               label="联系人邮箱">
                             </el-table-column>
+
 
                             <el-table-column 
                                 label="操作" 
@@ -342,16 +355,22 @@
                 callback();
             },
             validateCardNumber = (rule, value, callback) =>  {
-                if (this.studentForm.auto_create_number ==1 &&  !value) {
-                  return callback(new Error('学生会员卡不能为空'));
+                if (this.studentForm.auto_create_number ==0) 
+                {
+                    if(!value) {
+                      return callback(new Error('学生会员卡不能为空'));
+                    }
+
+                    var reg = new RegExp( /^(([a-z]+[0-9]+)|([0-9]+[a-z]+))[a-z0-9]*$/i);
+                    if (!reg.test(value)) {
+                        return callback(new Error('卡号只能是字母与数字组合'));
+                    }
+
+                    if(value.length < 8) {
+                        return callback(new Error('卡号不能小于8位'));
+                    }
                 }
-                var reg = new RegExp(/^(?![^a-zA-Z]+$)(?!\D+$)/);
-                if (!reg.test(value)) {
-                    return callback(new Error('卡号只能是字母与数字组合'));
-                }
-                if(value.length < 8) {
-                  return callback(new Error('卡号不能小于8位'));
-                }
+                callback();
                 
             };
 
@@ -410,7 +429,8 @@
               image: 'http://owu2vcxbh.bkt.clouddn.com/files/avatar/default.png', 
               userCards : [],
               Contacts : {},
-              userContacts : []
+              userContacts : [],
+              cardUseStatus : 0
             }
           },
 
@@ -530,9 +550,12 @@
                 }); 
             },
             selectCard(value) {
+               console.log(this.cardOptions[value])
                 var card = this.cardOptions[value];
+
                 card.card_id = card.id;
-                card.id = 0; // 新增数据 id 置为 0 
+                card.id = 0;// 新增数据 id 置为 0 
+                card.status = 1;
                 var that = this; 
                 this.$prompt('请输入卡券数量', '卡券数量', {
                     confirmButtonText: '确定',
@@ -541,9 +564,15 @@
                     inputErrorMessage: '卡券购买数量必须是大于0数值'
                 }).then(({ value }) => {
                     card.buy_number = value;
+                    console.log(this.cardUseStatus);
+                    card.status = that.cardUseStatus?0:1;
+                    console.log(card.status);
+                    if(!this.cardUseStatus) {
+                      this.cardUseStatus = 1;
+                    }
                     card.total_price = parseFloat(card.card_price * value).toFixed(2);
-                    console.log(card);
                     that.studentForm.user_cards.push(card);
+                    console.log(that.studentForm.user_cards);
                 }).catch(() => {
                     this.$message({
                         type: 'info',
@@ -554,10 +583,10 @@
 
             onSubmit() 
             {
-                var studentForm = this.studentForm;
-                console.log(this.studentForm);
+               var studentForm = this.studentForm;
                this.$refs.studentForm.validate(valid => {
                   var that = this;
+                  console.log(valid);
                   if (valid) {
                     if(that.studentForm.user_cards.length ==0) {
                       this.$notify.error({
@@ -566,7 +595,6 @@
                       });
                       return;
                     }
-
                     if(this.studentForm.user_contacts.length ==0) {
                       this.$notify.error({
                         title: '错误',
@@ -574,8 +602,6 @@
                       });
                       return;
                     }
-                    // studentForm.user_cards   = this.userCards;
-                    // studentForm.user_contacts = this.userContacts;
                     studentForm.birthday = parseTime(studentForm.birthday,'{y}-{m}-{d}');
                     studentForm.sign_up_at = parseTime(studentForm.sign_up_at);
                     console.log(studentForm);
@@ -702,6 +728,18 @@
             venueChange(value) {
 
               this.getClasses(value)
+            },
+            changeCardStatus(index) {
+              var length = this.studentForm.user_cards.length;
+              var that = this;
+              if(length > 1) 
+              {
+                  for (var i = length-1; i >= 0; i--) {
+                    console.log(this.studentForm.user_cards[i]);
+                    this.studentForm.user_cards[i].status = 0;
+                  }
+                  that.studentForm.user_cards[index].status = 1;
+              }
             }
 
 
