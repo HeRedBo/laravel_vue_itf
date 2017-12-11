@@ -7,15 +7,18 @@ use itbdw\QiniuStorage\QiniuStorage;
 use App\Services\Logs\OperationLogServices;
 use App\Services\Logs\CardOperationLogServices;
 use App\Services\Admin\StudentCard;
+use App\Services\Admin\VenueBillService;
 
 
 class ApiTestController extends ApiController
 {
     protected $student_card_service;
-    public  function __construct(StudentCard $student_card)
+    protected $bill_service;
+    public  function __construct(StudentCard $student_card, VenueBillService $bill_service)
     {
         parent::__construct();
         $this->student_card_service = $student_card;
+        $this->bill_service = $bill_service;
         
     }
     
@@ -24,9 +27,27 @@ class ApiTestController extends ApiController
 
     }
 
-    
+
+
+
     public  function  ApiTest()
     {
+
+        $bill_data = [
+            'venue_id'   => 1,
+            'bill_type'  => 1,
+            'data_type'  => 1,
+            'student_card_id' => 1,
+            'money'     => 500.00,
+            'status'   => 0,
+            'bill_created_at' => date("Y-m-d H:i:s"),
+            'remark'          => '卡券购买记录',
+            'input_user_id'   => 1,
+            'operator_id'     => 1
+        ];
+        $res = $this->bill_service->creaetVenueBill($bill_data);
+        dd($res);
+
 //        $student_id = 3;
 //        $data  = [];
 //        $data['auto_create_number'] = 1;

@@ -114,8 +114,10 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
             $student->giveClassTo($classId);
             // 保存用户联系人
             $student->giveContactsTo($studentContacts);
-            //// 保存用户购买的卡券
+            // 保存用户购买的卡券
             $student->giveCardTo($studentCards,$sign_up_at, $number_card_id);
+            //
+
             
             DB::commit();
             return success('学生信息创建成功');
@@ -243,9 +245,6 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
             unset($student['cards']);
             unset($student['contacts']);
             unset($student['classes']);
-
-
-
             return success('数据获取成功', $student);
         }
         else

@@ -92,7 +92,7 @@ class Student extends Model implements Transformable
     
   
     /**
-     * 学生卡券添加 卡券不能做新删旧添加 无 添加有不需要添加
+     * 学生卡券添加 卡券不能做新删旧添加 无 添加有不需要添加  生成卡券记录同时生成卡券ID
      * @param array $cards
      * @param  int $sign_up_time
      * @param int $number_card_id 会员开ID

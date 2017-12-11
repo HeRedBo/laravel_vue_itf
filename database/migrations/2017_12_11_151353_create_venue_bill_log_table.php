@@ -23,9 +23,11 @@ class CreateVenueBillLogTable extends Migration
             $table->integer('student_card_id')->unsigned()->default('0')->comment('学生卡券记录ID 当数据类型为学生卡券是才字段必填');
             $table->decimal('money',10,2)->default('0')->comment('账单金额');
             $table->tinyInteger('status')->default('0')->comment('账单状态 0：未审核 1：审核失败 2：通过');
+            $table->string('remark',255)->comment('账单备注');
             $table->timestamp('bill_created_at')->nullable()->comment('账单创建时间');
             $table->unsignedInteger('operator_id')->default('0')->comment('操作用户ID');
             $table->unsignedInteger('input_user_id')->default('0')->comment('录入人用户ID');
+            $table->string('operate_remark',255)->comment('账单操作备注');
             $table->timestamp('created_at')->nullable()->comment('创建时间');
         });
 

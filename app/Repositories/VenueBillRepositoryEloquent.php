@@ -6,6 +6,7 @@ use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\venueBillRepository;
 use App\Models\Admin\VenueBill;
+use App\Models\Admin\VenueBillDataType;
 use App\Validators\VenueBillValidator;
 
 /**
@@ -32,5 +33,27 @@ class VenueBillRepositoryEloquent extends BaseRepository implements VenueBillRep
     public function boot()
     {
         $this->pushCriteria(app(RequestCriteria::class));
+    }
+
+    
+    /**
+     * 保存道馆账单数据类型
+     * @param object $request
+     * @return bool
+     */
+    public function saveVenueBillDataType($request)
+    {
+        if($request->get('id'))
+        {
+            $model = VenueBillDataType::find($request->get('id'));
+        } 
+        else 
+        {
+            $model = new VenueBillDataType();
+        }
+        $model->type = $request->get('type');
+        $model->venue_id = $request->get('venue_id');
+        $model->name = $request->get('name');
+        return $model->save();
     }
 }

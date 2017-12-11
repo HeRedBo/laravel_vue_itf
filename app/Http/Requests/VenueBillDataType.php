@@ -13,7 +13,7 @@ class VenueBillDataType extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,8 +23,24 @@ class VenueBillDataType extends FormRequest
      */
     public function rules()
     {
+        $rules = [
+            'venue_id'       => 'required|exists:venues,id',
+            'type'           => 'required|in:1,2', // 1 入账 2 出账
+            'name'           => 'required|unique:venue_bill_data_type,name',
+        ];
+        if($this->get('id'))
+        {
+            $rules['name'] = 'required|unique:venue_bill_data_type,name,'. $this->get('id');
+        }
+        return $rules;
+    }
+    
+    public  function  attributes()
+    {
         return [
-            //
+            'venue_id'  => '道馆ID',
+            'type'      => '账单类别',
+            'name'      => '账单数据类型名称',
         ];
     }
 }

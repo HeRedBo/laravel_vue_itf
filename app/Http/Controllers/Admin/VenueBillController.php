@@ -9,10 +9,11 @@ use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Requests\VenueBillCreateRequest;
 use App\Http\Requests\VenueBillUpdateRequest;
+use App\Http\Requests\VenueBillDataType;
 use App\Repositories\VenueBillRepository;
 
 
-class VenueBillController extends Controller
+class VenueBillController extends ApiController
 {
 
     /**
@@ -22,6 +23,7 @@ class VenueBillController extends Controller
 
 
     public function __construct(VenueBillRepository $repository) {
+        parent::__construct();
         $this->repository = $repository;
     }
     
@@ -190,8 +192,12 @@ class VenueBillController extends Controller
 
     // 道馆战队数据类型创建
     
-    public function createVenueBillDataType()
+    public function createVenueBillDataType(VenueBillDataType $request)
     {
-        
+        $res = $this->repository->saveVenueBillDataType($request);
+        if($res)
+            return $this->response->withSuccess('数据操作成功');
+        else
+            return $this->response->withInternalServer('数据操作失败');
     }
 }
