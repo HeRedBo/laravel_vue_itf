@@ -76,4 +76,11 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     Route::resource('student', 'StudentsController');
 
 
+    Route::post('venueBill/createDataType', ['as' => 'admin.venueBill.createDataType', 'uses' => 'VenueBillController@createVenueBillDataType']);
+    Route::resource('venue-bill', 'VenueBillController');
+
+
+
+
+
 });
