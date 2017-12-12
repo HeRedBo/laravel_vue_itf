@@ -29,7 +29,7 @@ class CreateVenueBillLogTable extends Migration
             $table->string('remark',255)->comment('账单备注');
             $table->timestamp('bill_created_at')->nullable()->comment('账单创建时间');
             $table->unsignedInteger('operator_id')->default('0')->comment('操作用户ID');
-            $table->unsignedInteger('input_user_id')->default('0')->comment('录入人用户ID');
+            $table->unsignedInteger('create_user_id')->default('0')->comment('录入人用户ID');
             $table->string('operate_remark',255)->comment('账单操作备注');
             $table->timestamp('created_at')->nullable()->comment('创建时间');
         });
