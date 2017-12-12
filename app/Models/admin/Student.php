@@ -156,8 +156,14 @@ class Student extends Model implements Transformable
             }
         }
         if($student_card)
-            DB::table($this->tb_student_card)->insert($student_card);
-        
+        {
+            foreach ($student_card as $key => &$student) 
+            {
+                $id = DB::table($this->tb_student_card)->insertGetId($student);
+                $student['id'] = $id;
+            }
+            return $student_card;   
+        }
         return true;
     }
     

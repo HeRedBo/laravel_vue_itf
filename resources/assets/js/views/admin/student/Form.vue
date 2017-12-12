@@ -114,7 +114,7 @@
                         </el-form-item>
                         
                          <!-- 学校 -->
-                        <el-form-item label="会员卡号" prop="card_number"  v-show="studentForm.auto_create_number ==0">
+                        <el-form-item label="会员卡号" prop="card_number"  v-show="studentForm.auto_create_number==0">
                               <el-input v-model="studentForm.card_number" placeholder="请输入会员卡号"></el-input>
                         </el-form-item>
 
