@@ -11,6 +11,8 @@ use App\Http\Requests\StudentUpdateRequest;
 use App\Repositories\StudentRepository;
 use App\Services\Common\Dictionary;
 use App\Services\Admin\StudentCard;
+use App\Services\Admin\VenueBillService;
+
 
 
 class StudentsController extends ApiController
@@ -21,13 +23,15 @@ class StudentsController extends ApiController
      */
     protected $repository;
     protected $student_card_service;
+    protected $billService ;
 
 
-    public function __construct(StudentRepository $repository,StudentCard $student_card)
+    public function __construct(StudentRepository $repository,StudentCard $student_card,VenueBillService $billService)
     {
         parent::__construct();
-        $this->repository = $repository;
+        $this->repository  = $repository;
         $this->student_card_service = $student_card;
+        $this->billService = $billService;
     }
 
 
@@ -66,7 +70,7 @@ class StudentsController extends ApiController
                 ['operator_id' => auth('admin')->user()->id],
                 ['operator_name' => auth('admin')->user()->name]
             );
-            $res = $this->repository->createStudent($data ,$this->student_card_service);
+            $res = $this->repository->createStudent($data ,$this->student_card_service, $this->billService);
             if($res['status'] == 1)
                 return $this->response->withCreated($res['msg']);
             else
@@ -191,4 +195,23 @@ class StudentsController extends ApiController
         $sexMap = Dictionary::SexOptions();
         return $this->response->withData($sexMap);
     }
+
+    /**
+     *  学生卡券信息列表
+     */
+    public  function  studentCardList(Request $request)
+    {
+        try
+        {
+            $list = $this->student_card_service->getStudentCardList($request);
+            return $this->response->withData($list);
+        }
+        catch (\Exception $e)
+        {
+            logResult('【获取学生卡券信息错误】'.$e->__toString(),'error');
+            return $this->response->withInternalServer($e->getMessage());
+        }
+    }
+
+
 }

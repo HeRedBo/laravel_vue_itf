@@ -9,12 +9,14 @@
 
 namespace App\Services\Admin;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\StudentNumberCardRepositoryEloquent;
 use App\Repositories\VenueRepositoryEloquent;
 use App\Repositories\StudentRepositoryEloquent;
 use Illuminate\Support\Facades\Redis;
 use App\Models\Admin\StudentNumberCard;
+use App\Services\Common\Dictionary;
 
 
 class StudentCard
@@ -92,6 +94,49 @@ class StudentCard
         }
         return false;
     }
+
+    public  function  getStudentCardList(Request $request, $pageSize = 20)
+    {
+        $where = [];
+        $student_id = $request->get('student_id');
+        if($student_id)
+        {
+            $where[] = ['student_card.student_id','=', $student_id];
+        }
+
+        $DB = DB::table("student_card")
+                ->join('cards', "student_card.card_id","=", "cards.id")
+                ->join('admin', "student_card.operator_id","=", "admin.id")
+        ;
+
+        if($where)
+        {
+            foreach ($where as $v)
+            {
+                $DB->where($v[0], $v[1], $v[2]);
+            }
+        }
+        $fields = [
+            "student_card.*",
+            "cards.type",DB::raw("cards.name as card_name"),
+            DB::raw("admin.name as operator_name"),
+        ];
+        $list = $DB->select($fields)->paginate($pageSize)->toArray();
+        if($list['data'])
+        {
+            $data = $list['data'];
+            foreach ($data as &$v)
+            {
+                $v->type_name = Dictionary::CardTyeMap($v->type);
+            }
+            $list['data'] = $data;
+        }
+        return $list;
+    }
+
+
+
+
 
     /**
      * 获取道馆会员卡卡号最新的一个编号

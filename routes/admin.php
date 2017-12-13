@@ -73,6 +73,7 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     // students
     Route::get('student/relationOptions', ['as' => 'admin.student.relationOptions', 'uses' => 'StudentsController@relationOptions']);
     Route::get('student/sexOptions', ['as' => 'admin.student.sexOptions', 'uses' => 'StudentsController@sexOptions']);
+    Route::get('student/studentCardList', ['as' => 'admin.student.studentCardList', 'uses' => 'StudentsController@studentCardList']);
     Route::resource('student', 'StudentsController');
 
 

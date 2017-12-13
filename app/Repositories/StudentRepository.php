@@ -5,6 +5,8 @@ namespace App\Repositories;
 use Prettus\Repository\Contracts\RepositoryInterface;
 use Illuminate\Http\Request;
 use App\Services\Admin\StudentCard;
+use App\Services\Admin\VenueBillService;
+
 /**
  * Interface StudentRepository
  * @package namespace App\Repositories;
@@ -17,7 +19,7 @@ interface StudentRepository extends RepositoryInterface
      * @return mixed
      * @author Red-Bo
      */
-    public  function createStudent(array $data,StudentCard $studentCard);
+    public  function createStudent(array $data,StudentCard $studentCard,VenueBillService $bill_service);
     
     public  function  updateStudent(array $data, $id);
     

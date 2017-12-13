@@ -57,7 +57,6 @@ class VenueBillService
             return  false;
         $card_id_arr    = array_column($cards,'card_id');
         $student_id_arr = array_unique(array_column($cards,'student_id')); // 同一个用户ID
-
         $card_data      = Card::whereIn('id', $card_id_arr)->get()->toArray();
         $card_data      = array_column($card_data,NUll,'id');
         $student_data   = Student::whereIn('id', $student_id_arr)->get()->toArray();
@@ -112,8 +111,8 @@ class VenueBillService
                 catch (\Exception $e)
                 {
                     DB::rollBack();
-                    throw new \Exception($e->getMessage());
                     logResult('【创建系统账单失败】 原因：'. $e->__toString(),'error');
+                    throw new \Exception($e->getMessage());
                 }
                 DB::commit();
                 return true;

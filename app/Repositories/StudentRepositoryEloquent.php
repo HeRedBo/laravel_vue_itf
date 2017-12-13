@@ -12,6 +12,7 @@ use App\Models\Admin\RelationName;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Services\Admin\StudentCard;
+use App\Services\Admin\VenueBillService;
 
 /**
  * Class StudentRepositoryEloquent
@@ -50,6 +51,8 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
 
     protected  $studentCardService;
 
+    protected  $venueService;
+
     /**
      * Specify Model class name
      *
@@ -81,13 +84,16 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
 
         return $data;
     }
+
     /**
      * create a new student record
      * @param array $data
-     * @return array|void
+     * @param StudentCard $studentCard
+     * @param VenueBillService $bill_service
+     * @return array
      * @author Red-Bo
      */
-    public  function  createStudent(array  $data, StudentCard $studentCard)
+    public  function  createStudent(array  $data, StudentCard $studentCard,VenueBillService $bill_service)
     {
         try
         {
@@ -108,6 +114,7 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
             $student_id      = $student->id;
 
             $this->studentCardService = $studentCard;
+            $this->venueService       = $bill_service;
             // 处理用户会员卡问题
             $number_card_id = $this->studentCardService->saveStudentNumberCard($student_id, $data);
             // 保存用户课程信息
@@ -115,10 +122,12 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
             // 保存用户联系人
             $student->giveContactsTo($studentContacts);
             // 保存用户购买的卡券
-            $student->giveCardTo($studentCards,$sign_up_at, $number_card_id);
-            //
+            $user_card = $student->giveCardTo($studentCards,$sign_up_at, $number_card_id);
+            if($user_card && is_array($user_card))
+            {
+                $this->venueService->createUserCardBill($user_card,$data['venue_id']);
+            }
 
-            
             DB::commit();
             return success('学生信息创建成功');
         }
