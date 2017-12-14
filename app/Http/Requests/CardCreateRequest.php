@@ -30,6 +30,8 @@ class CardCreateRequest extends FormRequest
             'card_price' => 'required|numeric',
             'unit' => '',
             'number' => 'required|numeric',
+            'start_time' => 'required|date',
+            'end_time' => 'required|date',
         ];
         $type = $this->get('type');
         if($type == 1)
@@ -49,7 +51,10 @@ class CardCreateRequest extends FormRequest
             'unit'     => '计数单位',
             'card_price'=> '卡券价格',
             'number'   => '数量',
+            'start_time'   => '卡券有效期开始时间',
+            'end_time'   => '卡券有效期结束时间',
         ];
+        
         $type = $this->get('type');
         if($type ==2)
             $attributes['number'] = '次数';

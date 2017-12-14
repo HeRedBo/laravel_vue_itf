@@ -10,7 +10,7 @@
                        
                         <div class="form-inline pull-right">
                             <div class="input-group input-group-sm">
-                                <el-select style="width:100px" size="small"  v-model="params.card_type" class="filter-item" placeholder="卡券类型">
+                                <el-select style="width:100px" size="small"  v-model="params.type" class="filter-item" placeholder="卡券类型">
                                     <el-option
                                           v-for="(value, key) in typeOptions"
                                           :key="key"
@@ -64,6 +64,11 @@
                         </a>
                     </template>
                     
+                    <template slot="username" slot-scope="item">
+                        <span>{{item.item.operator.name}}</span>
+                    </template>
+                    username
+                    
                     <!-- 操作 -->
                     <template slot="actions" slot-scope="item">
                         <div class="btn-group">
@@ -86,7 +91,7 @@
                 :model="CardForm"
                 :rules="RoleRules"
                 label-position="right"
-                label-width="80px"
+                label-width="120px"
                 style='width: 400px; margin-left:50px;'
             >
 
@@ -129,6 +134,25 @@
 
                 <el-form-item label="价格" prop="card_price">
                     <el-input-number v-model="CardForm.card_price" ></el-input-number>        
+                </el-form-item>
+
+                <el-form-item label="有效期开始时间" prop="start_time">
+                        <el-date-picker
+                                v-model="CardForm.start_time"
+                                type="datetime"
+                                placeholder="选择开始时间"
+                                format="yyyy-MM-dd HH:mm:ss"
+                                >
+                        </el-date-picker>
+                </el-form-item>
+                <el-form-item label="有效期结束时间" prop="end_time">
+                        <el-date-picker
+                                v-model="CardForm.end_time"
+                                type="datetime"
+                                placeholder="选择结束时间"
+                                format="yyyy-MM-dd HH:mm:ss"
+                                >
+                        </el-date-picker>
                 </el-form-item>
 
                 <el-form-item label="启用状态">
@@ -179,10 +203,17 @@
                         <th>卡券价格</th>
                         <td>{{card.card_price}}</td>
                         <th>启用状态</th>
-                        <td>
-                            {{card.status==1? '启用':'未启用' }}
-                        </td>
+                        <td>{{card.status==1? '启用':'未启用' }}</td>
                     </tr>
+
+                     <tr>
+                        <th>卡券有效期开始时间</th>
+                        <td>{{card.start_time}}</td>
+                        <th>卡券有效期结束时间</th>
+                        <td>{{card.end_time}}</td>
+                    </tr>
+
+
                     <tr>
                         <th>创建时间</th>
                         <td>{{card.created_at}}</td>
@@ -192,9 +223,8 @@
                     </tr>
                     <tr>
                         <th>操作人</th>
-                        <td>{{card.operator.name }}</td>
-                            
-                         <th></th>
+                        <td>{{card.operator.name }}</td> 
+                        <th></th>
                         <td></td>
                     </tr>
                     </tbody>
@@ -219,7 +249,7 @@ $(function() {
     });
 });
 
-import {stack_error,parseSearchParam} from 'config/helper';
+import {stack_error,parseSearchParam,parseTime} from 'config/helper';
 export default {
    data () {
         const validateCardName = (rule, value, callback) => {
@@ -285,7 +315,13 @@ export default {
                 ],
                 card_price : [
                     { required: true, message: '卡券价格不能为空'}
-                ]
+                ],
+                start_time : [
+                    {  type: 'date', required: true,message: '请选择有效期开始时间', trigger: 'blur,change' }
+                ],
+                end_time : [
+                    {  type: 'date', required: true,message: '请选择有效期结束时间', trigger: 'blur,change' }
+                ],
             },
             venueOptions : [],
             typeOptions : [],
@@ -319,6 +355,9 @@ export default {
             this.dialogFormVisible = true;
         },
         handleUpdate(row) {
+            row.start_time = new Date(row.start_time);
+            row.end_time = new Date(row.end_time);
+
             this.CardForm = Object.assign({}, row)
             this.dialogTitle = '更新卡券';
             this.dialogFormVisible = true
@@ -341,7 +380,8 @@ export default {
                         cancelButtonColor: '#d33',
                         confirmButtonText: "确认",
                         closeOnConfirm: true
-                    }).then(function () {
+                    }).then(function () 
+                    {
                         that.saveCard();
                     
                     },function(dismiss) {
@@ -366,7 +406,8 @@ export default {
             });
         },
         saveCard() {
-                
+                this.CardForm.start_time = parseTime(this.CardForm.start_time);
+                this.CardForm.end_time  = parseTime(this.CardForm.end_time);
                 let url = '/card' + (this.CardForm.id ? '/' + this.CardForm.id : ''), that = this;
                 let method = this.CardForm.id ? 'put' : 'post';
                 that.buttonLoading = true;
@@ -460,55 +501,55 @@ export default {
         {
             var status = row.status;
             var id = row.id;
-            if(status == 0) 
+            var that = this;
+            var changeStatus = status ? 0 : 1;
+            swal({
+            title: '是否修改卡券状态?',
+            text: '你是否要继续执行该操作!?', // 
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '确认',
+            cancelButtonText: '取消'
+            }).then(function() 
             {
-                var that = this;
-                swal({
-                title: '是否卡券?',
-                text: '卡券一经启用状态便不可在修改,你是否要继续执行该操作!', // 
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: '确认',
-                cancelButtonText: '取消'
-                }).then(function() {
 
-                  var url =  '/card/changeStatus',changeStatus = 1;
-                  that.$http({
-                    method :'POST',
-                    url : url,
-                    data : {
-                        id : id,
-                        status : changeStatus
-                    }
-                  })
-                  .then(function(response) {
-                    let {data} = response;
-                    that.$message({
-                        showClose: true,
-                        message: data.message,
-                        type: 'success'
-                    });
-                    // 从新刷新页面数据
-                    that.$refs.table.loadList();
-                })
-                .catch(function(error) {
-                    stack_error(error);
+              var url =  '/card/changeStatus';
+              that.$http({
+                method :'POST',
+                url : url,
+                data : {
+                    id : id,
+                    status : changeStatus
+                }
+              })
+              .then(function(response) {
+                let {data} = response;
+                that.$message({
+                    showClose: true,
+                    message: data.message,
+                    type: 'success'
                 });
-                }, function(dismiss) {
-                    // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
-                    that.$message({
-                        showClose: true,
-                        message: '你已取消修改数据状态',
-                    });
-                    // if (dismiss === 'cancel') {
-                    //     swal(
-                    //     'Cancelled',
-                    //     'Your imaginary file is safe :)',
-                    //     'error'
-                    //     )
-                    // }
-                })
-            }
+                // 从新刷新页面数据
+                that.$refs.table.loadList();
+            })
+            .catch(function(error) {
+                stack_error(error);
+            });
+            }, function(dismiss) {
+                // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
+                that.$message({
+                    showClose: true,
+                    message: '你已取消修改数据状态',
+                });
+                // if (dismiss === 'cancel') {
+                //     swal(
+                //     'Cancelled',
+                //     'Your imaginary file is safe :)',
+                //     'error'
+                //     )
+                // }
+            })
+           
             
          },
          getcardTypeOptions() {
@@ -539,14 +580,14 @@ export default {
         },
 
         filterSearchParams() {
-            if(this.params.card_type)
+            if(!this.params.type)
             {
-                this.params.type = this.params.card_type;
+                delete this.params.type;
             }
         }
     },  
     watch: {  
-            'params.card_type': 'filterSearchParams',  
+            'params.type': 'filterSearchParams',  
     }  
    
 }

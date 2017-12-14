@@ -24,7 +24,7 @@ class CreateCardsTable extends Migration
             $table->string('unit',20)->defualt('')->comment('卡券计算单位 day：天 mouth 月 year 年');
             $table->decimal('card_price', 10, 2)->default('0')->comment('卡券价格');
             $table->string('explain',255)->comment('卡券说明');
-            $table->unsignedTinyInteger('status')->default('0')->comment('启用状态 0否 1 是 启用后不能修改');
+            $table->unsignedTinyInteger('status')->default('0')->comment('启用状态 0:否1:是');
             $table->integer('operator_id')->unsigned()->default('0')->comment('操作人ID');
             $table->timestamp('created_at')->nullable()->comment('创建时间');
             $table->timestamp('updated_at')->nullable()->comment('更新时间');

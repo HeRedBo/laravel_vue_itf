@@ -25,8 +25,9 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
         'card_price'    => 0,
         'explain'       => '',
         'status'        => 0,
+        'start_time'        => '',
+        'end_time'        => '',
         'operator_id'   => 0,
-        
     ];
     
 
@@ -37,8 +38,10 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
         'number'  => '计算数据',
         'unit' => '卡券计算单位',
         'card_price' => '卡券价格',
-        'explain' => '卡券说明',
         'status' => '卡券启用状态',
+        'start_time' => '卡券有效期开始时间',
+        'end_time' => '卡券有效期结束时间',
+        'explain' => '卡券说明',
     ];
     
     protected $cardStatusMap = [
@@ -137,9 +140,8 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
             $old_card_data = $card->toArray();
             $uid =  auth('admin')->user()->id;
             // 卡券启用后不可编辑 超级管理员可以修改 
-            if($card->status == 1 && $uid != 1)
-                return error('卡券一启用不能编辑');
-            
+            // if($card->status == 1 && $uid != 1)
+            //     return error('卡券一启用不能编辑');
             // 设置字段默认值
             foreach(array_keys($this->fields) as $field)
             {
@@ -183,16 +185,26 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
     public  function  updateStatus($id, $status)
     {
         $card = $this->find($id);
+        $old_card_data = $card->toArray();
         if($card)
         {
             if($card->status != $status)
             {
                 $card->status = $status;
                 $res = $card->save();
+                $card = $card->toArray();
+                
                 if($res == false)
                 {
                     return error('卡卷修改失败');
                 }
+            }
+
+            $log_data = $this->buildCardLogData($old_card_data, $card,'修改卡券状态');
+            if($log_data)
+            {
+                $card_log_services =  new CardOperationLogServices();
+                $card_log_services->addCardLog($log_data);
             }
             return success('卡卷修改成功');
         }
@@ -229,8 +241,9 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
         $cardLogServices = new CardOperationLogServices();
         return $cardLogServices->searchLog(self::LOGGER_TYPE, $where,$order_by,$pageSize);
     }
-    protected function buildCardLogData(array $oldData, array $newData)
+    protected function buildCardLogData(array $oldData, array $newData, $operation = '')
     {
+        $operation = $operation ? $operation : '编辑卡券';
         $field = $newValues = $oldValues =[];
         foreach ($oldData as $k => $v)
         {
@@ -252,7 +265,7 @@ class CardRepositoryEloquent extends BaseRepository implements CardRepository
         }
         $params = [
             'card_id'   => $oldData['id'],
-            'operation' => '编辑卡券',
+            'operation' => $operation,
             'field'     => $field,
             'oldValue'  => $oldValues,
             'newValue'  => $newValues,
