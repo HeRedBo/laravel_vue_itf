@@ -43,4 +43,18 @@ class Dictionary
             return $cardType[$index];
         return $cardType;
     }
+
+    static function classStatusOptions($index = false)
+    {
+
+        $statusOptions = [
+            -1  => '全部',
+            0   => '下线',
+            1   => '启用',
+        ];
+        if($index != false && isset($statusOptions[$index]))
+            return $statusOptions[$index];
+        return $statusOptions;
+    }
+
 }

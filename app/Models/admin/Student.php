@@ -105,42 +105,48 @@ class Student extends Model implements Transformable
         $card_id_arr = array_column($cards,'card_id');
         $card_data = Card::whereIn('id', $card_id_arr)->get()->toArray();
         $card_data = array_column($card_data,NUll,'id');
+        $card_snap_model = new CardSnap();
+
         foreach ($cards as $card)
         {
-            $card_info = isset($card_data[$card['card_id']]) ?$card_data[$card['card_id']] : [];
+            $card_info = isset($card_data[$card['card_id']]) ? $card_data[$card['card_id']] : [];
             if($card_info)
             {
+                // 创建卡券快照
+                $card_snap_id = $card_snap_model->createCardSnap($card_info);
                 $card_type = $card_info['type'];
                 $unit      = $card_info['unit'];
                 $number    = $card_info['number'];
+                $start_time= NULL;
                 $card_number = 0;
-                $end_time  = '';
+                $end_time  = NULL;
                 $now       =  date("Y-m-d H:i:s");
                 if($card['status'] == 1)
                 {
                     if($card_type == 1)
                     {
-                        $end_time  =  strtotime("$number $unit", strtotime($sign_up_time));
-                        $end_time  =  date("Y-m-d H:i:s", $end_time);
+                        $end_time  = strtotime("$number $unit", strtotime($sign_up_time));
+                        $end_time  = date("Y-m-d H:i:s", $end_time);
                     }
+                    $start_time = $sign_up_time;
                 }
                 if($card_type ==2)
                 {
                     $card_number = $card_info['number'];
                 }
-
                 $card_tmp = [
-                    'student_id'        => $this->id,
-                    'number_card_id'    => $number_card_id,
-                    'card_id'           => $card['card_id'],
-                    'number'            => $card['number'],
-                    'card_price'        => $card_info['card_price'],
+                    'student_id'         => $this->id,
+                    'number_card_id'     => $number_card_id,
+                    'card_id'            => $card['card_id'],
+                    'card_snap_id'       => $card_snap_id,
+                    'number'             => $card['number'],
+                    'card_price'         => $card_info['card_price'],
                     'total_class_number' => $card_number,
-                    'start_time'         => $sign_up_time,
+                    'start_time'         => $start_time,
                     'end_time'           => $end_time,
                     'status'             => $card['status'],
-                    'operator_id'        =>  auth('admin')->user()->id,
-                    'operator_name'      =>  auth('admin')->user()->name,
+                    'operator_id'        => auth('admin')->user()->id,
+                    'operator_name'      => auth('admin')->user()->name,
                     'updated_at'         => $now,
                 ];
                 if($card['id'])
@@ -166,6 +172,7 @@ class Student extends Model implements Transformable
         }
         return true;
     }
+    
     
     /**
      * 学生班级增加与修改

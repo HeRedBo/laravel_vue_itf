@@ -11,6 +11,18 @@
                         </div>
                         <div class="col-md-10">
                            <div class="form-inline pull-right">
+                             <div class="input-group input-group-sm">
+                                <el-select style="width:100px" size="small"  v-model="params.status" class="filter-item" placeholder="班级状态">
+                                    <el-option
+                                          v-for="(value, key) in statusOptions"
+                                          :key="key"
+                                          :value="key"
+                                          :label="value"
+                                    >
+                                    </el-option>
+                                </el-select>
+                            </div>
+
                            <!--  数据搜索框 -->
                            <div class="input-group input-group-sm" >
                                 <el-input 
@@ -46,26 +58,23 @@
                         :per-page="perPage"
                         :del="del"
                 >
-                 <!-- 道馆名称 -->
+                    <!-- 道馆名称 -->
                      <template slot="venue_name" slot-scope="item">
                         <span>{{item.item.venues.name}}</span>
                     </template>
                     
                      <template slot="remark" slot-scope="item">
-                        <!-- <div class="remark_content" slot="content">
-                            <p>
-                                    {{scope.row.remark}}
-                            </p>
-                      </div>  -->
                         <div class="auto_hidden inline-block" data-toggle="tooltip" data-placement="top" :title="item.item.remark">
                             {{item.item.remark}}
                         </div>
-                        <!-- <span class="auto_hidden" >     
-                        </span> -->
-
                     </template>
-                    
 
+                    <!-- 课程状态 -->     
+                     <template slot="status" slot-scope="item">
+                        <a href="javascript:void(0)" data-toggle="tooltip" :title="item.item.status==1 ? '启用':'下线'">
+                            <i :class="['fa','fa-circle',item.item.status==1?'text-success':'text-danger']"></i>
+                        </a>
+                    </template>
                      <!-- 操作 -->
                     <template slot="actions" slot-scope="item">
                         <div class="btn-group">
@@ -108,8 +117,14 @@
                              </el-form-item>
 
                               <el-form-item label="课程备注">
-
                                 <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6}" v-model="ClassForm.remark"></el-input>
+                              </el-form-item>
+                               <!-- 课程状态 -->
+                              <el-form-item label="课程状态">
+                                  <el-radio-group v-model="ClassForm.status">
+                                      <el-radio :label="0">下线</el-radio>
+                                      <el-radio :label="1">启用</el-radio>
+                                  </el-radio-group>
                               </el-form-item>
                     
                             </el-form>
@@ -151,6 +166,7 @@ export default {
                 venue_name: {label: '道馆', need: 'venues'},
                 name: {label: '课程名称'},
                 remark: {label: '课程课程备注'},
+                status: {label: '课程状态'},
                 created_at:{label:'创建时间', sortable: true},
                 updated_at:{label:'更新时间', sortable: true},
                 username : {label:'最新操作人', need:'operator'},
@@ -168,6 +184,12 @@ export default {
                 name : '',
                 venue_id : '',
                 remark : '',
+                status : 1,
+            },
+            statusOptions : {
+                "-1": "全部",
+                "0": "下线",
+                "1": "启用"
             },
 
             RoleRules: {
@@ -357,7 +379,17 @@ export default {
     {
             this.params = {};
     },
+    filterSearchParams()
+    {
+      if(this.params.status == '-1')
+      {
+          delete this.params.status;
+      }
+    }
     
+    },
+     watch: {  
+            'params.status': 'filterSearchParams',  
     }
 }
 </script>

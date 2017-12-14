@@ -20,10 +20,12 @@ class ClassesRepositoryEloquent extends BaseRepository implements ClassesReposit
         'name' => '',
         'venue_id' => 0,
         'remark' => '',
+        'status' => 1,
         'operator_id' => 0,
     ];
     
     protected $fieldSearchable = [
+        'status',
         'name'=>'like'
     ];
     
@@ -83,7 +85,7 @@ class ClassesRepositoryEloquent extends BaseRepository implements ClassesReposit
             {
                 foreach(array_keys($this->fields) as $field)
                 {
-                    $class->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
+                    $class->$field = (!isset($data[$field])) ? $this->fields[$field] : $data[$field];
                 }
                 // 保存用户信息
                 $res = $class->save();

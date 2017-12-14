@@ -10,6 +10,7 @@ use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Requests\ClassesCreateRequest;
 use App\Http\Requests\ClassesUpdateRequest;
 use App\Repositories\ClassesRepository;
+use App\Services\Common\Dictionary;
 
 
 class ClassesController extends ApiController
@@ -164,11 +165,17 @@ class ClassesController extends ApiController
         $result['status'] = $status;
         return $this->response->withData($result);
     }
+
     public  function  getClassOptions(Request $request)
     {
         $venue_id = $request->get('venue_id','0');
         $fields = ['id','venue_id','name'];
         $data = $this->repository->findWhere(['venue_id' => $venue_id],$fields)->toArray();
         return $this->response->withData($data);
+    }
+
+    public function getClassStatusOptions()
+    {
+
     }
 }

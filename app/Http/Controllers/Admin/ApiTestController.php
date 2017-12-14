@@ -8,6 +8,8 @@ use App\Services\Logs\OperationLogServices;
 use App\Services\Logs\CardOperationLogServices;
 use App\Services\Admin\StudentCard;
 use App\Models\Admin\Student;
+use App\Models\Admin\Card;
+use App\Models\Admin\CardSnap;
 use App\Services\Admin\VenueBillService;
 
 
@@ -33,14 +35,18 @@ class ApiTestController extends ApiController
 
     public  function  ApiTest()
     {
-        $card_json = '[{"student_id":2,"number_card_id":1,"card_id":1,"number":1,"card_price":"400.00","total_class_number":0,"start_time":"2017-12-12 17:31:18","end_time":"2018-12-12 17:31:18","status":1,"operator_id":1,"operator_name":"\u4f55\u7ea2\u6ce2","updated_at":"2017-12-12 17:31:18","created_at":"2017-12-12 17:31:18","id":3}]';
 
-        $user_card = json_decode($card_json,true);
-        $res = $this->bill_service->createUserCardBill($user_card,1);
-        dd($res);
-        $card_no = $this->bill_service->createVenueBillOrderNo(1);
 
-        dd($card_no);exit;
+        $card_info = Card::find(6)->toArray();
+        $snap_id = (new CardSnap)->createCardSnap($card_info);
+        // $card_json = '[{"student_id":2,"number_card_id":1,"card_id":1,"number":1,"card_price":"400.00","total_class_number":0,"start_time":"2017-12-12 17:31:18","end_time":"2018-12-12 17:31:18","status":1,"operator_id":1,"operator_name":"\u4f55\u7ea2\u6ce2","updated_at":"2017-12-12 17:31:18","created_at":"2017-12-12 17:31:18","id":3}]';
+
+        // $user_card = json_decode($card_json,true);
+        // $res = $this->bill_service->createUserCardBill($user_card,1);
+        // dd($res);
+        // $card_no = $this->bill_service->createVenueBillOrderNo(1);
+
+        // dd($card_no);exit;
 
         
 
