@@ -120,7 +120,7 @@
                 <div class="btn-group">
                     <!-- <a href="javascript:;" @click="view(item.item)" class="btn btn-success btn-xs">查看</a> -->
                     <router-link :to="{path:'update/'+  item.item.id}" class="btn bg-orange btn-xs">编辑</router-link>
-                  <!--   <router-link target="_blank"  :to="{path:'logger/'+ item.item.id}" class="btn bg-info btn-xs">操作日志</router-link> -->
+                    <router-link target="_blank"  :to="{path:'studentCardList/'+ item.item.id}" class="btn bg-info btn-xs">学生卡券</router-link>
                     <!-- <a href="#"  @click.prevent="$refs.table.onDel(item.item.id)"  class="btn btn-danger btn-xs">删除</a> -->
                 </div>
             </template>

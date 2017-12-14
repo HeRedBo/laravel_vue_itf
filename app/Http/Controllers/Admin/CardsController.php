@@ -210,11 +210,13 @@ class CardsController extends ApiController
             return $this->response->withInternalServer($res['msg']);
     }
 
-    public function getCardOptions()
+    public function getCardOptions(Request $request)
     {
+        $venue_id = $request->get('venue_id');
         $fields = ['id','name','card_price','unit','status','number'];
         $where = [
-            ['status' ,'=',1]
+            ['status' ,'=',1],
+            ['venue_id' ,'=', $venue_id],
         ];
         $data = $this->repository->findWhere($where,$fields)->toArray();
         $data = array_column($data,NULL,'id');

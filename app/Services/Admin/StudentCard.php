@@ -99,13 +99,18 @@ class StudentCard
     {
         $where = [];
         $student_id = $request->get('student_id');
+        $orderBy = $request->get('orderBy') ?: 'id';
+        $sortBy =  $request->get('sortedBy') ?: 'desc';
+
+
+
         if($student_id)
         {
             $where[] = ['student_card.student_id','=', $student_id];
         }
 
         $DB = DB::table("student_card")
-                ->join('cards', "student_card.card_id","=", "cards.id")
+                ->join('card_snap', "student_card.card_snap_id","=", "card_snap.id")
                 ->join('admin', "student_card.operator_id","=", "admin.id")
         ;
 
@@ -116,9 +121,13 @@ class StudentCard
                 $DB->where($v[0], $v[1], $v[2]);
             }
         }
+
+        $DB->orderBy($orderBy, $sortBy);
         $fields = [
             "student_card.*",
-            "cards.type",DB::raw("cards.name as card_name"),
+            "card_snap.type",
+            DB::raw("card_snap.name as card_name"),
+            DB::raw("card_snap.card_price as price"),
             DB::raw("admin.name as operator_name"),
         ];
         $list = $DB->select($fields)->paginate($pageSize)->toArray();

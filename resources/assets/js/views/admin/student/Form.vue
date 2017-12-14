@@ -586,7 +586,6 @@
                var studentForm = this.studentForm;
                this.$refs.studentForm.validate(valid => {
                   var that = this;
-                  console.log(valid);
                   if (valid) {
                     if(that.studentForm.user_cards.length ==0) {
                       this.$notify.error({
@@ -604,7 +603,6 @@
                     }
                     studentForm.birthday = parseTime(studentForm.birthday,'{y}-{m}-{d}');
                     studentForm.sign_up_at = parseTime(studentForm.sign_up_at);
-                    console.log(studentForm);
                     let url = '/student' + (this.studentForm.id ? '/' + this.studentForm.id : '')
                     let method = this.studentForm.id ? 'put' : 'post';
                     this.$http({
@@ -624,6 +622,8 @@
                      that.$router.push({ path: '/admin/student/index' })
                     })
                     .catch(function(error) {
+                    
+
                       stack_error(error);
                     });
                 } else {
