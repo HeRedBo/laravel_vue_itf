@@ -42,7 +42,7 @@
                     <!-- 操作 -->
                     <template slot="actions" slot-scope="item">
                         <div class="btn-group">
-                            <!-- <a href="javascript:;" @click="view(item.item)" class="btn btn-success btn-xs">查看</a> -->
+                            <a href="javascript:;" @click="view(item.item)" class="btn btn-success btn-xs">查看</a>
                             <!-- <router-link :to="{path:'update/'+  item.item.id}" class="btn bg-orange btn-xs">编辑</router-link> -->
                             <!--   <router-link target="_blank"  :to="{path:'logger/'+ item.item.id}" class="btn bg-info btn-xs">操作日志</router-link> -->
                             <!-- <a href="#"  @click.prevent="$refs.table.onDel(item.item.id)"  class="btn btn-danger btn-xs">删除</a> -->
@@ -168,6 +168,72 @@
             </div>
         </el-dialog>
 
+
+        <div id="card_view_box" style="display: none">
+            <!-- Widget: user widget style 1 -->
+            <div class="box box-widget">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <table class="table  table-bordered" style="font-size: 14px">
+                    <tbody>
+                    <tr>
+                        <th>ID</th>
+                        <td>{{card.id}}</td>
+                        <th>卡券类型</th>
+                        <td>{{card.type_name}}</td>
+                    </tr>
+
+                    <tr>
+                        <th>卡券名称</th>
+                        <td>{{card.card_name}}</td>
+                        <th>卡券价格</th>
+                        <td>{{card.price}}</td>
+                    </tr>
+
+                    <tr>
+                        <th>购买数量</th>
+                        <td>{{card.number}}</td>
+                        <th>总价</th>
+                        <td>{{card.card_price}}</td>
+                    </tr>
+                    <tr>
+                        <th>总课程数</th>
+                        <td>
+                            <span>{{card.type==1?'--':card.total_class_number}}</span>
+                        </td>
+                        <th>剩余课程数</th>
+                        <td>{{card.type==1?'--':card.residue_class_number}}</td>
+                    </tr>
+                
+                    
+                     <tr>
+                        <th>卡券有效期开始时间</th>
+                        <td><span>{{card.type==2?'--':card.start_time}}</span></td>
+                        <th>卡券有效期结束时间</th>
+                        <td><span>{{card.type==2?'--':card.end_time}}</span></td>
+                    </tr>
+
+
+                    <tr>
+                        <th>创建时间</th>
+                        <td>{{card.created_at}}</td>
+                        
+                        <th>最新更新时间</th>
+                        <td>{{card.updated_at}}</td>
+                    </tr>
+                    <tr>
+                        <th>操作人</th>
+                        <td>{{card.operator_name}}</td> 
+                        <th></th>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+            <!-- /.widget-user -->
+
+        </div>
+
     </div>
 </template>
 
@@ -195,7 +261,7 @@ $(function () {
                     status: { label: '状态' },
                     start_time: { label: '有效期开始时间' },
                     end_time: { label: '有效期结束时间'},
-                    created_at: { label: '创建时间', sortable: true },
+                    // created_at: { label: '创建时间', sortable: true },
                     // updated_at: { label: '更新时间', sortable: true },
                     actions: { label: '操作' }
                 },
@@ -216,6 +282,7 @@ $(function () {
                 dialogTitle : '新增卡券',
                 buttonLoading: false,
                 cardUseStatus:1,
+                card : {}
             }
         },
         created() {
@@ -336,6 +403,17 @@ $(function () {
             reset() {
                 this.params = {};
             },
+
+            view(card_info) {
+                this.card = card_info;
+                 setTimeout( function() {
+                    swal({
+                        title : card_info.card_name,
+                        width: '50%',
+                        html : $('#card_view_box').html(),
+                    });
+                },100);
+        },
         }
     }
 </script>
