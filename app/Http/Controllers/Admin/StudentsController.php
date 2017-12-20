@@ -8,6 +8,7 @@ use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Requests\StudentCreateRequest;
 use App\Http\Requests\StudentUpdateRequest;
+use App\Http\Requests\StudentCardCreateRequest;
 use App\Repositories\StudentRepository;
 use App\Services\Common\Dictionary;
 use App\Services\Admin\StudentCard;
@@ -211,6 +212,12 @@ class StudentsController extends ApiController
             logResult('【获取学生卡券信息错误】'.$e->__toString(),'error');
             return $this->response->withInternalServer($e->getMessage());
         }
+    }
+
+
+    public  function  saveStudentCard(StudentCardCreateRequest $request)
+    {
+
     }
 
 

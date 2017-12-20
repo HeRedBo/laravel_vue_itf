@@ -31,6 +31,7 @@ class StudentCreateRequest extends FormRequest
              'venue_id'       => 'required',
              'class_id'       => 'required',
              'user_contacts'   => 'required',
+             'user_cards'   => 'required',
         ];
     }
     
@@ -42,7 +43,8 @@ class StudentCreateRequest extends FormRequest
             'birthday'       => '学生生日',
             'sign_up_at'     => '报名时间',
             'venue_id'       => '道馆ID',
-            'user_contacts'   => '联系人信息',
+            'user_contacts'  => '联系人信息',
+            'user_cards'     => '学生卡券信息',
             'class_id'       => '归属班级',
         ];
     }
