@@ -53,14 +53,14 @@
         </div>
 
 
-        <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" style="z-index:120;" size="large">  
+        <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" style="z-index:120;" size="small" >  
             <el-form 
                 class="small-space"
                 ref="StudentCard" 
                 :model="StudentCard"
                 label-position="right"
                 label-width="80px"
-                style='width:65%;margin-left:50px;'
+                style='width:65%;margin-left:5px;'
             >
                 <!-- 道馆 -->
                 <el-form-item label="道馆" v-show="selectItemVisible" prop="venue_id" >
@@ -75,12 +75,9 @@
                           </el-option>
                         </el-select>
                 </el-form-item>
-
-                
-                
                 <!-- 卡券种类 -->
                 <el-form-item label="购卡类型">
-                        <el-select v-model="StudentCard.card" @change="selectCard"  placeholder="请选择需要购买的卡" style="width:100%" >
+                        <el-select v-model="StudentCard.card_id" @change="selectCard"  placeholder="请选择需要购买的卡" style="width:100%" >
                           <el-option
                             v-for="item in cardOptions"
                             :key="item.id"
@@ -90,23 +87,23 @@
                         </el-select>
                 </el-form-item> 
 
+
                 <el-table
                     :data="StudentCard.user_cards"
-                    style="min-width: 650px;margin-bottom: 20px;"
+                    style="min-width: 650px;margin-bottom: 10px;"
                     align="cneter"
                 >
                     <el-table-column
                         prop="card_id"
                         label="卡券ID"
                         align="cneter"
-                        width="120">
+                        >
                     </el-table-column>
 
                     <el-table-column
                         prop="name"
                         label="卡券名称"
                         align="cneter"
-                        width="120"
                     >
 
                     </el-table-column>
@@ -130,7 +127,6 @@
                         align="cneter"
                         label="总金额"
                     >
-
                     </el-table-column>
 
                     <el-table-column
@@ -148,13 +144,13 @@
 
                     <el-table-column 
                         label="操作" 
-                        width="120">
+                    >
                     <template slot-scope="scope">
-                        <el-button
-                        v-show="scope.row.id==0"
-                        size="small"
-                        type="danger"
-                        @click="deleteUserCard(scope.$index)">删除</el-button>
+                        <a 
+                         v-show="scope.row.id==0"
+                         href="#"  @click="deleteUserCard(scope.$index)"  
+                         class="btn btn-danger btn-xs">删除
+                        </a>
                     </template>
                     </el-table-column>
 
@@ -162,7 +158,7 @@
                
             </el-form>
 
-            <div slot="footer" class="dialog-footer">
+            <div slot="footer" class="dialog-footer" style="text-align:center">
               <el-button @click="dialogFormVisible = false">取 消</el-button>
               <el-button type="primary" @click="handleCard" :loading="buttonLoading">确 定</el-button>
             </div>
@@ -395,7 +391,45 @@ $(function () {
             },
 
             handleCard(){
+                var that = this,student_id = this.$route.params.id;
+                this.StudentCard.student_id = student_id;
+                // 教研学生卡券信息是否有提交
+                if(that.StudentCard.user_cards.length ==0) {
+                      this.$notify.error({
+                        title: '错误',
+                        message: '卡券信息不能为空',
+                        duration:3000
+                      });
+                      return;
+                }
 
+                let url = '/student/saveStudentCard'
+                let method = 'post';
+                // 请求接口保存用户卡券信息
+                this.$http({
+                      method :method,
+                      url : url,
+                      data : that.StudentCard
+                    })
+                .then(function(response) {
+                        
+                        var {data} = response; 
+                        that.$message({
+                          showClose: true,
+                          message: data.message,
+                          type: 'success'
+                        });
+                      // 跳转到列表页
+                      console.log('success');
+                      //that.$router.push({ path: '/admin/student/index' })
+                })
+                .catch(function(error) {
+                      stack_error(error);
+                });
+                
+
+                
+                
             },
             handleEdit(index, row) {
                 console.log(index, row);

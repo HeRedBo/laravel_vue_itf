@@ -214,10 +214,18 @@ class StudentsController extends ApiController
         }
     }
 
-
+    /**
+     * 创建学生卡券
+     * @param StudentCardCreateRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public  function  saveStudentCard(StudentCardCreateRequest $request)
     {
-
+        $res = $this->student_card_service->saveStudentCard($request,$this->billService);
+        if($res['status'] == 1)
+            return $this->response->withCreated($res['msg']);
+        else
+            return $this->response->withInternalServer($res['msg']);
     }
 
 

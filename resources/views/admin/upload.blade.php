@@ -10,9 +10,9 @@
     <script type="text/javascript"></script>
 </head>
 <body>
-<form method="post" enctype="multipart/form-data" action="/admin/upload/uploadImg">
+<form method="POST" enctype="multipart/form-data" action="/admin/upload/upAvatar">
     <input type="hidden" name="_token" value="{{ csrf_token() }}" id="">
-    <input type="file"  name="files" >
+    <input type="file"  name="avatar" >
     <input type="submit" value="上传">
 </form>
 </body>

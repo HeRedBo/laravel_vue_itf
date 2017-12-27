@@ -550,9 +550,7 @@
                 }); 
             },
             selectCard(value) {
-               console.log(this.cardOptions[value])
                 var card = this.cardOptions[value];
-
                 card.card_id = card.id;
                 card.id = 0;// 新增数据 id 置为 0 
                 card.status = 1;
@@ -564,9 +562,7 @@
                     inputErrorMessage: '卡券购买数量必须是大于0数值'
                 }).then(({ value }) => {
                     card.buy_number = value;
-                    console.log(this.cardUseStatus);
                     card.status = that.cardUseStatus?0:1;
-                    console.log(card.status);
                     if(!this.cardUseStatus) {
                       this.cardUseStatus = 1;
                     }

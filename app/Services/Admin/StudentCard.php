@@ -16,6 +16,7 @@ use App\Repositories\VenueRepositoryEloquent;
 use App\Repositories\StudentRepositoryEloquent;
 use Illuminate\Support\Facades\Redis;
 use App\Models\Admin\StudentNumberCard;
+use App\Models\Admin\Student;
 use App\Services\Common\Dictionary;
 
 
@@ -101,9 +102,6 @@ class StudentCard
         $student_id = $request->get('student_id');
         $orderBy = $request->get('orderBy') ?: 'id';
         $sortBy =  $request->get('sortedBy') ?: 'desc';
-
-
-
         if($student_id)
         {
             $where[] = ['student_card.student_id','=', $student_id];
@@ -143,9 +141,50 @@ class StudentCard
         return $list;
     }
 
-
-
-
+    
+    /**
+     * 创建学生卡券
+     * @param  Request  $request  
+     * @param  VenueBillService $bill_service 
+     * @return  array
+     */
+    public function saveStudentCard(Request $request, VenueBillService $bill_service)
+    {
+        try 
+        {
+            $student_id      = $request->get('student_id');
+            $studentCards    = $request->get('user_cards');
+            $venue_id        = $request->get('venue_id');
+            $student         = Student::find($student_id);
+            // 如果学生不归属当前道馆 不可编辑
+            if($student['venue_id']  !=  $venue_id)
+            {
+                return error('学生不归属当前道馆 不可操作');
+            }
+            $student_number_card = StudentNumberCard::where("student_id",'=', $student_id)->first();
+            if($student && $student_number_card) 
+            {
+                // 保存用户购买的卡券
+                $number_card_id = $student_number_card->id;
+                $user_card = $student->giveCardTo($studentCards, date("Y-m-d H:i:s"),$number_card_id);
+                if($user_card && is_array($user_card))
+                {
+                    $bill_service->createUserCardBill($user_card,$venue_id);
+                }
+                return success('学生卡券创建成功');
+            } 
+            else 
+            {
+                logResult('【学生卡券创建错误】学生信息不存在');
+                return error('学生信息不存在');
+            } 
+        } 
+        catch (\Exception $e) 
+        {
+            logResult('【学生卡券创建错误】'. $e->__toString(),'error');
+            return error($e->getMessage());
+        }
+    }
 
     /**
      * 获取道馆会员卡卡号最新的一个编号

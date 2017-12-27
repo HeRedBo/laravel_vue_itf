@@ -71,9 +71,11 @@ router.beforeEach((to, from, next) => {
     NProgress.start() // 开启Progress
     var url = '/admin/checkAcl', path =to.path;
 
-    if(path == '/admin/login')
+    if(path == '/admin/login') 
+    {
+        NProgress.done() // 结束Progress
         return next();
-        
+    }
     axios({
         method:'GET',
             url:url,
@@ -97,6 +99,7 @@ router.beforeEach((to, from, next) => {
          return next({ path: '/admin/login' });
      });
     
+        NProgress.done() // 结束Progress
         return next();
     });
     
