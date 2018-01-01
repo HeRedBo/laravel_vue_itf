@@ -118,7 +118,7 @@
             <!-- 操作 -->
             <template slot="actions" slot-scope="item">
                 <div class="btn-group">
-                    <!-- <a href="javascript:;" @click="view(item.item)" class="btn btn-success btn-xs">查看</a> -->
+                    <a href="javascript:;" @click="view(item.item)" class="btn btn-success btn-xs">查看</a>
                     <router-link :to="{path:'update/'+  item.item.id}" class="btn bg-orange btn-xs">编辑</router-link>
                     <router-link target="_blank"  :to="{path:'studentCardList/'+ item.item.id}" class="btn bg-info btn-xs">学生卡券</router-link>
                     <!-- <a href="#"  @click.prevent="$refs.table.onDel(item.item.id)"  class="btn btn-danger btn-xs">删除</a> -->
@@ -126,6 +126,83 @@
             </template>
           </vTable>
       </div>
+    </div>
+
+    <div id="studnet_view_box" style="display: none">
+        <!-- Widget: user widget style 1 -->
+        <div class="box box-widget">
+            <!-- Add the bg color to the header using any of the bg-* classes -->
+            <table class="table  table-bordered" style="font-size: 14px">
+                <tbody>
+                <tr>
+                    <th>姓名</th>
+                    <td> {{student_info.name}} </td>
+                    <th>性别</th>
+                    <td> {{student_info.sex_map?student_info.sex_map[student_info.sex]:''}} </td>
+                    <th>年龄</th>
+                    <td> {{student_info.age}} </td>
+                    <td rowspan=3>
+                        <img :src="student_info.picture" width="120px" height="120px" class="user-avatar" />
+                    </td>
+                </tr>
+                <tr>
+
+                    <th>籍贯</th>
+                    <td>{{student_info.native_place}} </td>
+                    <th>道馆</th>
+                    <td>{{student_info.venue_name}}</td>
+                    <th>班级</th>
+                    <td>--</td>
+                </tr>
+                <tr>
+                    <th>身份证</th>
+                    <td colspan="2"> {{student_info.id_card}}</td>
+                    <th>学校</th>
+                    <td colspan="2">{{student_info.school}}</td>
+                </tr>
+                
+               
+                <tr>
+                    <th>家庭住址</th>
+                    <td colspan="6">{{student_info.province}}{{student_info.city}}{{student_info.area}}{{ student_info.address}}</td>
+                </tr> 
+                <tr>
+                    <th colspan="7" align="center"> 个人卡券信息 </th>
+                </tr>
+                <tr>
+                    <th>卡券编号</th>
+                    <td colspan="2"> {{student_info.in_user_student_card ?  student_info.in_user_student_card.student_card_number : '' }} </td>
+                    <th>卡券类型</th>
+                    <td colspan="3">{{student_info.in_user_student_card ? student_info.in_user_student_card.type_name : '' }}</td>
+                </tr>
+                <tr v-show="student_info.in_user_student_card&&student_info.in_user_student_card.type==1">
+                    <th>卡券购买时间</th>
+                    <td colspan="2"> {{student_info.in_user_student_card ? student_info.in_user_student_card.created_at : '' }} </td>
+                    <th>有效期开始时间</th>
+                    <td> {{student_info.in_user_student_card ? student_info.in_user_student_card.start_time : '' }} </td>
+                    <th>有效期结束时间</th>
+                    <td> {{student_info.in_user_student_card ? student_info.in_user_student_card.end_time : '' }}</td>
+                </tr>
+
+                <tr v-show="student_info.in_user_student_card&&student_info.in_user_student_card.type==2">
+                    <th>卡券购买时间</th>
+                    <td colspan="2"> {{student_info.in_user_student_card ? student_info.in_user_student_card.created_at : '' }} </td>
+                    <th>卡券总次数/th>
+                    <td> {{student_info.in_user_student_card ? student_info.in_user_student_card.total_class_number : 0 }} </td>
+                    <th>卡券消费次数</th>
+                    <td> {{student_info.in_user_student_card ? student_info.in_user_student_card.residue_class_number : 0 }}</td>
+                </tr>
+                <tr>
+                    <td colspan="7">
+                        进度条显示
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+    
+        </div>
+        <!-- /.widget-user -->
+    
     </div>
   </div>
 </template>
@@ -158,7 +235,8 @@ export default {
         selectItemVisible : false,
         sexOptions : [],
         venueOptions : [],
-        classOptions : []
+        classOptions : [],
+        student_info : {},
       }
     },
     created() 
@@ -238,13 +316,43 @@ export default {
         venueChange(value) {
             this.getClasses(value)
         },
-      handleEdit(index, row) {
-        console.log(index, row);
-      },
-      reset() 
-      {
-            this.params = {};
-      },
+        handleEdit(index, row) {
+            console.log(index, row);
+        },
+        view(row) {
+            
+            var student_id = row.id;
+            // 请求数据
+            var url = '/student/getStudentInfo', that = this;
+            this.$http({
+                method: "GET",
+                url: url,
+                params: {
+                    student_id: student_id
+                }
+            })
+            .then(function (response) {
+                var responseJson = response.data, data = responseJson.data
+                    that.student_info = data;
+                    var title = row.name + "的个人信息";
+                    setTimeout(function () {
+                    swal({
+                        title: title,
+                        width: '80%',
+                        html: $('#studnet_view_box').html(),
+                    });
+                }, 100);
+                })
+            .catch(function (error) {
+                stack_error(error);
+            }); 
+            
+        },
+
+        reset() 
+        {
+                this.params = {};
+        },
     }
 }
 </script>

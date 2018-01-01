@@ -1,8 +1,8 @@
 <template>
     <div class="box-body tablew-responsive no-padding">
-        
+
         <table :class="['table table-bordered dataTable',stripped?'table-striped':'',hover?'table-hover':'']"
-                v-loading="listLoading" 
+                v-loading="listLoading"
                 element-loading-text="拼命加载中"
         >
             <thead>
@@ -10,13 +10,13 @@
                     <th v-if="checkbox"></th>
                     <th @click="headClick(field,key)"
                         :class="[field.sortable?'sorting':null,sort===key?'sorting_'+(sortDesc?'desc':'asc'):'']"
-                        v-for="field,key in fields"  
+                        v-for="field,key in fields"
                     >
                     {{field.label}}
                     </th>
                 </tr>
             </thead>
-            <tbody> 
+            <tbody>
             <tr v-if="_items.length==0">
                 <td :colspan="[checkbox?1+Object.keys(fields).length:Object.keys(fields).length]" class="td-empty">
                     <slot name="empty">{{empty_text}}</slot>
@@ -37,20 +37,20 @@
                         <slot :name="key" :value="field.need?item[field.need][key]:item[key]" :item="item" >
                             {{field.need?item[field.need][key]:item[key]}}
                         </slot>
-                        
+
                     </td>
                 </tr> -->
-            </tbody>            
+            </tbody>
         </table>
         <div v-show="!listLoading" class="col-sm-7 pagination-container" v-if="totalRows>initPage" style="margin-bottom:15px;">
           <!-- 分页组件  -->
-            <el-pagination 
-                @size-change="handleSizeChange" 
-                @current-change="handleCurrentChange" 
-                :current-page="currentPage" 
+            <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="currentPage"
                 :page-sizes="pageSizes"
-                :page-size="pageSize" 
-                :layout="layouts" 
+                :page-size="pageSize"
+                :layout="layouts"
                 :total="totalRows"
             >
             </el-pagination>
@@ -108,7 +108,7 @@ export default {
             type: Object,
             default: () => {}
         },
-        del: {    
+        del: {
             type: Object,
             default: () => {}
         },
@@ -128,20 +128,27 @@ export default {
             sort: null,
             sortDesc: true,
             currentPage: 1,
-            pageSizes: [15, 20, 50, 100, 200],
+            pageSizes: [ 15, 20, 50, 100, 200],
             pageSize: 15,
             initPage : 15,
             layouts: 'total, sizes, prev, pager, next, jumper',
             totalRows: 0,
             listLoading: true,
-            
         }
     },
     created() {
-        
-        this.loadList(); 
-        this.pageSize = this.perPage;
-        this.initPage = this.perPage;
+      
+        if(this.perPage)
+        {
+          this.pageSize = this.perPage;
+          this.initPage = this.perPage;
+          if(this.pageSizes.indexOf(this.perPage) !== false ) {
+            this.pageSizes.unshift(this.perPage);
+          }
+        }
+        this.loadList();
+
+
     },
 
     computed:{
@@ -166,12 +173,13 @@ export default {
             var orderBy = this.sort;
             var sortedBy = this.sortDesc?'desc':'asc';
             var params = { pageSize :this.pageSize, page:this.currentPage, orderBy:orderBy,sortedBy:sortedBy}
+            console.log(params);
             if(this.searchType == 1)
             {
                 if(typeof this.params !== 'undefined') {
                     params = Object.assign(params, this.params);
                 }
-            } 
+            }
             else if(this.searchType == 2)
             {
                 params.searchJoin = 'and';
@@ -179,7 +187,7 @@ export default {
                 params.search = search_query;
 
             }
-            
+
             this.listLoading = true;
             this.$http({
                 method :'GET',
@@ -194,7 +202,7 @@ export default {
                 that.pageSize  =  parseInt(responseData.per_page);
                 that.items     = responseData.data;
             })
-            .catch(function(error) 
+            .catch(function(error)
             {
                 that.listLoading = false
                 console.log(error);
@@ -266,7 +274,7 @@ export default {
             console.log(`当前页: ${val}`);
         },
     }
-    
+
 }
 </script>
 <style>

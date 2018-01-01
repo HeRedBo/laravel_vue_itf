@@ -17,6 +17,7 @@ use App\Repositories\StudentRepositoryEloquent;
 use Illuminate\Support\Facades\Redis;
 use App\Models\Admin\StudentNumberCard;
 use App\Models\Admin\Student;
+use App\Models\admin\StudentCard as studentCardModel;
 use App\Services\Common\Dictionary;
 
 
@@ -73,6 +74,8 @@ class StudentCard
         return $model->id;
     }
 
+
+
     /**
      * 创建学生会员卡编号
      * @param int $student_id  学生ID
@@ -96,12 +99,13 @@ class StudentCard
         return false;
     }
 
-    public  function  getStudentCardList(Request $request, $pageSize = 20)
+    public  function  getStudentCardList(Request $request)
     {
         $where = [];
         $student_id = $request->get('student_id');
         $orderBy = $request->get('orderBy') ?: 'id';
         $sortBy =  $request->get('sortedBy') ?: 'desc';
+        $pageSize = $request->get('pageSize') ?:  20;
         if($student_id)
         {
             $where[] = ['student_card.student_id','=', $student_id];
@@ -111,7 +115,6 @@ class StudentCard
                 ->join('card_snap', "student_card.card_snap_id","=", "card_snap.id")
                 ->join('admin', "student_card.operator_id","=", "admin.id")
         ;
-
         if($where)
         {
             foreach ($where as $v)
@@ -119,6 +122,7 @@ class StudentCard
                 $DB->where($v[0], $v[1], $v[2]);
             }
         }
+
 
         $DB->orderBy($orderBy, $sortBy);
         $fields = [
@@ -234,5 +238,77 @@ class StudentCard
             Redis::set($this->venues_student_number_card_redis_key. $venue_id, $number);
         }
         return str_pad($number, 5, "0", STR_PAD_LEFT);
+    }
+
+
+    /**
+     * 获取学生状态卡券信息
+     * @param $student_id
+     * @param int $status
+     * @return array
+     */
+    public  function  getStudentStatusCardInfo($student_id, $status = 1)
+    {
+        $where = [
+            ['student_id','=', $student_id],
+            ['status','=', $status]
+        ];
+
+        $student_card_model = new studentCardModel();
+        foreach ($where as $v)
+        {
+            $student_card_model->where($v[0], $v[1], $v[2]);
+        }
+        $result =  studentCardModel::with('card')
+                        ->where('student_id','=', $student_id)
+                        ->where('status','=',1)
+                        ->first();
+        $student_card = [];
+        if($result)
+        {
+            $result = $result->toArray();
+            $student_card = $result;
+            unset($student_card['card']);
+            $student_card['type']      = $result['card']['type'];
+            $student_card['type_name'] = Dictionary::CardTyeMap($result['card']['type']);
+            $student_card['name']      = $result['card']['name'];
+            // 计算 使用 百分比
+            $student_card['percentage'] = 0;
+            // 期卡
+            if($student_card['type'] == 1)
+            {
+                $now_time     = time();
+                $end_time     = strtotime($student_card['end_time']);
+                $start_time   = strtotime($student_card['start_time']);
+                $total_time   = $end_time - $now_time;
+                $consume_time =  $now_time  - $start_time;
+                $student_card['percentage'] = ceil($total_time / $consume_time);
+            }
+            // 次卡
+            if($student_card['type'] == 2) {
+                $total_class_number   = $student_card['total_class_number']; // 总课程数
+                $residue_class_number = $student_card['residue_class_number']; //  已经使用课程数
+                $student_card['percentage'] = ceil($total_class_number / $residue_class_number);
+            }
+
+            // 获取卡编号
+            $student_card['student_card_number'] = '';
+            $number_card_id = $student_card['number_card_id'];
+            if($number_card_id)
+            {
+                $student_number_card_model = new StudentNumberCard();
+                $number_card_info = $student_number_card_model
+                                    ->where('id','=', $number_card_id)
+                                    ->where('status','=',1)
+                                    ->first();
+                if($number_card_info)
+                {
+                    $number_card_info = $number_card_info->toArray();
+                    $student_card['student_card_number'] = $number_card_info['number'];
+                }
+            }
+        }
+        return $student_card;
+
     }
 }

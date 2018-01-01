@@ -136,7 +136,7 @@ export default [
                         name: '班级列表',
                         component : () => import('views/admin/class/Index.vue')
                      }
-                  
+
                 ]
             },
             {
@@ -154,7 +154,7 @@ export default [
                         name: '操作日志',
                         component: () => import('views/admin/card/Logger.vue')
                     },
-                   
+
                 ]
             },
             {
@@ -189,5 +189,3 @@ export default [
     }
 
 ];
-
-

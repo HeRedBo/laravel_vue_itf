@@ -198,6 +198,21 @@ class StudentsController extends ApiController
     }
 
     /**
+     * 获取学生基本信息
+     */
+    public  function getStudentInfo(Request $request)
+    {
+        $student_id = $request->get('student_id');
+        if(empty($student_id))
+            return $this->response->withBadRequest("student_id 参数不能为空");
+        $res = $this->repository->getStudentBaseInfo($student_id,$this->student_card_service);
+        if($res['status'] == 1)
+            return $this->response->withData($res['data']);
+        else
+            return $this->response->withInternalServer($res['msg']);
+
+    }
+    /**
      *  学生卡券信息列表
      */
     public  function  studentCardList(Request $request)

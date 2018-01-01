@@ -170,7 +170,7 @@
             </div>
         </el-dialog>
 
-         <div id="card_view_box" style="display: none">
+        <div id="card_view_box" style="display: none">
             <!-- Widget: user widget style 1 -->
             <div class="box box-widget">
                 <!-- Add the bg color to the header using any of the bg-* classes -->

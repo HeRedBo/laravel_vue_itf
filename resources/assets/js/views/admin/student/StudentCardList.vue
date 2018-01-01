@@ -3,6 +3,20 @@
         <div class="col-md-12">
             <div class="box">
                 <div class="box-header">
+                  <div class="row" style="margin-bottom:10px;">
+                    <div class="col-md-12">
+                      <h3 class="box-title">{{$route.name}}</h3>
+                    </div>
+                  </div>
+                  <!-- <div class="box-tools">
+                      <div class="input-group input-group-sm" style="width:200px">
+                          <input type="text" name="keyword" v-model="params.keyword" class="form-control pull-right" placeholder="请输入操作内容">
+
+                          <div class="input-group-btn">
+                              <button type="submit" class="btn btn-default" @click="$refs.table.loadlist()"><i class="fa fa-search"></i></button>
+                          </div>
+                      </div>
+                  </div> -->
                     <div class="row">
                        <div class="col-md-2">
                              <button  @click="handleCreate" type="button" class="btn btn-sm btn-success">添加卡券
@@ -33,12 +47,12 @@
                     <template slot="start_time" slot-scope="item">
                         <span>{{item.item.type==2?'--':item.item.start_time}}</span>
                     </template>
-                    
+
                     <template slot="end_time" slot-scope="item">
                         <span>{{item.item.type==2?'--':item.item.end_time}}</span>
                     </template>
 
-                
+
                     <!-- 操作 -->
                     <template slot="actions" slot-scope="item">
                         <div class="btn-group">
@@ -53,10 +67,10 @@
         </div>
 
 
-        <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" style="z-index:120;" size="small" >  
-            <el-form 
+        <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" style="z-index:120;" size="small" >
+            <el-form
                 class="small-space"
-                ref="StudentCard" 
+                ref="StudentCard"
                 :model="StudentCard"
                 label-position="right"
                 label-width="80px"
@@ -70,7 +84,7 @@
                              :key="item.value"
                              :label="item.label"
                              :value="item.value"
-                              
+
                              >
                           </el-option>
                         </el-select>
@@ -85,7 +99,7 @@
                             :value="item.id">
                           </el-option>
                         </el-select>
-                </el-form-item> 
+                </el-form-item>
 
 
                 <el-table
@@ -137,25 +151,25 @@
                           <a href="javascript:void(0)"   @click="changeCardStatus(scope.$index)" data-toggle="tooltip" :title="scope.row.status==1 ?'启用':'未启用'">
                               <i :class="['fa','fa-circle',scope.row.status==1?'text-success':'text-danger']"></i>
                           </a>
-                        </template>  
+                        </template>
                     </el-table-column>
 
-                            
 
-                    <el-table-column 
-                        label="操作" 
+
+                    <el-table-column
+                        label="操作"
                     >
                     <template slot-scope="scope">
-                        <a 
+                        <a
                          v-show="scope.row.id==0"
-                         href="#"  @click="deleteUserCard(scope.$index)"  
+                         href="#"  @click="deleteUserCard(scope.$index)"
                          class="btn btn-danger btn-xs">删除
                         </a>
                     </template>
                     </el-table-column>
 
                 </el-table>
-               
+
             </el-form>
 
             <div slot="footer" class="dialog-footer" style="text-align:center">
@@ -199,8 +213,8 @@
                         <th>剩余课程数</th>
                         <td>{{card.type==1?'--':card.residue_class_number}}</td>
                     </tr>
-                
-                    
+
+
                      <tr>
                         <th>卡券有效期开始时间</th>
                         <td><span>{{card.type==2?'--':card.start_time}}</span></td>
@@ -212,13 +226,13 @@
                     <tr>
                         <th>创建时间</th>
                         <td>{{card.created_at}}</td>
-                        
+
                         <th>最新更新时间</th>
                         <td>{{card.updated_at}}</td>
                     </tr>
                     <tr>
                         <th>操作人</th>
-                        <td>{{card.operator_name}}</td> 
+                        <td>{{card.operator_name}}</td>
                         <th></th>
                         <td></td>
                     </tr>
@@ -254,7 +268,7 @@ $(function () {
                     card_price: { label: '总价'},
                     total_class_number: { label: '总课程数' },
                     residue_class_number: { label: '剩余课程数' },
-                    status: { label: '状态' },
+                    status: { label: '状态' ,sortable: true},
                     start_time: { label: '有效期开始时间' },
                     end_time: { label: '有效期结束时间'},
                     // created_at: { label: '创建时间', sortable: true },
@@ -284,7 +298,7 @@ $(function () {
         created() {
            this.initData();
            this.getUserVenus();
-          
+
         },
         methods: {
 
@@ -294,7 +308,7 @@ $(function () {
                 this.params.student_id=id;
             },
 
-            getUserVenus() 
+            getUserVenus()
             {
                 var that = this;
                 var url = '/user/userVenues';
@@ -302,14 +316,14 @@ $(function () {
                     method :'GET',
                     url : url
                 })
-                .then(function(response) 
+                .then(function(response)
                 {
 
                     let {data} = response;
                     var  respondata = data.data
                     var options = [];
                     for (var i in respondata ) {
-                    
+
                         let label =  respondata[i].name;
                         options.push({value : respondata[i].id , label: label});
                     }
@@ -320,7 +334,7 @@ $(function () {
                         that.StudentCard.venue_id =  venue_id;
 
                         that.getCardOptions(venue_id);
-                    } 
+                    }
                     else
                     {
                         that.selectItemVisible = true;
@@ -332,9 +346,11 @@ $(function () {
                     stack_error(error);
                 });
             },
+
             venueChange(value) {
               this.getCardOptions(value)
             },
+
             getCardOptions(venue_id) {
                 var url = '/card/cardOptions', that = this;
                 this.$http({
@@ -351,15 +367,15 @@ $(function () {
                 })
                 .catch(function(error) {
                   stack_error(error);
-                }); 
+                });
             },
 
             selectCard(value){
                 var card = this.cardOptions[value];
                 card.card_id = card.id;
-                card.id = 0;// 新增数据 id 置为 0 
+                card.id = 0;// 新增数据 id 置为 0
                 card.status = 1;
-                var that = this; 
+                var that = this;
                 this.$prompt('请输入卡券数量', '卡券数量', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -377,7 +393,7 @@ $(function () {
                     this.$message({
                         type: 'info',
                         message: '取消输入'
-                    });       
+                    });
                 });
             },
 
@@ -385,7 +401,19 @@ $(function () {
                 this.StudentCard.user_cards.splice(index, 1)
             },
 
-            handleCreate() 
+            changeCardStatus(index) {
+              var length = this.StudentCard.user_cards.length;
+              var that = this;
+              if(length > 1)
+              {
+                  for (var i = length-1; i >= 0; i--) {
+                    this.StudentCard.user_cards[i].status = 0;
+                  }
+                  that.StudentCard.user_cards[index].status = 1;
+              }
+            },
+
+            handleCreate()
             {
                 this.dialogFormVisible = true;
             },
@@ -395,14 +423,13 @@ $(function () {
                 this.StudentCard.student_id = student_id;
                 // 教研学生卡券信息是否有提交
                 if(that.StudentCard.user_cards.length ==0) {
-                      this.$notify.error({
-                        title: '错误',
-                        message: '卡券信息不能为空',
-                        duration:3000
-                      });
-                      return;
+                    this.$notify.error({
+                      title: '错误',
+                      message: '卡券信息不能为空',
+                      duration:3000
+                    });
+                    return;
                 }
-
                 let url = '/student/saveStudentCard'
                 let method = 'post';
                 // 请求接口保存用户卡券信息
@@ -412,24 +439,22 @@ $(function () {
                       data : that.StudentCard
                     })
                 .then(function(response) {
-                        
-                        var {data} = response; 
-                        that.$message({
+                    var {data} = response;
+                    that.$message({
                           showClose: true,
                           message: data.message,
                           type: 'success'
-                        });
-                      // 跳转到列表页
-                      console.log('success');
-                      //that.$router.push({ path: '/admin/student/index' })
+                    });
+                    // 跳转到列表页
+                    that.dialogFormVisible = false;
+                    // 重置数据
+                    that.StudentCard.user_cards = [];
+                    // 刷新列表数据
+                    that.$refs.table.loadList();
                 })
                 .catch(function(error) {
                       stack_error(error);
                 });
-                
-
-                
-                
             },
             handleEdit(index, row) {
                 console.log(index, row);

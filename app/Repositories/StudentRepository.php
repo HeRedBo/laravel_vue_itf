@@ -28,5 +28,8 @@ interface StudentRepository extends RepositoryInterface
     public  function  getStudentInfo($student_id);
 
     public  function  studentList(Request $request);
+
+    public  function  getStudentBaseInfo($student_id,StudentCard $studentCard);
+
     
 }

@@ -24,4 +24,6 @@ class Card extends Model implements Transformable
         return $this->belongsTo(Admin::class,'venue_id','id');
     }
 
+
+
 }

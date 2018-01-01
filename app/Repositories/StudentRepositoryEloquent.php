@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Services\Admin\StudentCard;
 use App\Services\Admin\VenueBillService;
+use App\Services\Common\Dictionary;
 
 /**
  * Class StudentRepositoryEloquent
@@ -254,6 +255,49 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
             unset($student['cards']);
             unset($student['contacts']);
             unset($student['classes']);
+            return success('数据获取成功', $student);
+        }
+        else
+        {
+            return error('学生信息不存在');
+        }
+    }
+
+    /**
+     * get student base info
+     * @param int $student_id
+     * @return array
+     * @author Red-Bo
+     * @date 2017-12-31
+     */
+    public  function  getStudentBaseInfo($student_id, StudentCard $studentCard)
+    {
+        $student = $this->with(['classes','contacts','venues'])->find($student_id);
+
+        if($student)
+        {
+            // 获取数据归属的班级
+            $class = $student->classes;
+            $classIds = array_column($class->toArray(),'id');
+            $student['class_id'] = $classIds;
+            // 获取用户卡券
+            $in_use_card_info = $studentCard->getStudentStatusCardInfo($student_id, 1);
+            $student['in_user_student_card'] = $in_use_card_info; // 使用的学生卡券
+            $contacts =  $student->contacts->toArray();
+            $relations_ids = array_column($contacts,'relation_id');
+            $relation_names = RelationName::whereIn('id', $relations_ids)->get()->toArray();
+            $relation_names = array_column($relation_names,NULL,'id');
+            foreach ($contacts as &$contact) {
+                $contact['relation_name'] = $relation_names[$contact['relation_id']]['name'];
+            }
+            $student['user_contacts'] = $contacts;
+            $student = $student->toArray();
+            $student['venue_name'] = $student['venues']['name'];
+            $student['sex_map']   = Dictionary::SexOptions();
+
+            unset($student['contacts']);
+            unset($student['classes']);
+            unset($student['venues']);
             return success('数据获取成功', $student);
         }
         else
