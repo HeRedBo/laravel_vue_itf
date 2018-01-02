@@ -280,17 +280,16 @@ class StudentCard
                 $now_time     = time();
                 $end_time     = strtotime($student_card['end_time']);
                 $start_time   = strtotime($student_card['start_time']);
-                $total_time   = $end_time - $now_time;
-                $consume_time =  $now_time  - $start_time;
-                $student_card['percentage'] = ceil($total_time / $consume_time);
+                $total_time   = $end_time - $start_time;
+                $consume_time = $now_time - $start_time;
+                $student_card['percentage'] = round(($consume_time / $total_time),2) * 100;
             }
             // 次卡
             if($student_card['type'] == 2) {
                 $total_class_number   = $student_card['total_class_number']; // 总课程数
                 $residue_class_number = $student_card['residue_class_number']; //  已经使用课程数
-                $student_card['percentage'] = ceil($total_class_number / $residue_class_number);
+                $student_card['percentage'] = round(($residue_class_number/$total_class_number),2) * 100;
             }
-
             // 获取卡编号
             $student_card['student_card_number'] = '';
             $number_card_id = $student_card['number_card_id'];

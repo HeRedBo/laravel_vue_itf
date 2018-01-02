@@ -152,7 +152,11 @@
                     <th>道馆</th>
                     <td>{{student_info.venue_name}}</td>
                     <th>班级</th>
-                    <td>--</td>
+                    <td>
+                        <el-tag v-for="row in student_info.classes" :key="student_info.id" type="primary" close-transition>
+                            {{row.name}}
+                        </el-tag>
+                    </td>
                 </tr>
                 <tr>
                     <th>身份证</th>
@@ -167,7 +171,7 @@
                     <td colspan="6">{{student_info.province}}{{student_info.city}}{{student_info.area}}{{ student_info.address}}</td>
                 </tr> 
                 <tr>
-                    <th colspan="7" align="center"> 个人卡券信息 </th>
+                    <th colspan="7" style="text-align:center;"> 个人卡券信息 </th>
                 </tr>
                 <tr>
                     <th>卡券编号</th>
@@ -194,8 +198,25 @@
                 </tr>
                 <tr>
                     <td colspan="7">
-                        进度条显示
+                        <el-progress :text-inside="true" :stroke-width="15" :percentage="student_info.in_user_student_card ? student_info.in_user_student_card.percentage: 0"></el-progress>
                     </td>
+                </tr>
+
+                <tr>
+                    <th colspan="7"  style="text-align:center;">联系人信息</th>
+                </tr>
+                <tr>
+                    <th>关系</th>
+                    <th colspan="2">联系人姓名</th>
+                    <th colspan="2">联系人手机号码</th>
+                    <th colspan="2">联系人邮箱</th>
+                </tr>
+
+                <tr v-for="row in student_info.user_contacts"  :key="row.id">
+                    <td>{{row.relation_name}}</td>
+                    <td colspan="2">{{row.contact_name}}</td>
+                    <td colspan="2">{{row.contact_phone}}</td>
+                    <td colspan="2">{{row.contact_email}}</td>
                 </tr>
                 </tbody>
             </table>

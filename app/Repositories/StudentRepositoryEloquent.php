@@ -273,7 +273,6 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
     public  function  getStudentBaseInfo($student_id, StudentCard $studentCard)
     {
         $student = $this->with(['classes','contacts','venues'])->find($student_id);
-
         if($student)
         {
             // 获取数据归属的班级
@@ -294,9 +293,8 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
             $student = $student->toArray();
             $student['venue_name'] = $student['venues']['name'];
             $student['sex_map']   = Dictionary::SexOptions();
-
             unset($student['contacts']);
-            unset($student['classes']);
+            //unset($student['classes']);
             unset($student['venues']);
             return success('数据获取成功', $student);
         }
