@@ -1,30 +1,88 @@
 <template>
     <div class="row">
-        <div class="col-md-12">
-            <div class="box">
-                <div class="box-header">
-                  <div class="row" style="margin-bottom:10px;">
-                    <div class="col-md-12">
-                      <h3 class="box-title">{{$route.name}}</h3>
-                    </div>
-                  </div>
-                  <!-- <div class="box-tools">
-                      <div class="input-group input-group-sm" style="width:200px">
-                          <input type="text" name="keyword" v-model="params.keyword" class="form-control pull-right" placeholder="请输入操作内容">
 
-                          <div class="input-group-btn">
-                              <button type="submit" class="btn btn-default" @click="$refs.table.loadlist()"><i class="fa fa-search"></i></button>
-                          </div>
-                      </div>
-                  </div> -->
-                    <div class="row">
-                       <div class="col-md-2">
-                             <button  @click="handleCreate" type="button" class="btn btn-sm btn-success">添加卡券
+        <div class="col-md-12">
+            <div class="box box-primary">
+            <div class="box-header with-border">
+              <h3 class="box-title">学生基本信息</h3>
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+               <!--  <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button> -->
+              </div>
+            </div>
+            <div class="box-body">
+                 <table :class="['table table-bordered']" style="width:70%;">
+                            <tbody>
+                                <tr>
+                                    <th>姓名</th>
+                                    <td> {{student_info.name}} </td>
+                                    <th>性别</th>
+                                    <td> {{student_info.sex_map?student_info.sex_map[student_info.sex]:''}} </td>
+                                    <th>年龄</th>
+                                    <td> {{student_info.age}} </td>
+                                </tr>
+                                <tr>
+                                    <th>卡券编号</th>
+                                    <td> {{student_info.in_user_student_card ?  student_info.in_user_student_card.student_card_number : '' }} </td>
+                                    <th>卡券类型</th>
+                                    <td>{{student_info.in_user_student_card ? student_info.in_user_student_card.type_name : '' }}</td>
+                                    <th>卡券购买时间</th>
+                                    <td> {{student_info.in_user_student_card ? student_info.in_user_student_card.created_at : '' }} </td>
+                                </tr>
+                                <tr v-show="student_info.in_user_student_card&&student_info.in_user_student_card.type==1">
+                                
+                                    <th>有效期开始时间</th>
+                                    <td> {{student_info.in_user_student_card ? student_info.in_user_student_card.start_time : '' }} </td>
+                                    <th>有效期结束时间</th>
+                                    <td> {{student_info.in_user_student_card ? student_info.in_user_student_card.end_time : '' }}</td>
+                                    <th></th>
+                                    <td></td>
+                                </tr>
+
+                                <tr v-show="student_info.in_user_student_card&&student_info.in_user_student_card.type==2">
+                                  
+                                    <th>卡券总次数/th>
+                                    <td> {{student_info.in_user_student_card ? student_info.in_user_student_card.total_class_number : 0 }} </td>
+                                    <th>卡券消费次数</th>
+                                    <td> {{student_info.in_user_student_card ? student_info.in_user_student_card.residue_class_number : 0 }}</td>
+                                    <th></th>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6">
+                                        <el-progress :text-inside="true" :stroke-width="15" :percentage="student_info.in_user_student_card ? student_info.in_user_student_card.percentage: 0"></el-progress>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table> 
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+        
+         <!-- /.col (LEFT) -->
+        <div class="col-md-12">
+          <!-- LINE CHART -->
+          <div class="box box-info">
+            <div class="box-header with-border">
+              <h3 class="box-title">{{$route.name}}</h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+                <!--<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button> -->
+              </div>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <button  @click="handleCreate" type="button" class="btn btn-sm btn-success">添加卡券
                             </button>
-                       </div>
                     </div>
                 </div>
-
+                <!-- 学生卡券列表表 -->
                 <vTable ref="table" stripped hover :searchType=1 :ajax_url="ajax_url" :params="params" :items="items" :fields="fields" :current-page="currentPage"
                     :per-page="perPage">
 
@@ -64,9 +122,10 @@
                     </template>
                 </vTable>
             </div>
-        </div>
-
-
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+      </div>
         <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" style="z-index:120;" size="small" >
             <el-form
                 class="small-space"
@@ -94,9 +153,10 @@
                         <el-select v-model="StudentCard.card_id" @change="selectCard"  placeholder="请选择需要购买的卡" style="width:100%" >
                           <el-option
                             v-for="item in cardOptions"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.id">
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id"
+                            >
                           </el-option>
                         </el-select>
                 </el-form-item>
@@ -161,7 +221,7 @@
                     >
                     <template slot-scope="scope">
                         <a
-                         v-show="scope.row.id==0"
+                         v-show="scope.row.is_new==1"
                          href="#"  @click="deleteUserCard(scope.$index)"
                          class="btn btn-danger btn-xs">删除
                         </a>
@@ -292,12 +352,14 @@ $(function () {
                 dialogTitle : '新增卡券',
                 buttonLoading: false,
                 cardUseStatus:1,
-                card : {}
+                card : {},
+                student_info : {}
             }
         },
         created() {
            this.initData();
            this.getUserVenus();
+           this.getStudnetInfo();
 
         },
         methods: {
@@ -373,7 +435,7 @@ $(function () {
             selectCard(value){
                 var card = this.cardOptions[value];
                 card.card_id = card.id;
-                card.id = 0;// 新增数据 id 置为 0
+                card.is_new = 1;
                 card.status = 1;
                 var that = this;
                 this.$prompt('请输入卡券数量', '卡券数量', {
@@ -472,7 +534,29 @@ $(function () {
                         html : $('#card_view_box').html(),
                     });
                 },100);
-        },
+            },
+            getStudnetInfo() 
+            {
+                  
+                var student_id = this.$route.params.id;
+                // 请求数据
+                var url = '/student/getStudentInfo', that = this;
+                this.$http({
+                    method: "GET",
+                    url: url,
+                    params: {
+                        student_id: student_id
+                    }
+                })
+                    .then(function (response) {
+                        var responseJson = response.data, data = responseJson.data
+                        that.student_info = data;
+                        console.log(data);
+                    })
+                    .catch(function (error) {
+                        stack_error(error);
+                    }); 
+            }
         }
     }
 </script>

@@ -144,17 +144,18 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
      * update student info
      * @param array $data
      * @param  int     $id
+     * @param StudentCard $studentCard
      * @return array|void
      * @author Red-Bo
      */
-    public function  updateStudent(array $data, $id)
+    public function  updateStudent(array $data, $id, StudentCard $studentCard)
     {
         $student = $this->find($id);
         if(!$student)
         {
             return error('未找到相关数据记录信息');
         }
-        
+        $this->studentCardService = $studentCard;
         try
         {
             DB::beginTransaction();
@@ -181,19 +182,14 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
             //修改用户信息
             $student->save();
             $studentContacts = $data['user_contacts'];
-            $studentCards    = $data['user_cards'];
             $classId         = $data['class_id'];
-            $sign_up_at      = $data['sign_up_at'];
-            //
-            //$studentContacts = json_decode($studentContacts,true);
-            //$studentCards    = json_decode($studentCards,true);
-            //
             // 保存用户课程信息
             $student->giveClassTo($classId);
             // 保存用户联系人
             $student->giveContactsTo($studentContacts);
-             //保存用户购买的卡券想
-            $student->giveCardTo($studentCards,$sign_up_at);
+            // 处理用户会员卡问题
+            $number_card_id = $this->studentCardService->saveStudentNumberCard($id, $data);
+
             DB::commit();
             return success('数据修改成功');
         }
@@ -215,14 +211,11 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
      * @param integer  $id student_id
      * @author Red-Bo
      */
-    public  function  getStudentInfo($id)
+    public  function  getStudentInfo($id, StudentCard $studentCard)
     {
         $student = $this->with(['classes','cards','contacts'])->find($id);
         if($student)
         {
-
-//            $student['birthday'] = DateTimeToGmt($student['birthday']);
-//            $student['sign_up_at'] = DateTimeToGmt($student['sign_up_at']);
             // 获取数据归属的班级
             $class = $student->classes;
             $classIds = array_column($class->toArray(),'id');
@@ -240,6 +233,8 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
                 $student_card['card_price'] = $card_info['card_price'];
                 $student_card['total_price'] = $student_card['number'] * $card_info['card_price'];
             }
+            // 获取学生会员卡编号
+            $student['card_number'] = $studentCard->getStudentNumberCard($id);
 
             $contacts =  $student->contacts->toArray();
             $relations_ids = array_column($contacts,'relation_id');

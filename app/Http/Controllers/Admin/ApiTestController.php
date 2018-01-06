@@ -36,7 +36,9 @@ class ApiTestController extends ApiController
     public  function  ApiTest()
     {
 
-
+        $student_number_card_info = $this->student_card_service->getStudentNumberCard(12);
+        dd($student_number_card_info);
+        exit;
         $card_info = Card::find(6)->toArray();
         $snap_id = (new CardSnap)->createCardSnap($card_info);
         // $card_json = '[{"student_id":2,"number_card_id":1,"card_id":1,"number":1,"card_price":"400.00","total_class_number":0,"start_time":"2017-12-12 17:31:18","end_time":"2018-12-12 17:31:18","status":1,"operator_id":1,"operator_name":"\u4f55\u7ea2\u6ce2","updated_at":"2017-12-12 17:31:18","created_at":"2017-12-12 17:31:18","id":3}]';

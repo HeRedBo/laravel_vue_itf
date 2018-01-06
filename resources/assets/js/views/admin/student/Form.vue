@@ -95,7 +95,7 @@
                         </el-form-item>
                         
                         <!-- 报名时间 -->
-                        <el-form-item label="报名时间" prop="sign_up_at">
+                        <el-form-item label="报名时间" prop="sign_up_at" v-show="studentForm.id==0">
                             <el-date-picker
                                 v-model="studentForm.sign_up_at"
                                 type="datetime"
@@ -106,7 +106,7 @@
                         </el-form-item>
                         
                         <!-- 是否自动创建会员卡号 -->
-                        <el-form-item label="自动创建会员卡号">
+                        <el-form-item label="自动创建会员卡号" v-if="studentForm.id==0">
                             <el-radio-group v-model="studentForm.auto_create_number">
                                 <el-radio :label="0">否</el-radio>
                                 <el-radio :label="1">是</el-radio>
@@ -114,18 +114,27 @@
                         </el-form-item>
                         
                          <!-- 学校 -->
-                        <el-form-item label="会员卡号" prop="card_number"  v-show="studentForm.auto_create_number==0">
+                        <el-form-item label="会员卡号" 
+                                      prop="card_number"  
+                                      v-show="showCardNumber()"
+                        >
                               <el-input v-model="studentForm.card_number" placeholder="请输入会员卡号"></el-input>
                         </el-form-item>
 
                         <!-- 卡券种类 -->
-                        <el-form-item label="购卡类型">
-                                <el-select v-model="studentForm.card" @change="selectCard"  placeholder="请选择需要购买的卡" style="width:100%" >
+                        <el-form-item label="购卡类型" v-if="!studentForm.id">
+                                <el-select 
+                                    v-model="studentForm.card" 
+                                    @change="selectCard"  
+                                    placeholder="请选择需要购买的卡" 
+                                    style="width:100%" 
+                                    filterable
+                                >
                                   <el-option
                                     v-for="item in cardOptions"
-                                    :key="item.id"
-                                    :label="item.name"
-                                    :value="item.id">
+                                      :key="item.id"
+                                      :label="item.name"
+                                      :value="item.id">
                                   </el-option>
                                 </el-select>
                         </el-form-item> 
@@ -134,6 +143,7 @@
             					    :data="studentForm.user_cards"
             					    style="min-width: 650px;margin-bottom: 20px;"
             						  align="cneter"
+                          v-if="!studentForm.id"
                         >
                             <el-table-column
                                 prop="card_id"
@@ -184,7 +194,7 @@
                                 width="120">
                             <template slot-scope="scope">
                                 <el-button
-                                v-show="scope.row.id==0"
+                                v-show="scope.row.is_new==1"
                                 size="small"
                                 type="danger"
                                 @click="deleteUserCard(scope.$index)">删除</el-button>
@@ -266,10 +276,8 @@
                                 label-width="120px"
                                 style='width: 400px; margin-left:50px;'
                             >
-                            
-                              
                                 <el-form-item label="与本人关系" prop="relation_id">
-                                  <el-select v-model="Contacts.relation_id" placeholder="请选择关系" style="width:100%" >
+                                  <el-select v-model="Contacts.relation_id" placeholder="请选择关系" style="width:100%">
                                     <el-option
                                        v-for="item in relationOptions"
                                        :key="item.id"
@@ -355,7 +363,7 @@
                 callback();
             },
             validateCardNumber = (rule, value, callback) =>  {
-                if (this.studentForm.auto_create_number ==0) 
+                if (this.studentForm.id == 0 && this.studentForm.auto_create_number ==0) 
                 {
                     if(!value) {
                       return callback(new Error('学生会员卡不能为空'));
@@ -439,7 +447,8 @@
               // console.log(this.image);
               if(this.studentForm.id)
                {
-                 this.image = this.studentForm.picture;               }
+                 this.image = this.studentForm.picture;               
+               }
             }
           },
 
@@ -447,12 +456,13 @@
             // this.getRole();
             this.getUserVenus();
             //this.getClasses();
-            this.getCards();
+            //this.getCards();
             this.getRelationOptions();
           },
          
          
           methods: {
+
             getUserVenus() 
             {
                 var that = this;
@@ -478,6 +488,7 @@
                             var venue_id =  options[0].value;
                             that.studentForm.venue_id =  venue_id;
                             that.getClasses(venue_id);
+                            that.getCards(venue_id);
                         } 
                         else
                         {
@@ -489,6 +500,14 @@
                         console.log(error);
                         stack_error(error);
                     });
+            },
+            showCardNumber()
+            {
+              if(this.studentForm.id == 0 || this.studentForm.auto_create_number == 0)
+                return false
+              else if(this.studentForm.id > 0)
+                return true;
+              return true;
             },
 
             getClasses(venue_id) {
@@ -529,11 +548,14 @@
                   stack_error(error);
                 }); 
             },
-            getCards() {
+            getCards(venue_id) {
                 var url = '/card/cardOptions', that = this;
                 this.$http({
                    method :"GET",
                    url : url,
+                   params : {
+                    venue_id : venue_id
+                   }
                 })
                 .then(function(response) {
                   var responseJson = response.data,data = responseJson.data
@@ -551,16 +573,17 @@
             },
             selectCard(value) {
                 var card = this.cardOptions[value];
-                card.card_id = card.id;
-                card.id = 0;// 新增数据 id 置为 0 
+                card.is_new = 1;
                 card.status = 1;
+                card.card_id = card.id;
                 var that = this; 
+
                 this.$prompt('请输入卡券数量', '卡券数量', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     inputPattern: /^[1-9]\d*$/,
                     inputErrorMessage: '卡券购买数量必须是大于0数值'
-                }).then(({ value }) => {
+                }).then(({ value }) =>  {
                     card.buy_number = value;
                     card.status = that.cardUseStatus?0:1;
                     if(!this.cardUseStatus) {
@@ -568,7 +591,6 @@
                     }
                     card.total_price = parseFloat(card.card_price * value).toFixed(2);
                     that.studentForm.user_cards.push(card);
-                    console.log(that.studentForm.user_cards);
                 }).catch(() => {
                     this.$message({
                         type: 'info',
@@ -583,7 +605,7 @@
                this.$refs.studentForm.validate(valid => {
                   var that = this;
                   if (valid) {
-                    if(that.studentForm.user_cards.length ==0) {
+                    if(that.studentForm.id ==0 && that.studentForm.user_cards.length ==0) {
                       this.$notify.error({
                         title: '错误',
                         message: '卡券信息不能为空'
@@ -607,7 +629,6 @@
                       data : studentForm
                     })
                     .then(function(response) {
-                        
                         var {data} = response; 
                         that.$message({
                           showClose: true,
@@ -617,9 +638,20 @@
                       // 跳转到列表页
                      that.$router.push({ path: '/admin/student/index' })
                     })
-                    .catch(function(error) {
-                    
+                    .catch(function(error) 
+                    {
+                      // 把日期数据格式再次装换
+                      if(that.studentForm.birthday)
+                      {
+                          that.studentForm.birthday = new Date(studentForm.birthday); 
+                      }
 
+                      if(that.studentForm.sign_up_at)
+                      {
+                        that.studentForm.sign_up_at = new Date(studentForm.sign_up_at);
+                      }
+
+                       
                       stack_error(error);
                     });
                 } else {
@@ -723,7 +755,8 @@
             },
             venueChange(value) {
 
-              this.getClasses(value)
+              this.getClasses(value);
+              this.getCards(value);
             },
             changeCardStatus(index) {
               var length = this.studentForm.user_cards.length;

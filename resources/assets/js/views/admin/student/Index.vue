@@ -32,7 +32,9 @@
                     
                     <!-- 归属道馆 -->
                     <div class="input-group input-group-sm">
-                        <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange" size="small">
+                        <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange" size="small"
+                        clearable
+                        >
                             <el-option
                                    v-for="item in venueOptions"
                                    :key="item.value"
@@ -44,7 +46,9 @@
                     </div>
                     <!-- 班级 -->
                      <div class="input-group input-group-sm">
-                         <el-select style="width:160px" v-model="params.class_id" placeholder="班级"  class="filter-item"  size="small" >
+                         <el-select style="width:160px" v-model="params.class_id" placeholder="班级"  class="filter-item"  size="small"
+                            clearable
+                         >
                                 <el-option
                                        v-for="item in classOptions"
                                        :key="item.value"
@@ -165,10 +169,11 @@
                     <td colspan="2">{{student_info.school}}</td>
                 </tr>
                 
-               
                 <tr>
+                    <th>报名时间</th>
+                    <td colspan="2"> {{student_info.sign_up_at}}</td>
                     <th>家庭住址</th>
-                    <td colspan="6">{{student_info.province}}{{student_info.city}}{{student_info.area}}{{ student_info.address}}</td>
+                    <td colspan="3">{{student_info.province}}{{student_info.city}}{{student_info.area}}{{ student_info.address}}</td>
                 </tr> 
                 <tr>
                     <th colspan="7" style="text-align:center;"> 个人卡券信息 </th>

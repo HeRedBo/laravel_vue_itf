@@ -67,7 +67,7 @@
                     <template slot="username" slot-scope="item">
                         <span>{{item.item.operator.name}}</span>
                     </template>
-                    username
+                    
                     
                     <!-- 操作 -->
                     <template slot="actions" slot-scope="item">
@@ -96,7 +96,7 @@
             >
 
                 <el-form-item label="卡类型" prop="type">
-                    <el-radio-group v-model="CardForm.type">
+                    <el-radio-group v-model="CardForm.type" :disabled="!!CardForm.id" >
                         <el-radio :label="1" >期卡</el-radio>
                         <el-radio :label="2" >次卡</el-radio>
                     </el-radio-group>
@@ -136,6 +136,7 @@
                     <el-input-number v-model="CardForm.card_price" ></el-input-number>        
                 </el-form-item>
 
+
                 <el-form-item label="有效期开始时间" prop="start_time">
                         <el-date-picker
                                 v-model="CardForm.start_time"
@@ -155,9 +156,26 @@
                         </el-date-picker>
                 </el-form-item>
 
-                <el-form-item label="启用状态">
-                        <el-switch on-value="1" off-value="0" on-text="" off-text="" v-model="CardForm.status"></el-switch>
+                <el-form-item label="启用状态"> 
+                    <el-switch v-model="CardForm.status" on-text="" off-text=""></el-switch>
+                    <!-- <el-switch v-model="cardStatus" on-text="" off-text=""> -->
+                </el-switch>
+                
+                
+
                 </el-form-item>
+
+            <!-- <el-form-item label="test">
+                <el-tooltip :content="'Switch value: ' + cardStatus" placement="top">
+                  <el-switch
+                    v-model="cardStatus"
+                    on-color="#13ce66"
+                    off-color="#ff4949"
+                    on-value="100"
+                    off-value="0">
+                  </el-switch>
+                </el-tooltip>
+            </el-form-item> -->
 
                 <el-form-item label="卡券说明">
                     <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6}" v-model="CardForm.explain"></el-input>
@@ -283,6 +301,7 @@ export default {
             showCreateButton : false,
             dialogFormVisible : false,
             selectItemVisible : false,
+            cardStatus : false,
             dialogTitle : '创建卡券',
             CardForm : {
                 name : '',
@@ -291,7 +310,7 @@ export default {
                 unit : '',
                 card_price : '',
                 explain : '',
-                status : '',
+                status : false,
             },
 
             RoleRules: {
@@ -342,7 +361,6 @@ export default {
       this.getcardTypeOptions();
     },
     methods: {  
-
         handleCreate () {
             var venue_id = this.CardForm.venue_id;
             this.CardForm = {
@@ -357,8 +375,8 @@ export default {
         handleUpdate(row) {
             row.start_time = new Date(row.start_time);
             row.end_time = new Date(row.end_time);
-
-            this.CardForm = Object.assign({}, row)
+            row.status  =  Boolean(row.status);
+            this.CardForm = row;
             this.dialogTitle = '更新卡券';
             this.dialogFormVisible = true
         },
@@ -368,34 +386,8 @@ export default {
             var that = this;
             if (valid) 
             {
-                if(this.CardForm.status ==1) 
-                {
-                    swal({
-                        title: "确定要" + this.dialogTitle + "?",
-                        text: '卡券一经启用无法之后无法修改 你是否要继续执行该操作？',
-                        type: "warning",
-                        showCancelButton: true,
-                        cancelButtonText: "取消",
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: "确认",
-                        closeOnConfirm: true
-                    }).then(function () 
-                    {
-                        that.saveCard();
-                    
-                    },function(dismiss) {
-                        if (dismiss === 'cancel') {
-                            that.CardForm.status = 0;
-                        }
-                    }
-                )
-                }
-                else 
-                {
-                    that.saveCard();
-                }
                 
+                that.saveCard();
             } 
             else 
             {
@@ -407,7 +399,8 @@ export default {
         },
         saveCard() {
                 this.CardForm.start_time = parseTime(this.CardForm.start_time);
-                this.CardForm.end_time  = parseTime(this.CardForm.end_time);
+                this.CardForm.end_time   = parseTime(this.CardForm.end_time);
+                this.CardForm.status     = Number(this.CardForm.status);
                 let url = '/card' + (this.CardForm.id ? '/' + this.CardForm.id : ''), that = this;
                 let method = this.CardForm.id ? 'put' : 'post';
                 that.buttonLoading = true;
@@ -464,7 +457,6 @@ export default {
                 that.showCreateButton = true;
              })
             .catch(function(error) {
-                console.log(error);
                 stack_error(error);
             });
         },
@@ -509,7 +501,9 @@ export default {
             type: 'warning',
             showCancelButton: true,
             confirmButtonText: '确认',
-            cancelButtonText: '取消'
+            cancelButtonText: '取消',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
             }).then(function() 
             {
 

@@ -21,13 +21,13 @@ interface StudentRepository extends RepositoryInterface
      */
     public  function createStudent(array $data,StudentCard $studentCard,VenueBillService $bill_service);
     
-    public  function  updateStudent(array $data, $id);
+    public  function  updateStudent(array $data, $id,StudentCard $studentCard);
     
     public  function getRelationOptions();
-    
-    public  function  getStudentInfo($student_id);
 
     public  function  studentList(Request $request);
+
+    public  function  getStudentInfo($student_id,StudentCard $studentCar);
 
     public  function  getStudentBaseInfo($student_id,StudentCard $studentCard);
 

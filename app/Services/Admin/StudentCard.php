@@ -29,7 +29,6 @@ class StudentCard
     protected  $studentNumberCardRepository;
     protected  $venueRepository;
     protected  $studentRepository;
-    
     protected  $venues_student_number_card_redis_key = 'venues_student_number_card_redis_key:';
     
     public  function __construct(
@@ -52,7 +51,7 @@ class StudentCard
      */
     public  function saveStudentNumberCard($student_id, $data)
     {
-        if($data['auto_create_number'] == 1)
+        if(empty($data['card_number']) && (isset($data['auto_create_number']) && $data['auto_create_number'] == 1))
         {
             $card_number = $this->createUserCardNumber($student_id);
         }
@@ -73,8 +72,6 @@ class StudentCard
         $model->save();
         return $model->id;
     }
-
-
 
     /**
      * 创建学生会员卡编号
@@ -290,6 +287,7 @@ class StudentCard
                 $residue_class_number = $student_card['residue_class_number']; //  已经使用课程数
                 $student_card['percentage'] = round(($residue_class_number/$total_class_number),2) * 100;
             }
+            $student_card['percentage'] = (string) $student_card['percentage'];
             // 获取卡编号
             $student_card['student_card_number'] = '';
             $number_card_id = $student_card['number_card_id'];
@@ -309,5 +307,26 @@ class StudentCard
         }
         return $student_card;
 
+    }
+
+    /**
+     * 获取某个学生的卡券信息
+     * @param  int $student_id 学生ID
+     * @return string 学生编号
+     */
+    public  function  getStudentNumberCard($student_id)
+    {
+        $model =  new StudentNumberCard;
+        $student_card_info = $model
+                            ->where('student_id','=', $student_id)
+                            ->where('status','=',1)
+                            ->first();
+
+        $student_number_card = '';
+        if($student_card_info)
+        {
+            $student_number_card = $student_card_info->number;
+        }
+        return $student_number_card;
     }
 }

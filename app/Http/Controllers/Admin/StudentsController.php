@@ -115,11 +115,12 @@ class StudentsController extends ApiController
      */
     public function edit($id)
     {
-        $result = $this->repository->getStudentInfo($id);
+        $result = $this->repository->getStudentInfo($id, $student_card_service);
         if($result['status'] == 1)
         {
-            return $this->response->setResponseData($result['data'])
-                ->withSuccess($result['msg']);
+            return $this
+                    ->response->setResponseData($result['data'])
+                    ->withSuccess($result['msg']);
         }
         else
         {
@@ -142,8 +143,9 @@ class StudentsController extends ApiController
         {
             $data = array_merge($request->all(),[
                 'operator_id'      => auth('admin')->user()->id,
+                'operator_name'    => auth('admin')->user()->name
             ]);
-            $res = $this->repository->updateStudent($data, $id);
+            $res = $this->repository->updateStudent($data, $id,$this->student_card_service);
             if($res['status'] == 1)
                 return $this->response->withSuccess($res['msg']);
             else
@@ -166,9 +168,7 @@ class StudentsController extends ApiController
     public function destroy($id)
     {
         $deleted = $this->repository->delete($id);
-
         if (request()->wantsJson()) {
-
             return response()->json([
                 'message' => 'Student deleted.',
                 'deleted' => $deleted,
