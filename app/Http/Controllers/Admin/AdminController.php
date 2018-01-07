@@ -192,9 +192,7 @@ class AdminController extends ApiController
         else
             return $this->response->withInternalServer($res['msg']); 
     }
-
-
-
+    
     public function checkUserName(Request $request) 
     {
         $name  = $request->get('username');
@@ -207,5 +205,15 @@ class AdminController extends ApiController
         
         $result['status'] = $status;
         return $this->response->withData($result);
+    }
+
+    public  function logger(Request $request)
+    {
+        $res = $this->repository->logger($request);
+        if($res['status'] == 1)
+            return $this->response->withData($res['data']);
+        else
+            return $this->response->withInternalServer($res['msg']);
+
     }
 }

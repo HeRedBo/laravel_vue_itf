@@ -112,6 +112,11 @@ export default [
                         name : '用户列表',
                         component : () => import('views/admin/user/Index.vue')
                     },
+                     {
+                        path: 'logger',
+                        name : '操作日志',
+                        component : () => import('views/admin/user/Logger.vue')
+                    },
                 ]
             },
             // {

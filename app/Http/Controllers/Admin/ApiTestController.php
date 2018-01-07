@@ -11,6 +11,8 @@ use App\Models\Admin\Student;
 use App\Models\Admin\Card;
 use App\Models\Admin\CardSnap;
 use App\Services\Admin\VenueBillService;
+use Illuminate\Support\Facades\Event;
+use App\Events\AdminLogger;
 
 
 class ApiTestController extends ApiController
@@ -30,14 +32,11 @@ class ApiTestController extends ApiController
 
     }
 
-
-
-
     public  function  ApiTest()
     {
-
-        $student_number_card_info = $this->student_card_service->getStudentNumberCard(12);
-        dd($student_number_card_info);
+        
+        
+        echo $sql_log;
         exit;
         $card_info = Card::find(6)->toArray();
         $snap_id = (new CardSnap)->createCardSnap($card_info);

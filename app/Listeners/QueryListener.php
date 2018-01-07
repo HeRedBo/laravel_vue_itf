@@ -27,11 +27,15 @@ class QueryListener
      */
     public function handle(QueryExecuted $event)
     {
-        $sql  = str_replace("?", '"%s"', $event->sql);
-        $sql  = vsprintf($sql, $event->bindings);
-        $time = $event->time;
-        $name = $event->connectionName;
-        $data = compact('sql','time','name');
-        BLogger::getLogger(BLogger::LOG_QUERY_REAL_TIME)->info($data);
+        if(env('DB_SQL_LOG'))
+        {
+            $sql  = str_replace("?", '"%s"', $event->sql);
+            $sql  = vsprintf($sql, $event->bindings);
+            $time = $event->time;
+            $name = $event->connectionName;
+            $data = compact('sql','time','name');
+            BLogger::getLogger(BLogger::LOG_QUERY_REAL_TIME)->info($data);
+        }
+       
     }
 }

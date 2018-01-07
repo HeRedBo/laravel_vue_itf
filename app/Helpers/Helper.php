@@ -2,6 +2,7 @@
 
 use itbdw\QiniuStorage\QiniuStorage;
 use App\Services\Logs\BLogger;
+use Illuminate\Http\Request;
 
 function upBase64Img($base64_image_content, $path = 'images')
 {
@@ -123,5 +124,16 @@ if(!function_exists('DateTimeToGmt')) {
     {
         $unix_time = $datetime ? strtotime($datetime) : time();
         return @gmdate($format_string, $unix_time)." GMT";
+    }
+}
+
+
+if(!function_exists('getClientIp')) 
+{
+    function getClientIp() 
+    {
+        $request = request();
+        $request->setTrustedProxies(array('10.32.0.1/16'));  
+        return $request->getClientIp();
     }
 }

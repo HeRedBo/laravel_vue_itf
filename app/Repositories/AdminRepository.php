@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use Illuminate\Http\Request;
 use Prettus\Repository\Contracts\RepositoryInterface;
 
 /**
@@ -22,5 +23,7 @@ interface AdminRepository extends RepositoryInterface
     public function deleteUser($id);
     
     public  function  getUserVenues($uid);
+
+    public function logger(Request $request);
 
 }
