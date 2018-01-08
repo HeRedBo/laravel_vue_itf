@@ -26,4 +26,6 @@ interface AdminRepository extends RepositoryInterface
 
     public function logger(Request $request);
 
+    public  function  getUserList(Request $request);
+
 }

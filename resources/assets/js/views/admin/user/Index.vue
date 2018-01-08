@@ -1,47 +1,81 @@
 <template>
-    <div class="box">
-        <div class="app-container calendar-list-container">     
-            <div class="filter-container">
-                    <el-input  style="width: 200px;" class="filter-item" placeholder="角色名称" v-model="searchQuery.name" ></el-input>
-                    <el-button class="filter-item" type="primary" icon="search" @click="loadUserList">搜索</el-button>
-                    <router-link :to="{path:'create'}"> 
-                            <el-button class="filter-item" style="margin-left: 10px;"  @click="handleCreate" type="primary" icon="edit"> 添加  
-                            </el-button>
-                    </router-link>
-                
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-inline pull-right">
+                            <!-- 角色 -->
+                             <div class="input-group input-group-sm">
+                                 <el-select style="width:160px" v-model="params.role_id" placeholder="角色"  class="filter-item"  size="small"
+                                    clearable multiple autosize
+                                 >
+                                        <el-option
+                                               v-for="item in roleOptions"
+                                               :key="item.value"
+                                               :label="item.label"
+                                               :value="item.value"
+                                               >
+                                        </el-option>
+                                    </el-select>
+                            </div>
 
-                   
-                
-            </div>
-                    
-                    
-            <el-table
-                :data="tableData"
-                border
-                stripe
-                fit highlight-current-row
-                style="width: 100%"
-                :default-sort = "{prop: 'id', order:'descending'}"
-                @sort-change="sortChange"
-                v-loading="listLoading"
-                element-loading-text="拼命加载中"
-            >
-                    
-                <el-table-column 
-                    align="center" 
-                    label="ID" 
-                    prop="id"
-                    sortable="custom"
-                    width="80"
-                >
-                </el-table-column>
+
+                            <!-- 道馆 -->
+                             <div class="input-group input-group-sm">
+                                 <el-select style="width:160px" v-model="params.venue_id" placeholder="归属道馆"  class="filter-item"  size="small"
+                                    clearable
+                                 >
+                                        <el-option
+                                               v-for="item in venueOptions"
+                                               :key="item.value"
+                                               :label="item.label"
+                                               :value="item.value"
+                                               >
+                                        </el-option>
+                                    </el-select>
+                            </div>
+
+                                 <!--  数据搜索框 -->
+                               <div class="input-group input-group-sm">
+                                    <el-input 
+                                        placeholder="昵称、邮箱、手机号" 
+                                        v-model="params.query_name"
+                                        size="small"
+                                    >
+                                    </el-input>
+                                </div>
+
+                                 <!--  按钮分组 -->
+                                <div class="btn-group btn-group-sm">
+                                    <button type="submit" class="btn btn-primary" @click="$refs.table.loadList()"><i class="fa fa-search"></i>
+                                    </button>
+                                    <a href="javascript:void(0)" class="btn btn-warning" @click="reset"><i class="fa fa-undo"></i></a>
+                                </div>
+
+
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+
+
+                <vTable ref="table"
+                    stripped
+                    hover
+                    :searchType=1
+                    :ajax_url="ajax_url"
+                    :params="params"
+                    :fields="fields"
+                    :current-page="currentPage"
+                    :per-page="perPage"
+                    :del="del"
+                > 
 
                 <!-- 用户名 -->
-                <el-table-column
-                    label="用户名"
-                >
-                    <template slot-scope="scope">  
-                        <el-popover
+                <template slot="username" slot-scope="item">
+                     <el-popover
                         ref="popover"
                         placement="right"
                         width="170"
@@ -49,67 +83,60 @@
                         >
                     
                         <div style="text-align: right; margin: 0">
-                        <img :src="scope.row.picture" width="150px" height="150px" class="user-avatar"/>
+                        <img :src="item.item.picture" width="150px" height="150px" class="user-avatar"/>
                         </div>
                     </el-popover>
-                    <img :src="scope.row.picture" width="20px" height="20px" class="img-circle"  v-popover:popover />
-                    {{scope.row.username}}
-                    <!-- <img :src="scope.row.logo" width="40px" height="40px" class="user-avatar" v-popover:popover /> -->
-                    </template>
-                </el-table-column>
-                <!-- 姓名 -->
-                <el-table-column
-                    prop="name"
-                    label="姓名"
-                >
-                </el-table-column>
-
-                
-                <el-table-column
-                    prop="created_at"
-                    label="添加时间"
-                    sortable="custom"
-                >
-                </el-table-column>
-            
-                <el-table-column label="操作" width="250">
-                <template slot-scope="scope">
-
-                        <div class="btn-group">
-                                <!-- <router-link :to="{path:'setacl/'+ scope.row.id}" class="btn bg-purple btn-xs">设置权限</router-link> -->
-                    
-                                <!-- <a @click="handleDelete(scope.row.id)" class="btn btn-danger btn-xs">删除</a> -->
-                                <a href="#" @click.prevent="view(scope.row.id)" class="btn btn-success btn-xs">查看</a>
-                                <router-link target="_blank" :to="{path:'update/'+ scope.row.id}" class="btn  bg-orange btn-xs">编辑</router-link>
-                                <a @click="handleDelete(scope.row.id)" class="btn btn-danger btn-xs">删除</a>
-                        </div>
+                    <img :src="item.item.picture" width="20px" height="20px" class="img-circle"  v-popover:popover />
+                    {{item.item.username}}
                 </template>
-                </el-table-column>
-                    
-            </el-table>
-            
-            <!-- 分页组件 -->
-            <div v-show="!listLoading" class="pagination-container">
-                <el-pagination
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                :current-page="currentPage"
-                :page-sizes="pageSizes"
-                :page-size="perPage"
-                :layout="layouts"
-                :total="totalRows">
-                </el-pagination>
-            </div>
-            
+                 <!--  归属道馆 -->
+                <template slot="venues_name" slot-scope="item">
+                    <div style="width:120px">
+                        <el-tag v-for="row in item.item.venues"
+                        :key="row.id"
+                        type="primary"
+                        close-transition
+                     >
+                        {{row.name}}
+                    </el-tag>
+                    </div>
+                </template>
 
-            <div id="user_view_box" style="display: none">
+                <template slot="roles_name" slot-scope="item">
+                    <div style="width:120px">
+                        <el-tag v-for="row in item.item.roles"
+                        :key="row.id"
+                        type="primary"
+                        close-transition
+                     >
+                        {{row.name}}
+                    </el-tag>
+
+                    </div>
                     
+
+                </template>
+
+                <!-- 操作 -->
+                <template slot="actions" slot-scope="item">
+                    <div class="btn-group">
+                        <!-- <a href="#" @click.prevent="view(item.item)" class="btn btn-success btn-xs">查看</a> -->
+                        <router-link target="_blank" :to="{path:'update/'+ item.item.id}" class="btn  bg-orange btn-xs">编辑</router-link>
+                        <a @click="handleDelete(item.item.id)" class="btn btn-danger btn-xs">删除</a>
+
+
+                    </div>
+                </template>
+                </vTable>
+            </div>
+        </div>
+
+        <div id="user_view_box" style="display: none">    
                 <div class="box box-widget widget-user-2">
                     <div class="widget-user-header bg-yellow">
                         <div class="widget-user-image">
                             <img class="img-circle" :src="user.picture" alt="User Avatar"/>
                         </div>
-    
                         <h3 class="widget-user-username">{{user.username}}</h3>
                         <h5 class="widget-user-desc">{{user.name}}</h5>
                     </div>
@@ -117,176 +144,130 @@
                     <div class="box-footer no-padding">
                         <ul class="nav nav-stacked">
                             <li><a href="#">手机号<span class="pull-right badge bg-blue">{{user.phone}}</span></a></li>
-                            <li><a href="#">角色<span class="pull-right badge bg-aqua">{{user.rolesStr}}</span></a></li>
-                            <li><a href="#">隶属道馆<span class="pull-right badge bg-aqua">{{user.venuesStr}}</span></a></li>
+                            <li><a href="#">角色
+                                <span v-for="row in user.roles" :key="row.id" class="pull-right badge bg-aqua">{{row.name}}</span>
+                            </a></li>
+                             <li>
+                                <a href="#">隶属道馆
+                                 <span v-for="row in user.venues" :key="row.id" class="pull-right badge bg-green">{{row.name}}</span>
+                            </a></li>
+                            <li><a href="#">邮箱<span class="pull-right badge bg-aqua">{{user.email}}</span></a></li>
+
+                           <!--  <li><a href="#">Projects <span class="pull-right badge bg-blue">31</span></a></li>
+                <li><a href="#">Tasks <span class="pull-right badge bg-aqua">5</span></a></li>
+                <li><a href="#">Completed Projects <span class="pull-right badge bg-green">12</span></a></li>
+                <li><a href="#">Followers <span class="pull-right badge bg-red">842</span></a></li> -->
                         </ul>
                     </div>
                 </div>
             </div>
-                
-        </div>
+
+
     </div>
-
-
 </template>
 
 <script>
-import {stack_error,parseSearchParam} from 'config/helper';
+import {stack_error} from 'config/helper';
 export default {
     data() {
-        return {
-            tableData: [],
-            currentPage : 1,
-            pageSizes : [15,20, 50, 100, 200],
-            perPage : 15,
-            layouts : 'total, sizes, prev, pager, next, jumper',
-            totalRows : 0,
-            params : {
-                orderBy:'id',
-                sortedBy: 'desc'    
+        const validateRolename = (rule, value, callback) => {
+            this.checkRoleName(value, function(status) {
+                if(status == 1)
+                {
+                    callback(new Error('道馆名称已存在'))
+                } else {
+                    callback()
+                }
+         });
+      }
+
+     return { 
+            items: [],
+            fields: {
+                id: {label: 'ID', sortable: true},
+                username: {label: '登陆名'},
+                name: {label: '昵称'},
+                venues_name : {label:'归属道馆', need:'venues'},
+                roles_name : {label:'角色', need:'roles'},
+                email: {label: '邮箱'},
+                phone: {label: '手机号码'},
+                created_at:{label:'创建时间', sortable: true},
+                // updated_at:{label:'更新时间', sortable: true},
+                actions : {label: '操作'}
             },
-            searchQuery : {},
+            ajax_url: "/user",
+            params : {},
+            currentPage: 1,
+            perPage: 15,
+            del: {url:'/user',title:'用户删除后不可恢复，确定要删除角色吗?'},
             listLoading: true,
-            user : {
-                username: '',
-                password: '',
-                name : '',
-                phone : '',
-                rolesStr: '未分配',
-                venuesStr: '未分配'
-			},
+            buttonLoading: false,
+            user:{},
+            roleOptions: [],
+            venueOptions: [],
         }
     },
-
-    created () {
-        this.loadUserList();
+    created() {
+       this.getRole();
+       this.getVenues();
     },
     methods : {
-        handleCreate () {
-           
-        },
-        handleSizeChange(val) {
-            this.params.pageSize = val;
-            this.loadUserList();
-        },
-
-        handleCurrentChange(val) {
-            this.params.page = val;
-            this.loadUserList();
-        },
-
-        loadUserList() {
-            let url = '/user',that =this;
-            var search_query = parseSearchParam(that.searchQuery);
-            that.params.search = search_query;
-            this.listLoading = true;
-            this.$http({
-                method :'GET',
-                url : url,
-                params : that.params
-            })
-            .then(function(response) {
-                that.listLoading = false
-                let {data} = response;
-                let responseData = data.data;
-                that.totalRows = responseData.total;
-                that.perPage = responseData.per_page;
-                that.tableData = data.data.data;
-            })
-            .catch(function(error) {
-                that.listLoading = false;
-                stack_error(error);
-            });
-
-        },
-
-      sortChange(val) {
-        this.params.orderBy = val.prop;
-        if(val.order == 'ascending')
-        {
-            this.params.sortedBy = 'ASC';
-        } 
-
-        if(val.order == 'descending')
-        {
-            this.params.sortedBy = 'DESC';
-        }
-        this.loadUserList();
+      reset() 
+      {
+        this.params = {};
       },
 
-      handleDelete(id) {
-        var that = this;
-        swal({
-              title: "确定要删除?",
-              text: '角色删除后不可恢复，确定要删除角色吗？',
-              type: "warning",
-              showCancelButton: true,
-              cancelButtonText: "取消",
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: "删除",
-              closeOnConfirm: true
-            }).then(function () {
-                that.listLoading = false;
-                var url =  'user' +'/'+id;
-                that.$http({
-                    method :'DELETE',
-                    url : url,
+      view(row) {
+        this.user = row;
+        setTimeout(function() {
+                swal({
+                    title:'',
+                    html : $("#user_view_box").html(),
+                    customClass : 'user_view_box'
+                });
+        }, 100);
+      },
+
+      getRole() {
+        var url = '/user/role', that = this;
+        this.$http({
+           method :"GET",
+           url : url,
+        })
+        .then(function(response) {
+          var responseJson = response.data,data = responseJson.data
+          var options = [];
+          for (var i in data ) {
+            let label =  data[i].name;
+            options.push({value : data[i].id , label: label});
+          } 
+
+          that.roleOptions = options;
+        })
+        .catch(function(error) {
+          stack_error(error);
+        }); 
+    },
+
+     getVenues() {
+                var url = '/user/venues', that = this;
+                this.$http({
+                   method :"GET",
+                   url : url,
                 })
                 .then(function(response) {
-                    that.listLoading = false
-                    let {data} = response;
-                    that.$message({
-                        showClose: true,
-                        message: data.message,
-                        type: 'success'
-                    });
-                    that.loadUserList();
+                  var responseJson = response.data,data = responseJson.data
+                  var options = [];
+                  for (var i in data ) {
+                    let label =  data[i].name;
+                    options.push({value : data[i].id , label: label});
+                  } 
+                  that.venueOptions = options;
                 })
                 .catch(function(error) {
-                    that.listLoading = false;
-                    stack_error(error);
-                });
-  
-            }, function (dismiss) {
-                      // dismiss can be 'cancel', 'overlay',
-                      // 'close', and 'timer'
-                      if (dismiss === 'cancel') {
-                        swal(
-                          'Cancelled',
-                          'Your imaginary file is safe :)',
-                          'error'
-                        )
-                      }
-            });
-      },
-      view(id) {
-    
-				var that = this , url =  'user/' + id;
-                that.$http({
-                    method :'GET',
-                    url : url,
-                })
-                .then(function(response) {
-                    let {data} = response;
-                    that.user = data.data;
-                    setTimeout(function() {
-						swal({
-							title:'',
-							html : $("#user_view_box").html(),
-							customClass : 'user_view_box'
-						});
-					}, 100)
-                })
-                .catch(function(error) {
-                    that.listLoading = false;
-                    stack_error(error);
-                });
-      },
-      handleUpdate(row) {
-        
-     
-      },
+                  stack_error(error);
+                }); 
+        },
 
 
     }
@@ -294,16 +275,6 @@ export default {
 
 </script>
 
-<style>
-.user_view_box {
-    width : 312px;
-}
-.nav-stacked > li > a {
-text-align: left;
-}
-        
-    </style>
 <style rel="stylesheet/scss" lang="scss">
  @import "resources/assets/styles/index";
-
 </style>

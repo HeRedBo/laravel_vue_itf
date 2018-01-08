@@ -48,12 +48,12 @@ class AdminController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request  $request)
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
         try
         {
-            $users = $this->repository->paginate(20)->toArray();
+            $users = $this->repository->getUserList($request);
             return $this->response->withData($users);
         }
         catch (\Exception $e)
@@ -169,8 +169,9 @@ class AdminController extends ApiController
                 return $this->response->withSuccess('数据更新成功');
             else
                 return $this->response->withInternalServer($res['msg']);
-           
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e)
+        {
             return $this->response->withInternalServer($e->getMessage());
         }
     }

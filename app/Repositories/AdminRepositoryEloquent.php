@@ -255,7 +255,6 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
      */
     public function logger(Request $request)
     {
-        $data          = [];
         try 
         {
             $admin_user_id = auth('admin')->user()->id;
@@ -311,5 +310,92 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
         }
         return success('数据获取成功',$data);
 
+    }
+
+    /**
+     * 获取管理员学生列表数据
+     *
+     * @param Request $request
+     *
+     */
+    public  function  getUserList(Request $request)
+    {
+        $query = Admin::query()->with(["venues","roles"]);
+                $query->leftJoin('admin_user_role', 'admin.id','=', 'admin_user_role.user_id')
+                ->leftJoin("admin_roles","admin_user_role.role_id",'=', "admin_roles.id")
+                ->leftJoin("admin_venue","admin_venue.admin_id","admin.id")
+                ->leftJoin("venues","admin_venue.venue_id","=","venues.id");
+        $fields = ["admin.*"];
+
+        $pageSize  = $request->get('pageSize') ?: self::DEFAULT_PAGE_SIZE;
+        $orderBy   = $orderBy = $request->get('orderBy')?:'id';
+        $sortBy    = $request->get('sortedBy')?:'desc';
+        $query_name= $request->get('query_name');
+        $role_id= $request->get('role_id');
+        $venue_id= $request->get('venue_id');
+
+        $or_where  = $where = $whereIn =  [];
+        if(!empty($query_name))
+        {
+            $or_where = [
+                ["admin.username","like","%{$query_name}%"],
+                ["admin.name","like","%{$query_name}%"],
+                ["admin.phone","like","%{$query_name}%"],
+                ["admin.email","like","%{$query_name}%"],
+            ];
+        }
+
+        if(!empty($role_id))
+        {
+            if(is_array($role_id))
+            {
+                $whereIn[] = ["admin_user_role.role_id", $role_id];
+            }
+            else
+                $where[] = ["admin_user_role.roleL_id",'=', $role_id];
+        }
+
+        if(!empty($venue_id))
+        {
+            if(is_array($venue_id))
+            {
+                $whereIn[] = ["admin_venue.venue_id", $venue_id];
+            }
+            else
+                $where[] = ["admin_venue.venue_id",'=', $venue_id];
+        }
+
+
+
+
+
+        if(!empty($name))
+        {
+            $where[] = ["admin.name"];
+        }
+        $where     = [];
+        if($or_where)
+        {
+            foreach ($or_where as $v) {
+                $query->orWhere($v[0], $v[1], $v[2]);
+            }
+        }
+
+        if($whereIn)
+        {
+            foreach ($whereIn as $v) {
+                $query->whereIn($v[0], $v[1]);
+            }
+        }
+
+        if($where)
+        {
+            foreach ($where as $v) {
+                $query->where($v[0], $v[1], $v[2]);
+            }
+        }
+        $query->groupBy("admin.id");
+        $query->orderBy($orderBy, $sortBy);
+        return  $query->select($fields)->paginate($pageSize)->toArray();
     }
 }
