@@ -74,9 +74,9 @@ class OperationLogHelper
             //后台卡券数据操作日志
 			'card' => [
                 'type_id'	   => ['type'=>'integer'],
+                'operation'    => ['type'=>'string'],
                 'log' => [
                     'properties' => [
-                        'operation' => ['type'=>'string'],
                         'field'     => ['type'=>'string'],
                         'oldValue'  => ['type'=>'string'],
                         'newValue'  => ['type'=>'string'],

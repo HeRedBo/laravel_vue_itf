@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -27,6 +27,7 @@ class CreateCardSnapTable extends Migration
             $table->unsignedTinyInteger('status')->default('0')->comment('启用状态 0:否1:是');
             $table->timestamp('created_at')->nullable()->comment('创建时间');
             $table->index('venue_id');
+            $table->comment = '卡券快照表';
         });
     }
 

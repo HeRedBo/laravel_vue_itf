@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -20,8 +20,8 @@ class CreateRolePermissionTable extends Migration
             $table->integer('permission_id')->unsigned()->comment('权限id');
             $table->integer('role_id')->unsigned()->index('permission_role_role_id_foreign')->comment('角色ID');
             $table->unique(['permission_id','role_id']);
+            $table->comment = '角色权限表';
         });
-        DB::statement("ALTER TABLE $this->table_name comment '角色权限表'");
     }
 
     /**

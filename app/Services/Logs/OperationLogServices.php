@@ -91,44 +91,54 @@ class OperationLogServices
                 $DB->orderBy($v[0], $v[1]);
             }
         }
-        
-        return $DB->paginate($page_size)->toArray();
+        $list = $DB->paginate($page_size)->toArray();
+        if($list['data'])
+        {
+            $data = $list['data'];
+            foreach ($data as $k => &$v) {
+                $v->log = json_decode($v->content,true);
+                $v->field_count = count($v->log);
+                unset($v->content);
+            }
+            $list['data'] = $data;
+        }
+        return $list;
     }
     
     protected  function  saveOperateData(array $logData)
     {
-        $insert_data   = [];
+              
         $type          = $logData['type'];
         $log           = $logData['data']['log'];
         $type_id       = $logData['data']['type_id'];
         $created_at    = $logData['data']['created_at'];
         $operator_id   = $logData['data']['operator_id'];
         $operator_name = $logData['data']['operator_name'];
-        $row_data = [
+        $operation     = $logData['data']['operation'];
+        $filed_map    = $row_data = [];
+        foreach ($log as $k => $v) {
+            $row_data['field']        = $v['field'];
+            $row_data['oldValue']     = $v['oldValue'];
+            $row_data['newValue']     = $v['newValue'];
+            $filed_map[]              = $row_data;
+        }
+
+
+        $operate_data = [
             'type'         => $type,
             'type_id'      => $type_id,
-            'operation'     => '',
-            'field'         => '',
-            'oldValue'      => '',
-            'newValue'      => '',
+            'operation'     =>$operation,
+            'content'      => json_encode($filed_map),
             'created_at'    => $created_at,
             'operator_id'   => $operator_id,
             'operator_name' => $operator_name,
         ];
-        
-        foreach ($log as $k => $v) {
-            $row_data['operation'] = $v['operation'];
-            $row_data['field']     = $v['field'];
-            $row_data['oldValue']     = $v['oldValue'];
-            $row_data['newValue']     = $v['newValue'];
-            $insert_data[] = $row_data;
-        }
-        
-        if($insert_data)
+
+        if($operate_data)
         {
             try
             {
-                DB::table($this->table)->insert($insert_data);
+                DB::table($this->table)->insertGetId($operate_data);
             }
             catch (\Exception $e)
             {

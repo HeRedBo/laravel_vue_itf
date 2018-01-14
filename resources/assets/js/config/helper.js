@@ -165,4 +165,19 @@ export function parseTime(time, cFormat)
      return value || 0
    })
    return time_str
- }
+}
+
+/**
+ * js in_array方法
+ * 
+ * @param mixed search 数据查询的数据 
+ * @param array  array 需要查询的数组
+ */
+export function inArray(search, array) {
+    for (var i in array) {
+        if (array[i] == search) {
+            return true;
+        }
+    }
+    return false;
+}

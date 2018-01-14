@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -20,6 +20,7 @@ class CreateRelationNameTable extends Migration
             $table->char('name', 60)->default('')->comment('关联关系名称');
             $table->timestamp('created_at')->nullable()->comment('创建时间');
             $table->timestamp('updated_at')->nullable()->comment('更新时间');
+            $table->comment = '联系人关系字典表';
         });
     }
 

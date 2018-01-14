@@ -1,7 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -21,8 +20,8 @@ class CreateAdminRolesTable extends Migration
             $table->string('display_name', 50)->default('')->comment('显示名称');
             $table->string('description', 100)->default('')->comment('角色描述');
             $table->timestamps();
+            $table->comment = '用户角色关联表';
         });
-        DB::statement("ALTER TABLE $this->table_name comment '用户角色关联表'");
     }
 
     /**

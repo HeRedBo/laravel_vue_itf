@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -23,6 +23,7 @@ class CreateFederationsTable extends Migration
             $table->integer('operator_id')->unsigned()->default('0')->comment('操作人ID');
             $table->timestamps();
             $table->index('operator_id');
+            $table->comment = '联盟表';
         });
     }
 

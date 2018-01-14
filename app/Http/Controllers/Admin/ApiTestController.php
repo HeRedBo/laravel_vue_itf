@@ -34,26 +34,10 @@ class ApiTestController extends ApiController
 
     public  function  ApiTest()
     {
-        
-        
-        echo $sql_log;
-        exit;
-        $card_info = Card::find(6)->toArray();
-        $snap_id = (new CardSnap)->createCardSnap($card_info);
-        // $card_json = '[{"student_id":2,"number_card_id":1,"card_id":1,"number":1,"card_price":"400.00","total_class_number":0,"start_time":"2017-12-12 17:31:18","end_time":"2018-12-12 17:31:18","status":1,"operator_id":1,"operator_name":"\u4f55\u7ea2\u6ce2","updated_at":"2017-12-12 17:31:18","created_at":"2017-12-12 17:31:18","id":3}]';
 
-        // $user_card = json_decode($card_json,true);
-        // $res = $this->bill_service->createUserCardBill($user_card,1);
-        // dd($res);
-        // $card_no = $this->bill_service->createVenueBillOrderNo(1);
-
-        // dd($card_no);exit;
-
-        
-
-
-
-
+        $json = '{"card_id":3,"operation":"\u4fee\u6539\u5361\u5238\u72b6\u6001","field":["\u5361\u5238\u542f\u7528\u72b6\u6001"],"oldValue":["\u672a\u542f\u7528"],"newValue":["\u542f\u7528"]}';
+        $data = json_decode($json,true);
+        dd($data);
         $bill_data = [
             'venue_id'   => 1,
             'bill_type'  => 1,
@@ -111,23 +95,23 @@ class ApiTestController extends ApiController
     {
         $services = new OperationLogServices();
         $type = 'card';
-        $card_logs = $services->searchLog($type, 20);
-        dd($card_logs);
-        //
-        //$logData = [
+       // $card_logs = $services->searchLog($type, 20);
+       
+        
+        // $logData = [
         //    'type' => 'card',
         //    'data' => [
-        //        'type_id' => 23,
+        //        'card_id' => 23,
+        //        "operation" => '修改卡使用状态',
         //        'log' => [
         //            [
-        //                "operation" => '修改卡使用状态',
         //                "field"     => '卡状态',
         //                "oldValue"  => '未使用',
         //                "newValue"  => '使用中',
         //            ]
         //        ],
         //    ]
-        //];
+        // ];
         
         $services = new CardOperationLogServices();
         $logData = [

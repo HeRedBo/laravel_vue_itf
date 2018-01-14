@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -19,6 +19,7 @@ class CreateStudentClassTable extends Migration
             $table->integer('student_id')->unsigned()->comment('学生记录ID');
             $table->integer('class_id')->unsigned()->comment('班级ID');
             $table->unique(['student_id','class_id']);
+            $table->comment = '后台学生班级关联表';
         });
     }
 

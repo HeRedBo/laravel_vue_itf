@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -23,6 +23,7 @@ class CreateClassesTable extends Migration
             $table->timestamps();
             $table->index('name');
             $table->index('operator_id');
+            $table->comment = '班级表';
         });
     }
 

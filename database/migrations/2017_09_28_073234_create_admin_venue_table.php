@@ -1,8 +1,6 @@
 <?php
 
-
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -22,8 +20,8 @@ class CreateAdminVenueTable extends Migration
             $table->integer('admin_id')->unsigned()->comment('管理员ID');
             $table->integer('venue_id')->unsigned()->comment('道馆ID');
             $table->unique(['admin_id','venue_id']);
+            $table->comment = '管理员道馆关联表';
         });
-        DB::statement("ALTER TABLE $this->table_name comment '管理员道馆关联表'");
     }
 
     /**

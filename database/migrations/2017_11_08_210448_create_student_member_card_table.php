@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -29,6 +29,7 @@ class CreateStudentMemberCardTable extends Migration
             $table->timestamp('updated_at')->nullable()->comment('更新时间');
             $table->index('student_id');
             $table->index(['number','status']);
+            $table->comment = '学生会员卡信息表';
         });
     }
 

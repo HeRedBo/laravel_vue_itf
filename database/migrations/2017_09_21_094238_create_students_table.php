@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -36,6 +36,7 @@ class CreateStudentsTable extends Migration
             $table->timestamps();
             $table->index(['venue_id']);
             $table->index(['province_code', 'city_code','area_code']);
+            $table->comment = '学生信息表';
         });
     }
 

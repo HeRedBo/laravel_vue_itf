@@ -1,7 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -25,8 +24,9 @@ class CreateAdminTable extends Migration
             $table->string('password',255)->comment('登录密码');
             $table->rememberToken();
             $table->timestamps();
+            $table->comment = '后台管理员信息表';
         });
-        DB::statement("ALTER TABLE $this->table_name comment '后台管理员表'");
+       
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -25,8 +25,8 @@ class CreateAdminPermissionsTable extends Migration
             $table->boolean('is_show')->default(1)->comment('是否显示');
             $table->smallInteger('order_num')->default(0)->comment('排序');
             $table->timestamps();
+            $table->comment = '权限表';
         });
-        DB::statement("ALTER TABLE $this->table_name comment '权限表'");
     }
 
     /**

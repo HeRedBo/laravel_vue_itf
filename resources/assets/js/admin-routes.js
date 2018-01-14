@@ -158,8 +158,7 @@ export default [
                         path: 'logger/:id',
                         name: '操作日志',
                         component: () => import('views/admin/card/Logger.vue')
-                    },
-
+                    }
                 ]
             },
             {
@@ -189,7 +188,18 @@ export default [
                     }
                 ]
             },
-
+             {
+                path : 'test',
+                component:Parent,
+                name : 'debug测试模块',
+                children : [
+                    {
+                        path: 'index',
+                        name : '测试模块主页',
+                        component : () => import('views/admin/test/Index.vue')
+                    }
+                ]
+            },
         ]
     }
 

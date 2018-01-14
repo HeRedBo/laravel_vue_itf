@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -24,6 +24,7 @@ class CreateAdminLoggerTable extends Migration
             $table->text('intro', 65535)->nullable()->comment('操作');
             $table->char('ip', 15)->default('127.0.0.1')->comment('操作ip');
             $table->integer('created_at')->unsigned()->default(0)->comment('操作时间');
+            $table->comment = '管理操作日志表';
         });
     }
 

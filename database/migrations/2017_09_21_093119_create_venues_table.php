@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -34,6 +34,7 @@ class CreateVenuesTable extends Migration
             $table->timestamps();
             $table->index('operator_id');
             $table->index(['province_code','city_code','area_code']);
+            $table->comment = '道馆信息表';
         });
 
         

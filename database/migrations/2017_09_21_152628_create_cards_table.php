@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -30,6 +30,7 @@ class CreateCardsTable extends Migration
             $table->timestamp('updated_at')->nullable()->comment('更新时间');
             $table->index('venue_id');
             $table->index('operator_id');
+            $table->comment = '道馆卡券表';
         });
     }
 

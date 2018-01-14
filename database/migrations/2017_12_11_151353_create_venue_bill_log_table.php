@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -32,6 +32,7 @@ class CreateVenueBillLogTable extends Migration
             $table->unsignedInteger('create_user_id')->default('0')->comment('录入人用户ID');
             $table->string('operate_remark',255)->comment('账单操作备注');
             $table->timestamp('created_at')->nullable()->comment('创建时间');
+            $table->comment = '道馆账单日志表';
         });
 
         

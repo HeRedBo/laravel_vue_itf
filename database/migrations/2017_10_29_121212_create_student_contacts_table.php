@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -23,6 +23,7 @@ class CreateStudentContactsTable extends Migration
             $table->string('contact_email',60)->comment('联系人邮箱');
             $table->timestamp('created_at')->nullable()->comment('创建时间');
             $table->index(['relation_id']);
+            $table->comment = '学生联系信息表';
         });
     }
     /**

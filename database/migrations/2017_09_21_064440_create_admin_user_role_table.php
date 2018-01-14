@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -19,6 +19,7 @@ class CreateAdminUserRoleTable extends Migration
             $table->integer('user_id')->unsigned()->comment('管理员ID');
             $table->integer('role_id')->unsigned()->index('role_user_role_id_foreign')->comment('角色ID');
             $table->unique(['user_id','role_id']);
+            $table->comment = '用户角色关联表';
         });
     }
 

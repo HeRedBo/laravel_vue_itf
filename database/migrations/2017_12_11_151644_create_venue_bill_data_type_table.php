@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -22,6 +22,7 @@ class CreateVenueBillDataTypeTable extends Migration
             $table->char('name', 60)->default('')->comment('账单数据类型名称');
             $table->timestamp('created_at')->nullable()->comment('创建时间');
             $table->timestamp('updated_at')->nullable()->comment('更新时间');
+            $table->comment = '道馆账单数据类型字典表';
         });
     }
     

@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -33,6 +33,7 @@ class CreateVenueBillTable extends Migration
             $table->string('operate_remark',255)->comment('账单操作备注');
             $table->timestamp('created_at')->nullable()->comment('创建时间');
             $table->timestamp('updated_at')->nullable()->comment('更新时间');
+            $table->comment = '道馆账单表';
         });
     }
 

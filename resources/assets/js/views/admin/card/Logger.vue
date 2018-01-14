@@ -27,7 +27,7 @@
                            </div>
                            <!--  按钮分组 -->
                             <div class="btn-group btn-group-sm">
-                                <button type="submit" class="btn btn-primary" @click="$refs.table.loadList()"><i class="fa fa-search"></i>
+                                <button type="submit" class="btn btn-primary" @click="loadList"><i class="fa fa-search"></i>
                                 </button>
 
                                 <a href="javascript:void(0)" class="btn btn-warning" @click="reset"><i class="fa fa-undo"></i></a>
@@ -35,29 +35,49 @@
 
                         </div>
                 </div>
-                <vTable ref="table"
-                        stripped
-                        hover
-                        :ajax_url="ajax_url"
-                        :params="params"
-                        :items="items"
-                        :fields="fields"
-                        :current-page="currentPage"
-                        :per-page="perPage"
-                        :del="del"
-                >
-                    <template slot="actions" slot-scope="item">
-                        <div class="btn-group">
-                            <router-link :to="{ path: 'update/'+item.item.id}" class="btn bg-orange btn-xs">编辑</router-link>
-                            <a href="#"  @click.prevent="$refs.table.onDel(item.item.id)"  class="btn btn-danger btn-xs">删除</a>
-                        </div>
-                    </template>
+                    <div class="box-body tablew-responsive no-padding">
+                        <table class="table table-bordered dataTable table-striped table-hover" v-loading="listLoading"
+                            element-loading-text="拼命加载中">
+                            <thead>
+                                <tr>
+                                    <th @click="headClick(field,key)" :class="[field.sortable?'sorting':null,sort===key?'sorting_'+(sortDesc?'desc':'asc'):'']"
+                                        v-for="field,key in fields">
+                                        {{field.label}}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-if="_items.length==0">
+                                    <td :colspan="[checkbox?1+Object.keys(fields).length:Object.keys(fields).length]" class="td-empty">
+                                        <slot name="empty">{{empty_text}}</slot>
+                                    </td>
+                                </tr>
 
-                </vTable>
+                                <template v-else v-for="(item,index) in _items">
+                                    <tr v-for="(row,index) in item.log" :class="[item.state?'table-'+item.state:null]">
+                                        <td v-if="index==0" :rowspan="index==0&&item['field_count']?item['field_count']:1" >{{item['id']}}</td>
+                                        <td v-if="index==0" :rowspan="index==0&&item['field_count']?item['field_count']:1">{{item['operator_name']}}</td>
+                                        <td v-if="index==0" :rowspan="index==0&&item['field_count']?item['field_count']:1">{{item['created_at']}}</td>
+                                        <td v-if="index==0" :rowspan="index==0&&item['field_count']?item['field_count']:1">{{item['operation']}}</td>
+                                        <td>{{row.field}}</td>
+                                        <td><span v-if="!row.oldValue">--</span><del v-else>{{row.oldValue}}</del></td>
+                                        <td>{{row.newValue}}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                        <div v-show="!listLoading" class="col-sm-7 pagination-container" v-if="totalRows>initPage" style="margin-bottom:15px;">
+                            <!-- 分页组件  -->
+                            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSizes"
+                                :page-size="pageSize" :layout="layouts" :total="totalRows">
+                            </el-pagination>
+                        </div>
+                    </div>
+
+
+               
             </div>
         </div>
-
-
 
     </div>
 </template>
@@ -81,11 +101,21 @@
                     oldValue: {label: '旧值'},
                     newValue: {label: '新值'}
                 },
+                filter_fields : ['field','oldValue','newValue'],
                 ajax_url: "/card/cardLogger",
+                checkbox:false,
                 params: {operator_name: ''},
-                currentPage: 1,
                 perPage: 15,
-                del: {url:'/admin/user',title:'确定要删除用户吗?',successText:'删除后台用户成功!'},
+                listLoading: true,
+                sort: null,
+                sortDesc: true,
+                currentPage: 1,
+                pageSizes: [15, 20, 50, 100, 200],
+                pageSize: 15,
+                initPage: 15,
+                layouts: 'total, sizes, prev, pager, next, jumper',
+                totalRows: 0,
+                empty_text:'暂无数据',
                 pickerOptions2: {
                 shortcuts: [{
                     text: '最近一周',
@@ -117,10 +147,25 @@
         },
         created() {
           this.params.card_id = this.$route.params.id
+          this.loadList();
         },
+        computed: {
+
+                    _items() {
+                        if (!this.items)
+                            return []
+                        let items = this.items;
+                        const fix = v => {
+                            if (v instanceof Object) {
+                                return Object.keys(v).map(k => fix(v[k])).join(' ');
+                            }
+                            return String(v);
+                        };
+                        return items;
+                    }
+                },
         methods: {  
             convertSearchTime: function(){ 
-              console.log(this.params.search_time_between); 
               if(this.params.search_time_between)
                {
                     var search_time = [];
@@ -131,9 +176,68 @@
                     this.params.search_time = search_time;
                }
             },
+
+            loadList: function () {
+                var that = this;
+                var url = this.ajax_url;
+                var orderBy = this.sort;
+                var sortedBy = this.sortDesc ? 'desc' : 'asc';
+                var params = { pageSize: this.pageSize, page: this.currentPage, orderBy: orderBy, sortedBy: sortedBy }
+                if (typeof this.params !== 'undefined') {
+                    params = Object.assign(params, this.params);
+                }
+                this.listLoading = true;
+                this.$http({
+                    method: 'GET',
+                    url: url,
+                    params: params
+                })
+                    .then(function (response) {
+                        that.listLoading = false
+                        let { data } = response;
+                        let responseData = data.data;
+                        that.totalRows = responseData.total;
+                        that.pageSize = parseInt(responseData.per_page);
+                        that.items = responseData.data;
+                    })
+                    .catch(function (error) {
+                        that.listLoading = false
+                        console.log(error);
+                        stack_error(error);
+                    });
+
+            },
+
+            headClick(field, key) {
+                if (!field.sortable) {
+                    return;
+                }
+                if (key === this.sort) {
+                    this.sortDesc = !this.sortDesc;
+                }
+                this.sort = key;
+                this.loadList();
+            },
             reset : function() 
             {
                 this.params = {};
+            },
+             handleSizeChange(val) {
+                this.params.pageSize = val;
+                this.loadList();
+            },
+            handleCurrentChange(val) {
+                this.params.page = val;
+                this.loadList();
+                console.log(`当前页: ${val}`);
+            },
+            inArray(search, array) {
+                for (var i in array) {
+                    if (array[i] == search) {
+                        return true;
+                    }
+                }
+                return false;
             }
         },  
         watch: {  
@@ -141,4 +245,10 @@
         }  
     }
 </script>
+
+<style>
+    .td-empty {
+        text-align: center;
+    }
+</style>
 

@@ -30,19 +30,24 @@ class CardOperationLogServices extends  OperationLogServices
      */
     public  function  addCardLog(array $params)
     {
+        logResult(json_encode($params));
         if( empty($params['card_id']) || !is_numeric($params['card_id']) ){
             return error('参数不正确');
+        }
+
+        if(empty($params['operation'])) {
+            return error('操作描述不能为空');
         }
         
         $data = [
             'type' => 'card',
             'data' => [
                 'type_id' => $params['card_id'],
+                'operation' => $params['operation'],
                 'log' => [],
             ]
         ];
         
-        $params['operation'] = $params['operation']?:'';
         $params['field']     = isset($params['field']) ? $params['field'] : '';
         $params['oldValue']  = isset($params['oldValue'])? $params['oldValue'] :'';
         $params['newValue']  = isset($params['newValue']) ? $params['newValue'] :'';
@@ -50,7 +55,6 @@ class CardOperationLogServices extends  OperationLogServices
         if(!is_array($params['field']))
         {
             $data['data']['log'][] = [
-                "operation" => $params['operation'],
                 "field"     => $params['field'],
                 "oldValue"  => $params['oldValue'],
                 "newValue"  => $params['newValue'],
@@ -61,7 +65,6 @@ class CardOperationLogServices extends  OperationLogServices
             foreach ($params['field'] as $k => $filed)
             {
                 $data['data']['log'][] = [
-                    "operation" => $params['operation'],
                     "field"     => $filed,
                     "oldValue"  => $params['oldValue'][$k],
                     "newValue"  => $params['newValue'][$k],

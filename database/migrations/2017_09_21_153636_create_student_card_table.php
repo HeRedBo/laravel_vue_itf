@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -33,6 +33,7 @@ class CreateStudentCardTable extends Migration
             $table->timestamp('updated_at')->nullable()->comment('更新时间');
             $table->index(['number_card_id','card_id']);
             $table->index('operator_id');
+            $table->comment = '学生卡券购买记录表';
         });
     }
 
