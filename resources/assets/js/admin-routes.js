@@ -197,6 +197,11 @@ export default [
                         path: 'index',
                         name : '测试模块主页',
                         component : () => import('views/admin/test/Index.vue')
+                    },
+                    {
+                        path: 'table',
+                        name : '测试表格',
+                        component : () => import('views/admin/test/Table.vue')
                     }
                 ]
             },

@@ -52,7 +52,7 @@ export function stack_error(error) {
     }
 }
 
-function isEmpty(obj) 
+export function isEmpty(obj) 
 {
     if (obj == null) return true;
     if (obj.length > 0)    return false;

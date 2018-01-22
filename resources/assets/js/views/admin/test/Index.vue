@@ -15,7 +15,7 @@
       };
 
     },
-    methods : {
+    methods:{
       inputChange(value) {
         console.log(value)
       }
