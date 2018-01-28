@@ -115,7 +115,7 @@ class StudentsController extends ApiController
      */
     public function edit($id)
     {
-        $result = $this->repository->getStudentInfo($id, $student_card_service);
+        $result = $this->repository->getStudentInfo($id, $this->student_card_service);
         if($result['status'] == 1)
         {
             return $this

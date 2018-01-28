@@ -1,7 +1,69 @@
 <template>
+ 
     <div class="row">
         <div class="col-md-12">
-            <div class="box">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <el-form 
+                            :model="venueCourseForm"
+                            label-width="160px" 
+                            class="el-form"
+                            :rules="venueCourseFormRules">
+                         <!-- 道馆 -->
+                            <el-form-item label="归属道馆" 
+                                v-show="selectItemVisible" 
+                                prop="venue_id" 
+                            >
+                                <el-select 
+                                    v-model="venueCourseForm.venue_id" 
+                                    placeholder="请选择道馆" 
+                                    style="width:200px"   
+                                    @change="venueChange"
+                                    size="small"
+                                >
+                                      <el-option
+                                         v-for="item in venueOptions"
+                                         :key="item.value"
+                                         :label="item.label"
+                                         :value="item.value"
+                                         >
+                                      </el-option>
+                                    </el-select>
+                            </el-form-item>
+                            <el-form-item label="课表名称" prop="schedule_name" >
+                                <el-input 
+                                    v-model="venueCourseForm.schedule_name" 
+                                    placeholder="课表名称"
+                                    style="width:300px"  
+                                    size="small"
+
+                                 > 
+                                 </el-input>
+                            </el-form-item>
+
+                            <!-- 节次数 -->
+                            <el-form-item label="节次数" prop="course_count">
+                                </el-input-number>
+                                  <el-input
+                                    size="small"
+                                    style="width:300px"  
+                                    placeholder="请输入节次数"
+                                    v-model="venueCourseForm.course_count"
+                                    @change="courseCountChange"
+                                    >
+                                </el-input>
+                            </el-form-item>
+
+                            <!-- 状态 -->
+                            <el-form-item label="启用状态">
+                                <el-radio-group v-model="venueCourseForm.status">
+                                    <el-radio :label="0">否</el-radio>
+                                    <el-radio :label="1">是</el-radio>
+                                </el-radio-group>
+                            </el-form-item>    
+                    </el-form>                    
+                </div>
+
                 <div class="box-body tablew-responsive no-padding">
                     <table class="table table-bordered dataTable table-striped table-hover">
                         <thead>
@@ -25,7 +87,6 @@
                                             v-model="course_times[r]"
                                             @change="inputChange"
                                             @blur="courseTimeChange(r)"
-                                           
                                             placeholder="选择时间范围">
                                         </el-time-picker>
                                     </template>
@@ -36,7 +97,6 @@
                                        {{j-data_start_column+1}}
                                        {{r}}
                                     </template>
-                                    
                                 </td>
                             </tr>
                         </tbody>
@@ -52,7 +112,9 @@
             <el-dialog title="设置课程" :visible.sync="dialogFormVisible" class="course_time_form" >
               <div class="row">
                   <div class="col-md-10">
-                      <el-form :model="ScheduleForm">
+                      <el-form ref="ScheduleForm" 
+                      :model="ScheduleForm"  :rules="CourseRules"
+                      >
 
                         <el-form-item label="星期" :label-width="formLabelWidth">
                           <el-input  v-show="0" v-model="ScheduleForm.week" auto-complete="off" 
@@ -69,7 +131,7 @@
                         </el-form-item>
 
                          <!-- 道馆 -->
-                        <el-form-item label="道馆" v-show="selectItemVisible" :label-width="formLabelWidth" >
+                      <!--   <el-form-item label="道馆" v-show="selectItemVisible" :label-width="formLabelWidth"  prop="venue_id" >
                                 <el-select v-model="ScheduleForm.venue_id" placeholder="请选择道馆" size="small" @change="venueChange">
                                   <el-option
                                      v-for="item in venueOptions"
@@ -79,10 +141,10 @@
                                      >
                                   </el-option>
                                 </el-select>
-                        </el-form-item>
+                        </el-form-item> -->
 
                         <!-- 班级 -->
-                        <el-form-item label="班级"  :label-width="formLabelWidth">
+                        <el-form-item label="班级"  :label-width="formLabelWidth" prop="class_id">
                             <el-select v-model="ScheduleForm.class_id" placeholder="请选择班级" size="small">
                               <el-option
                                 v-for="item in classOptions"
@@ -103,7 +165,7 @@
 
               <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+                <el-button type="primary" @click="handleCourseRow">确 定</el-button>
               </div>
 
             </el-dialog>
@@ -114,6 +176,18 @@
 import {stack_error,isEmpty} from 'config/helper';
 export default {
     data() {
+        var checkCourseCount = (rule, value, callback) => {
+            var patrn = /^[0-9]*$/;
+            if (patrn.exec(value) == null || value == "" || value > this.limit_data_row) 
+            {
+                callback(new Error('请输入正确的数字值'));
+            } 
+            else 
+            {
+                 callback();
+            }
+        };
+
         return {
             fields: {
                     course_time: {label: '时间'},
@@ -129,13 +203,12 @@ export default {
             data_start_column: 3,
             total_column : 9,
             data_row : 6,
+            limit_data_row : 9,
             class_Options : [],
             venueCourseForm:{
-                classes:[]
+                venue_id : '',
             },
-
             course_times: [],
-
             dialogFormVisible: false,
 
             ScheduleForm: {
@@ -153,6 +226,29 @@ export default {
                 "6": "六",
                 "7": "日",
             },
+            venueCourseFormRules : {
+                venue_id : [
+                    { required: true, message: '归属道馆不能为空'}
+                ],
+                schedule_name : [
+                     { required: true, message: '课表名称不能为空'}
+                ],
+                course_count : [
+                    { required: true, message: '节次数不能为空'},
+                    { validator: checkCourseCount, trigger: 'blur' }
+                ]
+            },
+            CourseRules: { 
+
+                // venue_id : [
+                //     { required: true, message: '归属道馆不能为空'}
+                // ],
+                
+                class_id: [
+                    { required: true, type: 'number', message: '班级不能为空', trigger: 'blur' }
+                ]
+            },
+
             formLabelWidth: '110px',
             venueOptions: [],
             classOptions: [],
@@ -247,14 +343,17 @@ export default {
             console.log('click');
             console.log(r_key);
         },
-
+        debug()
+        {
+            console.log(this.venueCourseForm);
+        },
         tdClick(row_num, col_num)
         {
-
             console.log(row_num + ':' + col_num);
             if(((1<=row_num) && (row_num <=7)) && ((col_num >=1) && (col_num <= this.data_row)))
             {
                 console.log("hello world");
+                this.ScheduleForm = {};
                 this.ScheduleForm.week = row_num;
                 this.ScheduleForm.section = col_num;
                 this.dialogFormVisible = true;
@@ -324,6 +423,41 @@ export default {
             venueChange(value) {
               this.getClasses(value);
             },
+
+        handleCourseRow()
+        {
+            this.$refs.ScheduleForm.validate(valid => {
+            var that = this;
+            if (valid) 
+            {
+                that.course_times[that.ScheduleForm.week] = [];
+                that.course_times[that.ScheduleForm.week][that.ScheduleForm.section] = that.ScheduleForm;
+                console.log(that.course_times);
+                return true;
+            } 
+            else 
+            {
+                    console.log('error submit!!')
+                    return false
+            }
+
+            });
+            
+        },
+
+        courseCountChange(value)
+        {
+            var patrn = /^[0-9]*$/;
+            if (patrn.exec(value) == null || value == "" || value > this.limit_data_row) 
+            {
+                return false;
+            }
+            this.data_row = value;
+            console.log(this.data_row);
+            console.log(this.total_column);
+            console.log(this.data_start_column);
+            
+        }
     }
 }
 </script>
