@@ -13,7 +13,6 @@ use App\Validators\VenueValidator;
 
 class VenueController extends ApiController
 {
-
     /**
      * @var VenueRepository
      */

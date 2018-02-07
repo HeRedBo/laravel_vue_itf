@@ -137,3 +137,16 @@ if(!function_exists('getClientIp'))
         return $request->getClientIp();
     }
 }
+
+if(!function_exists('getNow'))
+{
+    /**
+     * 获取当前时间的时间日期格式
+     * @return false|string
+     * @author Red-Bo
+     */
+    function getNow()
+    {
+        return date("Y-m-d H:i:d");
+    }
+}

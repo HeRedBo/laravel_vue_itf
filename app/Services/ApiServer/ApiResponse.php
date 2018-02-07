@@ -227,8 +227,7 @@ class ApiResponse
     {
         return $this->response->json($data, $this->statusCode, $headers);
     }
-
-
+    
     public  function  getResponseObj()
     {
         $this->responseObj = new \stdClass();
@@ -249,7 +248,7 @@ class ApiResponse
         return $this->responseCode;
     }
 
-    protected function setResponseMessage($responseMessage)
+    public function setResponseMessage($responseMessage)
     {
         $this->responseMessage = $responseMessage;
         return $this;

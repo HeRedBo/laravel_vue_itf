@@ -12,7 +12,7 @@ use App\Http\Requests\VenueScheduleUpdateRequest;
 use App\Repositories\VenueScheduleRepository;
 
 
-class VenueSchedulesController extends Controller
+class VenueSchedulesController extends ApiController
 {
 
     /**
@@ -23,11 +23,11 @@ class VenueSchedulesController extends Controller
 
     public function __construct(VenueScheduleRepository $repository)
     {
+        parent::__construct();
         $this->repository = $repository;
 
     }
-
-
+    
     /**
      * Display a listing of the resource.
      *
@@ -53,52 +53,33 @@ class VenueSchedulesController extends Controller
      *
      * @param  VenueScheduleCreateRequest $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(VenueScheduleCreateRequest $request)
     {
-        try
-        {
-            $data_json = '{"course_times":[null,["2018-02-07 01:06:51","2018-02-07 02:06:51"],["2018-02-07 02:07:57","2018-02-07 04:07:57"]],"venue_schedules":[null,[null,{"week":1,"section":1,"remark":null,"class_id":4}],[null,{"week":2,"section":1,"remark":null,"class_id":3}],null,null,null,[null,{"week":6,"section":1,"remark":null,"class_id":4},{"week":6,"section":2,"remark":null,"class_id":4}],[null,{"week":7,"section":1,"remark":null,"class_id":5},{"week":7,"section":2,"remark":null,"class_id":3}]],"venue_course_form":{"venue_id":1,"date_between":["2018-02-07 00:00:00","2018-03-31 00:00:00"],"course_count":"2","schedule_name":"2018\u5e74\u65b0\u6625\u5b63\u8bfe\u7a0b\u8868","status":1}}';
-            $request_data =json_decode($data_json,true);
-            //dd($request_data);
-            //$venueSchedule = $this->repository->create($request->all());
-            $venueSchedule = $this->repository->create($request_data);
-            $response = [
-                'message' => 'VenueSchedule created.',
-                'data'    => $venueSchedule->toArray(),
-            ];
-            if ($request->wantsJson())
-            {
-                return response()->json($response);
-            }
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'error'   => true,
-                    'message' => $e->getMessageBag()
-                ]);
-            }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
-        }
+        //$data_json = '{"course_times":[null,["2018-02-07 01:06:51","2018-02-07 02:06:51"],["2018-02-07 02:07:57","2018-02-07 04:07:57"]],"venue_schedules":[null,[null,{"week":1,"section":1,"remark":null,"class_id":4}],[null,{"week":2,"section":1,"remark":null,"class_id":3}],null,null,null,[null,{"week":6,"section":1,"remark":null,"class_id":4},{"week":6,"section":2,"remark":null,"class_id":4}],[null,{"week":7,"section":1,"remark":null,"class_id":5},{"week":7,"section":2,"remark":null,"class_id":3}]],"venue_course_form":{"venue_id":1,"date_between":["2018-02-07 00:00:00","2018-03-31 00:00:00"],"course_count":"2","schedule_name":"2018\u5e74\u65b0\u6625\u5b63\u8bfe\u7a0b\u8868","status":1}}';
+        //$request_data = json_decode($data_json,true);
+        //$res = $this->repository->create($request_data);
+        
+        
+        $res = $this->repository->create($request->all());
+        if($res['status'] == 1)
+            return $this->response->withCreated($res['msg']);
+        else
+            return $this->response->withError($res['msg']);
     }
-
-
+    
     /**
      * Display the specified resource.
      *
      * @param  int $id
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show($id)
     {
         $venueSchedule = $this->repository->find($id);
-
         if (request()->wantsJson()) {
-
             return response()->json([
                 'data' => $venueSchedule,
             ]);
@@ -106,24 +87,27 @@ class VenueSchedulesController extends Controller
 
         return view('venueSchedules.show', compact('venueSchedule'));
     }
-
-
+    
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int $id
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function edit($id)
     {
-
-        $venueSchedule = $this->repository->find($id);
-
-        return view('venueSchedules.edit', compact('venueSchedule'));
+        $result = $this->repository->show($id);
+        if($result['status'])
+        {
+            return $this->response->setResponseMessage($result['msg'])->withData($result['data']);
+        }
+        else
+        {
+            return $this->response->withInternalServer($result['msg']);
+        }
     }
-
-
+    
     /**
      * Update the specified resource in storage.
      *
@@ -134,11 +118,8 @@ class VenueSchedulesController extends Controller
      */
     public function update(VenueScheduleUpdateRequest $request, $id)
     {
-
-        try {
-
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
-
+        try
+        {
             $venueSchedule = $this->repository->update($request->all(), $id);
 
             $response = [
