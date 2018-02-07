@@ -28,10 +28,11 @@ class ClassesRepositoryEloquent extends BaseRepository implements ClassesReposit
         'status',
         'name'=>'like'
     ];
-    
+
     protected  $tb_admin = 'admin';
     protected  $tb_admin_venue = 'admin_venue';
     protected  $tb_class = 'classes';
+
     /**
      * Specify Model class name
      *

@@ -4,7 +4,7 @@ use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCourseTimeTable extends Migration
+class CreateAdminCourseTimeTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateCourseTimeTable extends Migration
      */
     public function up()
     {
-        Schema::create('course_time', function(Blueprint $table)
+        Schema::create('admin_course_time', function(Blueprint $table)
         {
             $table->increments('id')->comment('主键ID');
             $table->integer('venue_id')->unsigned()->comment('道馆ID');
@@ -24,6 +24,7 @@ class CreateCourseTimeTable extends Migration
             $table->integer('operator_id')->unsigned()->default('0')->comment('操作人ID');
             $table->dateTime('created_at')->comment('创建时间');
             $table->index('operator_id');
+            $table->comment = '后台道馆课程表额外配置表';
         });
     }
 

@@ -215,7 +215,7 @@ export default {
                 venue_id : '',
             },
             course_times: [],
-            venue_schedule: [],
+            venue_schedules: [],
             dialogFormVisible: false,
 
             ScheduleForm: {
@@ -289,7 +289,8 @@ export default {
             {
                 var row_course_start_time = Date.parse(row_course_times[0]);
                 var row_course_end_time   = Date.parse(row_course_times[1]);
-
+                console.log(parseTime(row_course_times[0]))
+                console.log(parseTime(row_course_times[1]))
                 for (let j in total_course_time) 
                 {
                     console.log(j);
@@ -326,9 +327,9 @@ export default {
                         {
                             flag_3 = false;
                         }
-                        // console.log(flag_1)
-                        // console.log(flag_2)
-                        // console.log(flag_3)
+                        console.log(flag_1)
+                        console.log(flag_2)
+                        console.log(flag_3)
                         
                         if(!flag_1 || !flag_2) 
                         {
@@ -371,7 +372,7 @@ export default {
                 // 处理每个的数据
                 if(((1<=row_num) && (row_num <=7)) && ((col_num >=1) && (col_num <= that.data_row)))
                 {  
-                    if(isEmpty(that.venue_schedule[row_num]))
+                    if(isEmpty(that.venue_schedules[row_num]) || (!isEmpty(that.venue_schedules[row_num]) && isEmpty(that.venue_schedules[row_num][col_num])))
                     {
                         that.ScheduleForm = {};
                         that.ScheduleForm.week = row_num;
@@ -380,10 +381,11 @@ export default {
                     } 
                     else 
                     {
-                        if(!isEmpty(that.venue_schedule[row_num][col_num]))
+                        if(!isEmpty(that.venue_schedules[row_num][col_num]))
                         {
-                            that.ScheduleForm = that.course_times[row_num][col_num];
-                        }
+                            that.ScheduleForm = that.venue_schedules[row_num][col_num];
+                        } 
+                       
                     }                
                     that.dialogFormVisible = true;
                 }
@@ -396,7 +398,6 @@ export default {
                   var that = this;
                   if (valid) 
                   {
-
                     cb();
                     return true;
                   }  
@@ -481,9 +482,12 @@ export default {
             this.$refs.ScheduleForm.validate(valid => {
             var that = this;
             if (valid) {
-
-                that.venue_schedule[that.ScheduleForm.week] = [];
-                that.venue_schedule[that.ScheduleForm.week][that.ScheduleForm.section] = that.ScheduleForm;
+                var  week = that.ScheduleForm.week;
+                var section = that.ScheduleForm.section;
+                if(isEmpty(that.venue_schedules[week]))
+                    that.venue_schedules[week] = [];
+                    
+                that.venue_schedules[week][section] = that.ScheduleForm;
                 let td_dom_class = 'td_course_time_' + that.ScheduleForm.week + '_' + that.ScheduleForm.section;
                 let class_id = that.ScheduleForm.class_id;
                 let class_name = that.classMap[class_id];
@@ -526,21 +530,47 @@ export default {
             if(!res)
             {
                 this.$message.error('课程时间开始结束时间必填！');
+                return ;
             }
             // 校验课程时间
             var check = this.validateVenueSchedule();
+            console.log(check);
             if(!check)
             {
                 this.$message.error('课程表数据不能为空！');
+                return 
             }
             // 数据校验完成 提交数据到后台 
             // 时间数据进行数据格式转换 提交前 js 格林时间需要转换
             var formData = {};
-            formData.course_time_form = that.tranformCourseTimes(that.course_times);
-            formData.venue_schedule   = that.venue_schedule;
-            formData.venue_course_form = that.tranformVenueCourseForm(that.venueCourseForm) ;
+            formData.course_times = that.tranformCourseTimes(that.course_times);
+            formData.venue_schedules   = that.venue_schedules;
+            formData.venue_course_form = that.tranformVenueCourseForm(that.venueCourseForm);
+            
             // ajax 调用后台接口保存数据
             
+            let url = '/venueSchedules' + (this.venueCourseForm.id ? '/' + this.venueCourseForm.id : '')
+            let method = this.venueCourseForm.id ? 'put' : 'post';
+            this.$http({
+                method: method,
+                url: url,
+                data: formData
+            })
+            .then(function (response) {
+                var { data } = response;
+                that.$message({
+                    showClose: true,
+                    message: data.message,
+                    type: 'success'
+                });
+                
+                // 跳转到列表页
+                that.$message.info('ok');
+                    //that.$router.push({ path: '/admin/student/index' })
+                })
+                .catch(function (error) {
+                    stack_error(error);
+                });
             return;
         },
 
@@ -566,7 +596,9 @@ export default {
 
         validateVenueSchedule()
         {
-            if(isEmpty(this.venue_schedule))
+            console.log(this.venue_schedules)
+
+            if(isEmpty(this.venue_schedules))
                 return false;
             else 
                 return true;

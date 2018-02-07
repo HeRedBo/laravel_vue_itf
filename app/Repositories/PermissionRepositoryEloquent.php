@@ -104,7 +104,6 @@ class PermissionRepositoryEloquent extends BaseRepository implements PermissionR
         }
         $permisson->save();
         Cache::forget('menus');
-
         return success('数据创建成功');
     }
 
