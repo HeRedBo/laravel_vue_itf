@@ -2,18 +2,22 @@
 
 namespace App\Repositories;
 
+use Illuminate\Http\Request;
+use App\Repositories\AdminCommonRepository;
 use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\VenueScheduleRepository;
 use App\Models\Admin\VenueSchedule;
 use App\Models\Admin\VenueScheduleDetail;
+use Illuminate\Support\Facades\Event;
+use App\Events\AdminLogger;
 
 /**
  * Class VenueScheduleRepositoryEloquent
  * @package namespace App\Repositories;
  */
-class VenueScheduleRepositoryEloquent extends BaseRepository implements VenueScheduleRepository
+class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements VenueScheduleRepository
 {
     const WEEK_START = 1; // 周开始
     const WEEK_END   = 7; // 周结束
@@ -55,11 +59,13 @@ class VenueScheduleRepositoryEloquent extends BaseRepository implements VenueSch
             $venue_schedule   = [
                 'venue_id'     => $venue_course['venue_id'],
                 'course_count' => $venue_course['course_count'],
+                'schedule_name' => $venue_course['schedule_name'],
                 'start_time'   => date("Y-m-h 00:00:00",strtotime($venue_course['date_between'][0])),
                 'end_time'     => date("Y-m-h 23:59:59",strtotime($venue_course['date_between'][1])),
                 'status'       => $venue_course['status'],
                 'operator_id'  => $operator_id,
             ];
+           
             
             // 组装
             $model = $this->model;
@@ -104,6 +110,7 @@ class VenueScheduleRepositoryEloquent extends BaseRepository implements VenueSch
                 $schedule_detail_model->BatchCreate($venue_schedule_detail);
             }
             DB::commit();
+            Event::fire(new AdminLogger($venue_course['venue_id'],'create',"添加课程表【{$venue_course['schedule_name']}】"));
             return success('数据保存成功！');
         }
         catch (\Exception $e)
@@ -162,6 +169,7 @@ class VenueScheduleRepositoryEloquent extends BaseRepository implements VenueSch
                 }
             }
             $data = compact('venue_course','venue_schedules','course_times');
+            
             return success('数据获取成功', $data);
         }
         catch (\Exception $e)
@@ -193,6 +201,7 @@ class VenueScheduleRepositoryEloquent extends BaseRepository implements VenueSch
             $venue_schedule   = [
                 'venue_id'     => $venue_course['venue_id'],
                 'course_count' => $venue_course['course_count'],
+                'schedule_name' => $venue_course['schedule_name'],
                 'start_time'   => date("Y-m-h 00:00:00",strtotime($venue_course['date_between'][0])),
                 'end_time'     => date("Y-m-h 23:59:59",strtotime($venue_course['date_between'][1])),
                 'status'       => $venue_course['status'],
@@ -245,9 +254,60 @@ class VenueScheduleRepositoryEloquent extends BaseRepository implements VenueSch
                 $schedule_detail_model->BatchCreate($venue_schedule_detail);
             }
             return success('数据更新成功');
+            
+            Event::fire(new AdminLogger($data['venue_id'],'update',"编辑课程表【{$data['schedule_name']}】"));
         }
         return error('记录不存在，请检查');
     }
     
+    public  function  index(Request $request)
+    {
+        try
+        {
+            $pageSize  = $request->get('pageSize') ?: self::DEFAULT_PAGE_SIZE;
+            $venuesIds = $this->getUserVenueIds();
+            $query     = VenueSchedule::query();
+            $data      = $query
+                         ->whereIn('venue_id', $venuesIds)
+                         ->paginate($pageSize)->toArray();
+            return success('列表数据查询成功',$data);
+        }
+        catch (\Exception $e)
+        {
+            logResult('【道馆课程表列表获取错误】'. $e->__toString(),'error');
+            return error($e->getMessage());
+        }
+    }
     
+    public  function  delete($id)
+    {
+        try
+        {
+            $venueIds = $this->getUserVenueIds();
+            $venueSchedule = $this->model->where('id', $id)
+                                         ->whereIn('venue_id', $venueIds)
+                                         ->first();
+            
+            if (empty($venueSchedule))
+            {
+                return error('数据不存在');
+            }
+            $venue_id = $venueSchedule->venue_id;
+            $schedule_name = $venueSchedule->schedule_name;
+            // 删除道馆课程表详情数据
+            $venue_schedule_detail_query = VenueScheduleDetail::query();
+            $venue_schedule_detail_query
+                                    ->where('schedule_id', $id)
+                                    ->delete();
+            // 删除课表数据
+            $venueSchedule->delete();
+            Event::fire(new AdminLogger($venue_id,'delete',"删除课程表【{$schedule_name}】"));
+            return success('数据删除成功');
+        }
+        catch (\Exception $e)
+        {
+            logResult('【删除道馆课程错误】'. $e->__toString(),'error');
+            return error($e->getMessage());
+        }
+    }
 }

@@ -17,6 +17,7 @@ class CreateAdminVenueScheduleTable extends Migration
         Schema::create('admin_venue_schedule', function (Blueprint $table) {
             $table->increments('id')->comment('主键ID');
             $table->integer('venue_id')->unsigned()->comment('道馆ID');
+            $table->string('schedule_name', 100)->default('')->comment('道馆课程表名称');
             $table->integer('course_count')->unsigned()->comment('道馆每日课程数');
             $table->dateTime('start_time')->comment('课程有效期开始时间');
             $table->dateTime('end_time')->comment('课程效期结束时间');

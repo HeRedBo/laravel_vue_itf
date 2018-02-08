@@ -11,7 +11,7 @@ use Carbon\Carbon;
  * 后台管理员操作日志
  * 操作日志只有超级管理员可以查看
  */
-class Logger extends Model
+class AdminLogger extends Model
 {
     use TransformableTrait;
 
@@ -29,8 +29,7 @@ class Logger extends Model
     {
         return $this->belongsTo(Venue::class,'venue_id','id')->select('id','name');
     }
-
-
+    
     public function getCreatedAtAttribute($date)
     {
         if (Carbon::now() < Carbon::parse(date("Y-m-d H:i:s",$date))->addDays(5)) {

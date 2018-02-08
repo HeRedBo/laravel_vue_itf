@@ -232,7 +232,7 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
             $user->delete();
             return success('数据删除成功');
         } else {
-            return errror('数据不存在');
+            return error('数据不存在');
         }
            
     }

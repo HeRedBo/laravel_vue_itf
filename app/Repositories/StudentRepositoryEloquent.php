@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use Illuminate\Container\Container as Application;
+
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\StudentRepository;

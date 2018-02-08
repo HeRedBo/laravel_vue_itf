@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\Admin\Logger;
+use App\Models\Admin\AdminLogger as Logger;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -25,7 +25,6 @@ class AdminLogger
      */
     public function __construct($venue_id, $catalog, $intro)
     {
-        
         $this->model    = new Logger();
         $this->catalog  = $catalog;
         $this->intro    = $intro;
