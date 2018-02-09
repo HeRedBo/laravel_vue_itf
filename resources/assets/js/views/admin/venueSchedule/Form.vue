@@ -87,7 +87,7 @@
                         </thead>
                         
                         <tbody>
-                            <tr  v-for="r in data_row" >
+                            <tr  v-for="r in venueCourseForm.course_count" >
                                 <td v-for="j in total_column" @click="tdClick(j-data_start_column+1,r)"
                                     :class="['td_course_time_' + (j-data_start_column+1) + '_' + r ]"
                                 >
@@ -106,8 +106,24 @@
                                         {{r}}
                                     </template>
                                     <template v-else>
-                                       {{j-data_start_column+1}}
-                                       {{r}}
+                                       <!-- {{j-data_start_column+1}} -->
+                                       <!-- {{r}} -->
+
+                                        {{
+                                             venue_schedules[j-data_start_column+1] ? 
+                                                venue_schedules[j-data_start_column+1][r] ?
+                                                    venue_schedules[j-data_start_column+1][r].class_name
+                                                    : ''
+                                             : ''    
+                                        }}
+
+                                        <br>
+                                        <span class='text-error'>
+                                             {{ venue_schedules[j-data_start_column+1] ? venue_schedules[j-data_start_column+1][r] ? venue_schedules[j-data_start_column+1][r].remark
+                                            ? venue_schedules[j-data_start_column+1][r].remark : '' :'' :'' }}
+                                        </span>
+                                       
+
 
                                     </template>
                                 </td>
@@ -119,8 +135,10 @@
                 </div>
 
                 <div class="box-footer">
-                   <!--  <button type="submit" @click="$router.back" class="btn btn-default">返回</button> -->
-                    <button type="submit" @click="onSubmit" class="btn btn-info">添加</button>
+                    <button type="submit" @click="$router.back" class="btn btn-default">返回</button>
+                    <button type="submit" @click="onSubmit" class="btn btn-info">
+                         {{ venueCourseForm.id ? '更新' : '添加' }}
+                    </button>
 
                 </div>
             </div>
@@ -182,8 +200,22 @@ import {stack_error,isEmpty,parseTime} from 'config/helper';
 export default {
     name: 'Form',
     props: {
-        
+
         venueCourseForm: {
+            type: Object,
+            default() {
+                return {}
+            }
+        },
+
+        course_times : {
+            type: Object,
+            default() {
+                return {}
+            }
+        },
+
+        venue_schedules : {
             type: Object,
             default() {
                 return {}
@@ -219,16 +251,12 @@ export default {
             },
             data_start_column: 3,
             total_column : 9,
-            data_row : 7,
+          
             limit_data_row : 9,
-            class_Options : [],
-            venueCourseForm:{
-                venue_id : '',
-            },
-            course_times: [],
-            venue_schedules: [],
-            dialogFormVisible: false,
 
+            data_row: 7,
+            class_Options : [],
+            dialogFormVisible: false,
             ScheduleForm: {
               class_id: '',
               remark: '',
@@ -281,9 +309,16 @@ export default {
 
     created() {
         this.getUserVenus();
+        this.initData();
     },
 
     methods:{
+
+        initData(){
+            console.log('12342134');
+            console.log(this.venueCourseForm);
+        },
+
         inputChange(value,index) {
             //console.log(this.course_times)
             var dom_str  = '.course_time'
@@ -300,8 +335,7 @@ export default {
             {
                 var row_course_start_time = Date.parse(row_course_times[0]);
                 var row_course_end_time   = Date.parse(row_course_times[1]);
-                console.log(parseTime(row_course_times[0]))
-                console.log(parseTime(row_course_times[1]))
+
                 for (let j in total_course_time) 
                 {
                     console.log(j);
@@ -528,6 +562,7 @@ export default {
                 return false;
             }
             this.data_row = +value;
+            this.venueCourseForm.course_count =  +value;
             return true;
         },
 
@@ -574,14 +609,13 @@ export default {
                     message: data.message,
                     type: 'success'
                 });
-                
                 // 跳转到列表页
-                that.$message.info('ok');
-                    //that.$router.push({ path: '/admin/student/index' })
-                })
-                .catch(function (error) {
+                // that.$message.info('ok');
+                that.$router.push({ path: '/admin/venueSchedule/index' })
+            })
+            .catch(function (error) {
                     stack_error(error);
-                });
+            });
             return;
         },
 
@@ -589,7 +623,8 @@ export default {
         {
             var that = this;
             var check_flag = true;
-            for (let i=1;i<=this.data_row;i++)
+            var data_row = this.venueCourseForm.course_count;
+            for (let i=1;i<=data_row;i++)
             {
                 if(isEmpty(that.course_times[i]))
                 {

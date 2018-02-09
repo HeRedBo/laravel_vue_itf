@@ -16,6 +16,7 @@ class VenueScheduleDetail extends Model implements Transformable
         'schedule_id','start_time','end_time','class_id','week','section',
         'remark','operator_id','created_at',
     ];
+    
     protected $table = 'admin_venue_schedule_detail';
     
     
@@ -24,6 +25,12 @@ class VenueScheduleDetail extends Model implements Transformable
      * @var bool
      */
     public $timestamps = false;
+    
+    public  function  classes()
+    {
+        return $this->belongsTo(Classes::class,'class_id','id')
+            ->select(['id','name']);
+    }
     
     /**
      * 批量创建数据
@@ -53,19 +60,22 @@ class VenueScheduleDetail extends Model implements Transformable
     public  function getVenueSchedules($schedule_id)
     {
         $result = [];
+        
         $query = $this->query();
-        $details   = $query->where('schedule_id', $schedule_id)
+        $details   = $query
+                    ->with(['classes'])
+                     ->where('schedule_id', $schedule_id)
                      ->get()
                      ->toArray();
         if($details)
         {
             foreach ($details as $detail)
             {
+                $detail['class_name'] = $detail['classes']['name'];
+                unset($detail['classes']);
                 $result[$detail['week']][$detail['section']] = $detail;
             }
         }
         return $result;
     }
-    
-
 }

@@ -58,7 +58,7 @@ class VenueSchedulesController extends ApiController
         //$request_data = json_decode($data_json,true);
         //$res = $this->repository->create($request_data);
         
-        $res = $this->repository->create($request->all());
+         $res = $this->repository->create($request->all());
          logResult(var_export($res,true));
         if($res['status'] == 1)
             return $this->response->withCreated($res['msg']);

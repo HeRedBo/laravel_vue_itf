@@ -198,6 +198,11 @@ export default [
                         name : '课程表新增',
                         component : () => import('views/admin/venueSchedule/Create.vue')
                     },
+                     {
+                         path: 'update/:id',
+                         name: '课程表编辑',
+                         component: () => import('views/admin/venueSchedule/Update.vue')
+                     },
                     {
                         path: 'index',
                         name : '课程表列表',

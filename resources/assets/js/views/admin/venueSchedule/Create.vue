@@ -8,7 +8,9 @@ export default {
     components: { VenueScheduleForm },
     data() {
         return {
-            venueCourseForm : {},
+            venueCourseForm : {
+                course_count:7
+            },
         }
     }
 }

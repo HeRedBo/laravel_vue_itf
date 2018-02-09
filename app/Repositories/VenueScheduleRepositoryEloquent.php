@@ -55,7 +55,7 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $course_times      = $data['course_times'];
             $venue_schedules   = $data['venue_schedules'];
             $course_count      = $venue_course['course_count'];
-            $operator_id       =  auth('admin')->user()->id;
+            $operator_id       = $this->admin_id;
             $venue_schedule   = [
                 'venue_id'     => $venue_course['venue_id'],
                 'course_count' => $venue_course['course_count'],
@@ -168,8 +168,10 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                     }
                 }
             }
-            $data = compact('venue_course','venue_schedules','course_times');
             
+            $course_times = $this->reBuildCourseTimes($course_times);
+            logResult(json_encode($course_times));
+            $data = compact('venue_course','venue_schedules','course_times');
             return success('数据获取成功', $data);
         }
         catch (\Exception $e)
@@ -197,7 +199,8 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $course_times      = $data['course_times'];
             $venue_schedules   = $data['venue_schedules'];
             $course_count      = $venue_course['course_count'];
-            $operator_id       = auth('admin')->user()->id;
+            $operator_id       = $this->admin_id;
+            
             $venue_schedule   = [
                 'venue_id'     => $venue_course['venue_id'],
                 'course_count' => $venue_course['course_count'],
@@ -207,11 +210,8 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                 'status'       => $venue_course['status'],
                 'operator_id'  => $operator_id,
             ];
-            
-            // 组装
-            $model = $this->model;
             // 设置字段默认值
-            $model->update($venue_schedule, $id);
+            $schedule->update($venue_schedule);
             $schedule_id = $id;
             // 组装新的数据
             $now = getNow();
@@ -248,12 +248,11 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             if($venue_schedule_detail)
             {
                 $schedule_detail_model = new VenueScheduleDetail();
-                
                 // 先删后增加 快且方便
                 $schedule_detail_model->where('schedule_id', $schedule_id)->delete();
                 $schedule_detail_model->BatchCreate($venue_schedule_detail);
             }
-            Event::fire(new AdminLogger($data['venue_id'],'update',"编辑课程表【{$data['schedule_name']}】"));
+            Event::fire(new AdminLogger($venue_course['venue_id'],'update',"编辑课程表【{$venue_course['schedule_name']}】"));
             return success('数据更新成功');
         }
         return error('记录不存在，请检查');
@@ -314,5 +313,18 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             logResult('【删除道馆课程错误】'. $e->__toString(),'error');
             return error($e->getMessage());
         }
+    }
+    
+    protected  function  reBuildCourseTimes($course_times)
+    {
+        $result = [];
+        foreach ($course_times as $k => $v)
+        {
+            foreach ($v as $kk => $vv) {
+                $date_time = date("Y-m-d H:i:s", strtotime($v[0]));
+                $result[$k][$kk] = DateTimeToGmt($date_time);
+            }
+        }
+        return $result;
     }
 }
