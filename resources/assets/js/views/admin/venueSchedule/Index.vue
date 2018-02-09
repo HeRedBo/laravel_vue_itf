@@ -159,7 +159,7 @@ export default {
                 id: {label: 'ID', sortable: true},
                 schedule_name: {label: '课表名称'},
                 venue_name: {label: '道馆名称'},
-                //course_count: {label: '课程总数'},
+                course_count: {label: '每日课程数'},
                 start_time: {label: '课程开始时间'},
                 end_time: {label: '课程结束时间'},
                 status: {label: '状态'},
