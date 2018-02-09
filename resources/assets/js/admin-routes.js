@@ -188,6 +188,23 @@ export default [
                     }
                 ]
             },
+            {
+                path : 'venueSchedule',
+                component:Parent,
+                name : '课表管理',
+                children : [
+                     {
+                        path: 'create',
+                        name : '课程表新增',
+                        component : () => import('views/admin/venueSchedule/Create.vue')
+                    },
+                    {
+                        path: 'index',
+                        name : '课程表列表',
+                        component : () => import('views/admin/venueSchedule/Index.vue')
+                    }
+                ]
+            },
              {
                 path : 'test',
                 component:Parent,

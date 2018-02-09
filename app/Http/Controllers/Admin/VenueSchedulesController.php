@@ -59,10 +59,11 @@ class VenueSchedulesController extends ApiController
         //$res = $this->repository->create($request_data);
         
         $res = $this->repository->create($request->all());
+         logResult(var_export($res,true));
         if($res['status'] == 1)
             return $this->response->withCreated($res['msg']);
         else
-            return $this->response->withError($res['msg']);
+            return $this->response->withInternalServer($res['msg']);
     }
     
     /**

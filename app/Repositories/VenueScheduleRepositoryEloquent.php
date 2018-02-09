@@ -253,9 +253,8 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                 $schedule_detail_model->where('schedule_id', $schedule_id)->delete();
                 $schedule_detail_model->BatchCreate($venue_schedule_detail);
             }
-            return success('数据更新成功');
-            
             Event::fire(new AdminLogger($data['venue_id'],'update',"编辑课程表【{$data['schedule_name']}】"));
+            return success('数据更新成功');
         }
         return error('记录不存在，请检查');
     }
@@ -266,9 +265,16 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
         {
             $pageSize  = $request->get('pageSize') ?: self::DEFAULT_PAGE_SIZE;
             $venuesIds = $this->getUserVenueIds();
+
+            // 排序规则
+            $orderBy   = $request->get('orderBy')?:'id';
+            $sortBy    = $request->get('sortedBy')?:'desc';
+
             $query     = VenueSchedule::query();
             $data      = $query
+                         ->with(['operator','venues'])
                          ->whereIn('venue_id', $venuesIds)
+                         ->orderBy($orderBy, $sortBy)
                          ->paginate($pageSize)->toArray();
             return success('列表数据查询成功',$data);
         }
@@ -287,7 +293,6 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $venueSchedule = $this->model->where('id', $id)
                                          ->whereIn('venue_id', $venueIds)
                                          ->first();
-            
             if (empty($venueSchedule))
             {
                 return error('数据不存在');

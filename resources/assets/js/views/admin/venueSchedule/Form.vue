@@ -180,6 +180,18 @@
 <script>
 import {stack_error,isEmpty,parseTime} from 'config/helper';
 export default {
+    name: 'Form',
+    props: {
+        
+        venueCourseForm: {
+            type: Object,
+            default() {
+                return {}
+            }
+        }
+    },
+
+
     data() {
         var checkCourseCount = (rule, value, callback) => {
             var patrn = /^[0-9]*$/;
