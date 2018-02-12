@@ -17,6 +17,7 @@ export default [
             },
             {
                 path : 'venue',
+                redirect:'venue/index',
                 name : '道馆管理',
                 component : Parent,
                 children : [
@@ -65,6 +66,7 @@ export default [
             },
             {
                 path : 'role',
+                redirect: 'role/index',
                 component:Parent,
                 name : '角色管理',
                 children : [
@@ -82,6 +84,7 @@ export default [
             },
             {
                 path : 'permission',
+                redirect: 'permission/index',
                 component:Parent,
                 name : '权限管理',
                 children : [
@@ -94,6 +97,7 @@ export default [
             },
             {
                 path : 'user',
+                redirect: 'user/index',
                 component:Parent,
                 name : '用户管理',
                 children : [
@@ -133,6 +137,7 @@ export default [
             // },
             {
                 path: 'class',
+                redirect: 'class/index',
                 component : Parent,
                 name : '班级',
                 children : [
@@ -146,6 +151,7 @@ export default [
             },
             {
                 path: 'card',
+                redirect: 'card/index',
                 component : Parent,
                 name : '卡券',
                 children : [
@@ -163,6 +169,7 @@ export default [
             },
             {
                 path : 'student',
+                redirect: 'student/index',
                 component:Parent,
                 name : '学习管理',
                 children : [
@@ -190,6 +197,7 @@ export default [
             },
             {
                 path : 'venueSchedule',
+                redirect: 'venueSchedule/index',
                 component:Parent,
                 name : '课表管理',
                 children : [
