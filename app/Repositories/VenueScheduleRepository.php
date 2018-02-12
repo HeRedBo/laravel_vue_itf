@@ -22,5 +22,7 @@ interface VenueScheduleRepository extends RepositoryInterface
     
     public  function  delete($id);
     
+    public  function  changeStatus($id, $status);
+    
     
 }

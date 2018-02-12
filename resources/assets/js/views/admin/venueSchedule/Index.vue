@@ -188,15 +188,13 @@ export default {
 
        changeStatus(row) 
         {
-            console.log(row);
 
-            return;
             var status = row.status;
             var id = row.id;
             var that = this;
             var changeStatus = status ? 0 : 1;
             swal({
-            title: '是否修改卡券状态?',
+            title: '修改课程表状态?',
             text: '你是否要继续执行该操作!?', // 
             type: 'warning',
             showCancelButton: true,
@@ -207,11 +205,11 @@ export default {
             }).then(function() 
             {
 
-              var url =  '/card/changeStatus';
+              var url =  '/venueSchedules/changeStatus';
               that.$http({
-                method :'POST',
+                method :'GET',
                 url : url,
-                data : {
+                params : {
                     id : id,
                     status : changeStatus
                 }

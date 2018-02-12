@@ -22,6 +22,9 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
     const WEEK_START = 1; // 周开始
     const WEEK_END   = 7; // 周结束
     
+    const VENUE_SCHEDULE_ON_STATUS  = 1;// 课程表启用状态
+    const VENUE_SCHEDULE_OFF_STATUS = 0;// 禁用状态
+    
     /**
      * Specify Model class name
      *
@@ -56,18 +59,27 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $venue_schedules   = $data['venue_schedules'];
             $course_count      = $venue_course['course_count'];
             $operator_id       = $this->admin_id;
-            $venue_schedule   = [
-                'venue_id'     => $venue_course['venue_id'],
-                'course_count' => $venue_course['course_count'],
-                'schedule_name' => $venue_course['schedule_name'],
-                'start_time'   => date("Y-m-h 00:00:00",strtotime($venue_course['date_between'][0])),
-                'end_time'     => date("Y-m-h 23:59:59",strtotime($venue_course['date_between'][1])),
-                'status'       => $venue_course['status'],
-                'operator_id'  => $operator_id,
-            ];
-           
             
-            // 组装
+            $venue_schedule   = [
+                'venue_id'      => $venue_course['venue_id'],
+                'course_count'  => $venue_course['course_count'],
+                'schedule_name' => $venue_course['schedule_name'],
+                'start_time'    => date("Y-m-h 00:00:00",strtotime($venue_course['date_between'][0])),
+                'end_time'      => date("Y-m-h 23:59:59",strtotime($venue_course['date_between'][1])),
+                'status'        => $venue_course['status'],
+                'operator_id'   => $operator_id,
+            ];
+            
+            // 如果状态是启用 在用的状态改为 禁用 启用当前启用的状态课程表
+            if(self::VENUE_SCHEDULE_ON_STATUS == $venue_course['status'])
+            {
+                $in_use_schedule =  $this->getCurrentVenueSchedule();
+                if($in_use_schedule && self::VENUE_SCHEDULE_ON_STATUS == $in_use_schedule['status'])
+                {
+                    $this->changeStatus($in_use_schedule['id'], self::VENUE_SCHEDULE_OFF_STATUS);
+                }
+            }
+            
             $model = $this->model;
             // 设置字段默认值
             $model = $model->create($venue_schedule);
@@ -109,8 +121,9 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                 $schedule_detail_model = new VenueScheduleDetail();
                 $schedule_detail_model->BatchCreate($venue_schedule_detail);
             }
-            DB::commit();
+            
             Event::fire(new AdminLogger($venue_course['venue_id'],'create',"添加课程表【{$venue_course['schedule_name']}】"));
+            DB::commit();
             return success('数据保存成功！');
         }
         catch (\Exception $e)
@@ -210,6 +223,22 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                 'status'       => $venue_course['status'],
                 'operator_id'  => $operator_id,
             ];
+    
+            if(self::VENUE_SCHEDULE_ON_STATUS == $schedule->status)
+            {
+                $in_use_schedule =  $this->getCurrentVenueSchedule();
+                if($in_use_schedule &&  $in_use_schedule['id'] != $schedule->id)
+                {
+                    if(self::VENUE_SCHEDULE_ON_STATUS == $in_use_schedule['status']
+                        &&  $schedule->status == self::VENUE_SCHEDULE_ON_STATUS
+                    )
+                    {
+                        $this->changeStatus($in_use_schedule['id'], self::VENUE_SCHEDULE_OFF_STATUS);
+                    }
+                }
+                
+            }
+            
             // 设置字段默认值
             $schedule->update($venue_schedule);
             $schedule_id = $id;
@@ -315,6 +344,59 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
         }
     }
     
+
+    
+    /**
+     * 修改数课程转态
+     * @param $id
+     * @param $status
+     * @return array|void
+     * @author Red-Bo
+     */
+    public function  changeStatus($id, $status =0)
+    {
+        try
+        {
+            $schedule = $this->find($id);
+            $in_use_schedule = $this->getCurrentVenueSchedule();
+            if($schedule)
+            {
+                if($in_use_schedule &&  $in_use_schedule['id'] != $schedule->id)
+                {
+                    if(self::VENUE_SCHEDULE_ON_STATUS == $in_use_schedule['status']
+                        &&  $schedule->status == self::VENUE_SCHEDULE_ON_STATUS
+                    )
+                    {
+                        $this->changeStatus($in_use_schedule['id'], self::VENUE_SCHEDULE_OFF_STATUS);
+                    }
+                }
+                
+                // 更新数据状态
+                $in_status = [
+                    self::VENUE_SCHEDULE_OFF_STATUS,
+                    self::VENUE_SCHEDULE_ON_STATUS
+                ];
+                if(in_array($status, $in_status) &&
+                    $schedule->status != $status
+                )
+                {
+                    $schedule->status = $status;
+                    $schedule->save();
+                    return success('状态修改成功');
+                }
+            }
+            else
+            {
+                return error('数据不存在');
+            }
+        }
+        catch (\Exception $e)
+        {
+           logResult('【课程状态修改失败】'.$e->__toString());
+           return error($e->getMessage());
+        }
+    }
+    
     protected  function  reBuildCourseTimes($course_times)
     {
         $result = [];
@@ -327,4 +409,23 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
         }
         return $result;
     }
+    
+    private  function  getCurrentVenueSchedule()
+    {
+        $now_time = getNow();
+        $query = $this->model->query();
+        $where = [
+            ['start_time','<=', $now_time],
+            ['end_time','>=', $now_time],
+            ['status','=', self::VENUE_SCHEDULE_ON_STATUS],
+        ];
+    
+        foreach ($where as $v)
+        {
+             $query->where($v[0], $v[1], $v[2]);
+        }
+        return  $query->first()->toArray();
+    }
+    
+    
 }
