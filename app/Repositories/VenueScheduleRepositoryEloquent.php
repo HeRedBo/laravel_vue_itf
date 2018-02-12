@@ -76,7 +76,7 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                 $in_use_schedule =  $this->getCurrentVenueSchedule();
                 if($in_use_schedule && self::VENUE_SCHEDULE_ON_STATUS == $in_use_schedule['status'])
                 {
-                    $this->changeStatus($in_use_schedule['id'], self::VENUE_SCHEDULE_OFF_STATUS);
+                    $this->updateStatus($in_use_schedule['id'], self::VENUE_SCHEDULE_OFF_STATUS);
                 }
             }
             
@@ -233,7 +233,7 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                         &&  $schedule->status == self::VENUE_SCHEDULE_ON_STATUS
                     )
                     {
-                        $this->changeStatus($in_use_schedule['id'], self::VENUE_SCHEDULE_OFF_STATUS);
+                        $this->updateStatus($in_use_schedule['id'], self::VENUE_SCHEDULE_OFF_STATUS);
                     }
                 }
                 
@@ -353,24 +353,24 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
      * @return array|void
      * @author Red-Bo
      */
-    public function  changeStatus($id, $status =0)
+    public function  changeStatus($id, $status)
     {
         try
         {
             $schedule = $this->find($id);
-            $in_use_schedule = $this->getCurrentVenueSchedule();
             if($schedule)
             {
-                if($in_use_schedule &&  $in_use_schedule['id'] != $schedule->id)
+                
+                $in_use_schedule =  $this->getCurrentVenueSchedule();
+                if($in_use_schedule &&
+                    $in_use_schedule['id'] != $schedule->id
+                )
                 {
-                    if(self::VENUE_SCHEDULE_ON_STATUS == $in_use_schedule['status']
-                        &&  $schedule->status == self::VENUE_SCHEDULE_ON_STATUS
-                    )
+                    if($in_use_schedule['status'] == self::VENUE_SCHEDULE_ON_STATUS)
                     {
-                        $this->changeStatus($in_use_schedule['id'], self::VENUE_SCHEDULE_OFF_STATUS);
+                        $this->updateStatus( $in_use_schedule['id'], self::VENUE_SCHEDULE_OFF_STATUS);
                     }
                 }
-                
                 // 更新数据状态
                 $in_status = [
                     self::VENUE_SCHEDULE_OFF_STATUS,
@@ -396,6 +396,42 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
            return error($e->getMessage());
         }
     }
+    
+    protected  function  updateStatus($id, $status)
+    {
+        try
+        {
+            $schedule = $this->find($id);
+            if($schedule)
+            {
+                // 更新数据状态
+                $in_status = [
+                    self::VENUE_SCHEDULE_OFF_STATUS,
+                    self::VENUE_SCHEDULE_ON_STATUS
+                ];
+                if(in_array($status, $in_status) &&
+                    $schedule->status != $status
+                )
+                {
+                    $schedule->status = $status;
+                    $schedule->save();
+                    return success('状态修改成功');
+                }
+            }
+            else
+            {
+                return error('数据不存在');
+            }
+        }
+        catch (\Exception $e)
+        {
+            logResult('【课程状态修改失败】'.$e->__toString());
+            return error($e->getMessage());
+        }
+    }
+    
+    
+    
     
     protected  function  reBuildCourseTimes($course_times)
     {
