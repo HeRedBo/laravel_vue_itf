@@ -135,8 +135,8 @@
                 </div>
 
                 <div class="box-footer">
-                    <!-- <button type="submit" @click="$router.back" class="btn btn-default">返回</button> -->
-                    <button type="submit" @click="$router.push({ path: '/admin/venueSchedule/index' })" class="btn btn-default">返回</button>
+                    <button type="submit" @click="$router.back()" class="btn btn-default">返回</button>
+                    <!-- <button type="submit" @click="$router.push({ path: '/admin/venueSchedule/index' })" class="btn btn-default">返回</button> -->
                     <button type="submit" @click="onSubmit" class="btn btn-info">
                          {{ venueCourseForm.id ? '更新' : '添加' }}
                     </button>
