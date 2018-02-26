@@ -24,5 +24,7 @@ interface VenueScheduleRepository extends RepositoryInterface
     
     public  function  changeStatus($id, $status);
     
+    public  function  getSchedules(Request $request);
+    
     
 }

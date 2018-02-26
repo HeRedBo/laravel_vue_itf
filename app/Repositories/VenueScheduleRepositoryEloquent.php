@@ -12,6 +12,8 @@ use App\Models\Admin\VenueSchedule;
 use App\Models\Admin\VenueScheduleDetail;
 use Illuminate\Support\Facades\Event;
 use App\Events\AdminLogger;
+use App\Services\ServiceFactory;
+
 
 /**
  * Class VenueScheduleRepositoryEloquent
@@ -343,14 +345,11 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             return error($e->getMessage());
         }
     }
-    
-
-    
     /**
      * 修改数课程转态
      * @param $id
      * @param $status
-     * @return array|void
+     * @return mixed
      * @author Red-Bo
      */
     public function  changeStatus($id, $status)
@@ -360,7 +359,6 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $schedule = $this->find($id);
             if($schedule)
             {
-                
                 $in_use_schedule =  $this->getCurrentVenueSchedule();
                 if($in_use_schedule &&
                     $in_use_schedule['id'] != $schedule->id
@@ -431,7 +429,24 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
     }
     
     
-    
+    /**
+     * 获取道馆当前的课表信息
+     * @param Request $request
+     * @author Red-Bo
+     */
+    public  function  getSchedules(Request $request)
+    {
+        $date= $request->get('date');
+        if(empty($date))
+        {
+            $date = date("Y-m-d");
+        }
+        $venueScheduleService  = ServiceFactory::getService("Admin\\VenueSchedule");
+        $th_fields = $venueScheduleService->getScheduleHead($date); // 表头字段
+        
+        
+        
+    }
     
     protected  function  reBuildCourseTimes($course_times)
     {

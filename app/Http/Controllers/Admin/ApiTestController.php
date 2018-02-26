@@ -13,7 +13,7 @@ use App\Models\Admin\CardSnap;
 use App\Services\Admin\VenueBillService;
 use Illuminate\Support\Facades\Event;
 use App\Events\AdminLogger;
-
+use App\Services\ServiceFactory;
 
 class ApiTestController extends ApiController
 {
@@ -34,7 +34,6 @@ class ApiTestController extends ApiController
 
     public  function  ApiTest()
     {
-
         $json = '{"card_id":3,"operation":"\u4fee\u6539\u5361\u5238\u72b6\u6001","field":["\u5361\u5238\u542f\u7528\u72b6\u6001"],"oldValue":["\u672a\u542f\u7528"],"newValue":["\u542f\u7528"]}';
         $data = json_decode($json,true);
         dd($data);
@@ -76,6 +75,9 @@ class ApiTestController extends ApiController
 //        $data = json_decode($data_str,true);
 //        return $this->api_response->withData($data);
         //echo 132412;exit;
+    
+        //$service = ServiceFactory::getService("Common\Lunar");
+        //dd($service);
     }
 
     public function uploadBase64Img()
