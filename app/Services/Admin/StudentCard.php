@@ -20,7 +20,6 @@ use App\Models\Admin\Student;
 use App\Models\admin\StudentCard as studentCardModel;
 use App\Services\Common\Dictionary;
 
-
 class StudentCard
 {
     /**

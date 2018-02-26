@@ -57,4 +57,23 @@ class Dictionary
         return $statusOptions;
     }
 
+    /**
+     * php 星期几中文字典
+     * @param boolean $index 
+     */
+    public static function WeekMap($index = false)
+    {
+        $weekMap = [
+            0 => '星期日',
+            1 => '星期一',
+            2 => '星期二',
+            3 => '星期三',
+            4 => '星期四',
+            5 => '星期五',
+            6 => '星期六',
+        ];
+        if($index != false && isset($weekMap[$index]))
+            return $weekMap[$index];
+        return $weekMap;
+    }
 }

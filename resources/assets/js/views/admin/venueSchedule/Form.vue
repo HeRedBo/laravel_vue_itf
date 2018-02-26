@@ -242,13 +242,13 @@ export default {
             fields: {
                 course_time: {label: '时间'},
                 section:{label:'节次'},
-                weak_1:{label:'周一'},
-                weak_2:{label:'周二'},
-                weak_3:{label:'周三'},
-                weak_4:{label:'周四'},
-                weak_5:{label:'周五'},
-                weak_6:{label:'周六'},
-                weak_7:{label:'周日'}
+                week_1:{label:'周一'},
+                week_2:{label:'周二'},
+                week_3:{label:'周三'},
+                week_4:{label:'周四'},
+                week_5:{label:'周五'},
+                week_6:{label:'周六'},
+                week_7:{label:'周日'}
             },
             data_start_column: 3,
             total_column : 9,

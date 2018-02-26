@@ -148,4 +148,12 @@ class VenueSchedulesController extends ApiController
             return $this->response->withInternalServer($res['msg']);
     }
     
+    public function schedules(Request $request)
+    {
+        $schedules = $this->repository->getSchedules($request);
+        dd($schedules);
+    }
+    
+    
+    
 }

@@ -150,3 +150,19 @@ if(!function_exists('getNow'))
         return date("Y-m-d H:i:d");
     }
 }
+
+
+if(!function_exists('getWeekBE'))
+{
+    /**
+     * 获得任意一个星期的开始时间，结束时间 | 返回时间日期格式
+     * @param string $day 某一天的日期时间格式
+     * @return array
+     */
+    function getWeekBE($day)
+    {
+        $last_day = date('Y-m-d',strtotime("$day Sunday"));
+        $first_day= date('Y-m-d',strtotime("$last_day -6 days"));
+        return array($first_day, $last_day);
+    }
+}
