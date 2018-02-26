@@ -13,6 +13,14 @@ class  ServiceFactory
      * @var array
      */
     protected  static  $_services = [];
+
+    /**
+     * 模型静态存储变量
+     * @var array
+     */
+    protected  static  $_models  = [];
+
+    private  static  $model_path = "\\App\\Models";
     
     /**
      * 服务获取调度方法
@@ -32,7 +40,27 @@ class  ServiceFactory
             return self::$_services[$className];
         }
     }
-    
+
+
+    /**
+     * 服务工程 模型方法
+     *
+     * @param string $class
+     * @return mixed
+     */
+    public  static  function  getModel($class)
+    {
+        $className = self::getModelRealName($class);
+        if(!isset(self::$_models[$className]))
+        {
+            return self::$_models[$className] = new $className();
+        }
+        else
+        {
+            return self::$_models[$className];
+        }
+    }
+
     /**
      * 获取服务的路径
      * @param  string $class
@@ -44,5 +72,12 @@ class  ServiceFactory
         $namespace = __NAMESPACE__;
         $className = $namespace. '\\'. $class;
         return $className;
+    }
+
+    protected  static  function  getModelRealName($class)
+    {
+        $namespace = self::$model_path;
+        $modelName = $namespace .'\\'. $class;
+        return $modelName;
     }
 }

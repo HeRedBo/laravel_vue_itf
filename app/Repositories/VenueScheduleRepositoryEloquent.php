@@ -185,7 +185,6 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             }
             
             $course_times = $this->reBuildCourseTimes($course_times);
-            logResult(json_encode($course_times));
             $data = compact('venue_course','venue_schedules','course_times');
             return success('数据获取成功', $data);
         }
@@ -442,7 +441,9 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $date = date("Y-m-d");
         }
         $venueScheduleService  = ServiceFactory::getService("Admin\\VenueSchedule");
-        $th_fields = $venueScheduleService->getScheduleHead($date); // 表头字段
+        //$th_fields = $venueScheduleService->getScheduleHead($date); // 表头字段
+        $schedule = $venueScheduleService->getSchedulesInUse($date);
+        var_dump($schedule);
         
         
         
