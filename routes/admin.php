@@ -84,6 +84,7 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     // venuechedules
     Route::get('venueSchedules/changeStatus', ['as' => 'admin.venueSchedules.changeStatus', 'uses' => 'VenueSchedulesController@changeStatus']);
     Route::get('venueSchedules/schedules', ['as' => 'admin.venueSchedules.schedules', 'uses' => 'VenueSchedulesController@schedules']);
+    Route::post('venueSchedules/saveScheduleExtend', ['as' => 'admin.venueSchedules.saveScheduleExtend', 'uses' => 'VenueSchedulesController@saveScheduleExtend']);
     Route::resource('venueSchedules', 'VenueSchedulesController');
 
 });

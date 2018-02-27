@@ -453,20 +453,80 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             logResult('【获取道馆课程错误】'.$e->__toString(),'error');
             return error($e->getMessage());
         }
-        
     }
-    
-    public  function saveScheduleExtend(array $request)
+
+
+    /**
+     * 保存道馆课程补充数据
+     *
+     * @param array $data
+     * @return array
+     */
+    public  function saveScheduleExtend(array $data)
     {
-        // 1、判断请求时间是否已过期
-        
-        // 2、组装数据
-        
-        // 3、判断数据库中是否存在当天的数据
-        
-        // 3.1 有 先删 后添加
-        
-        // 3.2 无 添加数据
+        try
+        {
+            $today_time         = strtotime(date("Y-m-d"));
+            $schedule_date_time = strtotime($data['schedule_date']);
+            // 1、判断请求时间是否已过期
+            if($today_time > $schedule_date_time)
+            {
+                return error("课程已过期，不能设置");
+            }
+            $data['operator_id'] = $this->admin_id;
+            $data['created_at']  = getNow();
+            $data['remark'] = empty($data['remark']) ? '': $data['remark'];
+            // 2、组装数据
+            $model = ServiceFactory::getModel("Admin\\VenueScheduleDetailExtend");
+
+            $fields = [
+                'schedule_id','schedule_date','start_time','end_time','class_id','week','section',
+                'remark','operator_id','created_at',
+            ];
+
+            foreach ($fields as $v)
+            {
+                $model->$v = isset($data[$v]) ? $data[$v] : '';
+            }
+
+            // 3、判断数据库中是否存在当天的数据
+            $query = $model->query();
+            $where = [
+                ['schedule_id','=', $data['schedule_id']],
+                ['schedule_date','=', $data['schedule_date']],
+                ['class_id','=', $data['class_id']],
+                ['week','=', $data['week']],
+            ];
+            foreach ($where as $v)
+            {
+                $query->where($v[0], $v[1], $v[2]);
+            }
+            $row = $query->first();
+            if($row)
+            {
+                // 3.1 有 先删 后添加
+                $row->delete();
+                $id = $model->save();
+            }
+            else
+            {
+                // 3.2 无 添加数据
+                $id = $model->save();
+            }
+            if($id)
+            {
+                return success("数据保存成功");
+            }
+            else
+            {
+                return error("数据保存失败");
+            }
+        }
+        catch (\Exception $e)
+        {
+            logResult('【保存道馆扩展课程数据失败】'.$e->__toString(),'error');
+            return error($e->getMessage());
+        }
     }
     
     

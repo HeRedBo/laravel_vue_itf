@@ -132,7 +132,7 @@
                         <!--   <el-input  v-model="ScheduleForm.date" auto-complete="off" 
                           size="small">
                           </el-input> -->
-                          <span>{{ScheduleForm.date}}</span>
+                          <span>{{ScheduleForm.schedule_date}}</span>
 
                         </el-form-item>
                         <el-form-item label="星期" :label-width="formLabelWidth">
@@ -149,9 +149,9 @@
                             </el-input>
                         </el-form-item>
 
-                        <!-- 班级 -->
-                        <el-form-item label="班级"  :label-width="formLabelWidth" prop="class_id">
-                            <el-select v-model="ScheduleForm.class_id" placeholder="请选择班级" size="small">
+                        <!-- 班级  prop="class_id"-->
+                        <el-form-item label="班级"  :label-width="formLabelWidth" >
+                            <el-select v-model="ScheduleForm.class_id" placeholder="请选择班级" size="small" clearable>
                               <el-option
                                 v-for="item in classOptions"
                                 :key="item.value"
@@ -239,9 +239,9 @@ export default {
                 // venue_id : [
                 //     { required: true, message: '归属道馆不能为空'}
                 // ],
-                class_id: [
-                    { required: true, type: 'number', message: '班级不能为空', trigger: 'blur' }
-                ]
+                // class_id: [
+                //     { required: true, type: 'number', message: '班级不能为空', trigger: 'blur' }
+                // ]
             },
 
             formLabelWidth: '110px',
@@ -252,7 +252,8 @@ export default {
             course_times : {},
             venue_schedules : {},
             venueCourseForm:{},
-            schedule : {}
+            schedule : {},
+            
         }
     },
     created() 
@@ -276,8 +277,8 @@ export default {
                 let {data} = response;
                 var  respondata = data.data
                 that.fields  = respondata.fields;
-                var schedule = respondata.schedule;
-                that.course_count    = schedule.course_count;
+                that.schedule = respondata.schedule;
+                that.course_count    = that.schedule.course_count;
                 that.course_times    = respondata.course_times;
                 that.venue_schedules = respondata.venue_schedules;
             })
@@ -296,6 +297,7 @@ export default {
         {
             // 校验道馆的基本信息必填项
             var that = this;
+            console.log(that.schedule)
              // 处理每个的数据
             if(((1<=row_num) && (row_num <=7)) && ((col_num >=1) && (col_num <= that.data_row)))
             {  
@@ -305,16 +307,18 @@ export default {
                     that.ScheduleForm.week = row_num;
                     that.ScheduleForm.section = col_num;
                     that.ScheduleForm.remark = '';
-                    that.ScheduleForm.date = that.fields[row_num +1 ].ori_date
+                    that.ScheduleForm.schedule_date = that.fields[row_num +1 ].ori_date
                     that.ScheduleForm.start_time = that.course_times[col_num][0];
                     that.ScheduleForm.end_time = that.course_times[col_num][1];
+                    that.ScheduleForm.schedule_id = that.schedule.id;
                 } 
                 else 
                 {
                     if(!isEmpty(that.venue_schedules[row_num][col_num]))
                     {
                         that.ScheduleForm = that.venue_schedules[row_num][col_num];
-                        that.ScheduleForm.date = that.fields[row_num +1 ].ori_date
+                        that.ScheduleForm.schedule_date = that.fields[row_num +1 ].ori_date;
+                        that.ScheduleForm.schedule_id = that.schedule.id;
                     }
                 }      
 
@@ -376,7 +380,8 @@ export default {
                 {
                     that.selectItemVisible = true;
                 }
-                    // that.showCreateButton = true;
+
+                    
             })
             .catch(function(error) {
                 console.log(error);
@@ -425,28 +430,37 @@ export default {
             	// 数据操作入库
                 var  week  = that.ScheduleForm.week;
                 var section = that.ScheduleForm.section;
+                var url = '/venueSchedules/saveScheduleExtend';
+                this.$http({
+                    method: 'POST',
+                    url: url,
+                    data: that.ScheduleForm
+                })
+                .then(function (response) {
+                   
+                    var { data } = response;
+                    that.$message({
+                        showClose: true,
+                        message: data.message,
+                        type: 'success'
+                    });
 
-                if(isEmpty(that.venue_schedules[week]))
-                    that.venue_schedules[week] = [];
-
-                
-
-
-
-                that.venue_schedules[week][section] = that.ScheduleForm;
-
-                let td_dom_class = 'td_course_time_' + that.ScheduleForm.week + '_' + that.ScheduleForm.section;
-                let class_id = that.ScheduleForm.class_id;
-                let class_name = that.classMap[class_id];
-                var html = class_name;
-                if(that.ScheduleForm.remark !='')
-                {
-                    html += "<br><p class='text-error'>" + that.ScheduleForm.remark +  "</p>"
-                }
-                // 填充表格数据
-                $("." + td_dom_class).html(html)
-                that.dialogFormVisible = false;
-                return true;
+                    let td_dom_class = 'td_course_time_' + that.ScheduleForm.week + '_' + that.ScheduleForm.section;
+                    let class_id = that.ScheduleForm.class_id;
+                    let class_name = that.classMap[class_id];
+                    var html = class_name;
+                    if(that.ScheduleForm.remark !='')
+                    {
+                        html += "<br><p class='text-error'>" + that.ScheduleForm.remark +  "</p>"
+                    }
+                     // 填充表格数据
+                    $("." + td_dom_class).html(html)
+                    that.dialogFormVisible = false;
+                    
+                })
+                .catch(function (error) {
+                    stack_error(error);
+                });
             } 
             else 
             {
@@ -482,7 +496,6 @@ export default {
             }
             // 校验课程时间
             var check = this.validateVenueSchedule();
-            console.log(check);
             if(!check)
             {
                 this.$message.error('课程表数据不能为空！');
@@ -496,7 +509,6 @@ export default {
             formData.venue_course_form = that.tranformVenueCourseForm(that.venueCourseForm);
             
             // ajax 调用后台接口保存数据
-            
             let url = '/venueSchedules' + (this.venueCourseForm.id ? '/' + this.venueCourseForm.id : '')
             let method = this.venueCourseForm.id ? 'put' : 'post';
             this.$http({

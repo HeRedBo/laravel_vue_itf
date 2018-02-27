@@ -158,14 +158,25 @@ class VenueSchedulesController extends ApiController
             return $this->response->withInternalServer($result['msg']);
         }
     }
-    
+
     /**
-     * 保持用户扩展课程表信息
+     * 保持道馆课程补充信息
+     *
      * @param VenueScheduleExtendRequest $request
-     * @author Red-Bo
+     * @return \Illuminate\Http\JsonResponse
      */
     public function saveScheduleExtend(VenueScheduleExtendRequest $request)
     {
-           
+        logResult(json_encode($request->all()));
+        $result = $this->repository->saveScheduleExtend($request->all());
+        if($result['status'])
+        {
+            return $this->response
+                ->withSuccess($result['msg']);
+        }
+        else
+        {
+            return $this->response->withInternalServer($result['msg']);
+        }
     }
 }
