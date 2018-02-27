@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Repositories;
 
 use Exception;
@@ -10,8 +9,6 @@ use Illuminate\Support\Facades\DB;
 use App\Repositories\AdminRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-
-
 
 /**
  * Class AdminRepositoryEloquent
@@ -321,12 +318,13 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
     public  function  getUserList(Request $request)
     {
         $query = Admin::query()->with(["venues","roles"]);
-                $query->leftJoin('admin_user_role', 'admin.id','=', 'admin_user_role.user_id')
-                ->leftJoin("admin_roles","admin_user_role.role_id",'=', "admin_roles.id")
-                ->leftJoin("admin_venue","admin_venue.admin_id","admin.id")
-                ->leftJoin("venues","admin_venue.venue_id","=","venues.id");
+        
+        $query->leftJoin('admin_user_role', 'admin.id','=', 'admin_user_role.user_id')
+            ->leftJoin("admin_roles","admin_user_role.role_id",'=', "admin_roles.id")
+            ->leftJoin("admin_venue","admin_venue.admin_id","admin.id")
+            ->leftJoin("venues","admin_venue.venue_id","=","venues.id");
+        
         $fields = ["admin.*"];
-
         $pageSize  = $request->get('pageSize') ?: self::DEFAULT_PAGE_SIZE;
         $orderBy   = $orderBy = $request->get('orderBy')?:'id';
         $sortBy    = $request->get('sortedBy')?:'desc';
@@ -364,30 +362,24 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
             else
                 $where[] = ["admin_venue.venue_id",'=', $venue_id];
         }
-
-
-
-
-
+        
         if(!empty($name))
         {
             $where[] = ["admin.name"];
         }
-        $where     = [];
+        $where    = [];
         if($or_where)
         {
             foreach ($or_where as $v) {
                 $query->orWhere($v[0], $v[1], $v[2]);
             }
         }
-
         if($whereIn)
         {
             foreach ($whereIn as $v) {
                 $query->whereIn($v[0], $v[1]);
             }
         }
-
         if($where)
         {
             foreach ($where as $v) {

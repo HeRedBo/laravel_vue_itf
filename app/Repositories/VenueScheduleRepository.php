@@ -26,5 +26,6 @@ interface VenueScheduleRepository extends RepositoryInterface
     
     public  function  getSchedules(Request $request);
     
+    public  function saveScheduleExtend(array $request);
     
 }

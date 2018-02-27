@@ -202,15 +202,20 @@ export default [
                 name : '课表管理',
                 children : [
                      {
+                        path: 'schedule',
+                        name : '道馆课程',
+                        component : () => import('views/admin/venueSchedule/schedule.vue')
+                    },
+                    {
                         path: 'create',
                         name : '课程表新增',
                         component : () => import('views/admin/venueSchedule/Create.vue')
                     },
-                     {
+                    {
                          path: 'update/:id',
                          name: '课程表编辑',
                          component: () => import('views/admin/venueSchedule/Update.vue')
-                     },
+                    },
                     {
                         path: 'index',
                         name : '课程表列表',

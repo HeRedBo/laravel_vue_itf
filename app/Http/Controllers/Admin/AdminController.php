@@ -58,6 +58,7 @@ class AdminController extends ApiController
         }
         catch (\Exception $e)
         {
+            logResult('【获取管理员信息错误】'.$e->__toString(),'error');
             return $this->response->withInternalServer($e->getMessage());
         }
     }
@@ -77,8 +78,7 @@ class AdminController extends ApiController
         else 
             return $this->response->withInternalServer($res['msg']);
     }
-
-
+    
     /**
      * Display the specified resource.
      *
@@ -111,7 +111,8 @@ class AdminController extends ApiController
             return $this->response
                         ->setResponseData($result['data'])
                         ->withSuccess($result['msg']);
-        } else
+        }
+        else
         {
             return $this->response->withInternalServer($res['msg']);
         }

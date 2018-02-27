@@ -10,12 +10,11 @@ use App\Services\Common\Dictionary;
 
 class VenueSchedule
 {
-    const VENUE_SCHEDULE_ON_STATUS  = 1;// 课程表启用状态
-    const VENUE_SCHEDULE_OFF_STATUS = 0;// 禁用状态
+    const VENUE_SCHEDULE_ON_STATUS  = 1; //课程表启用状态
+    const VENUE_SCHEDULE_OFF_STATUS = 0; //禁用状态
 
     const WEEK_START = 1; // 周开始
     const WEEK_END   = 7; // 周结束
-
 
     public  function __construct()
     {
@@ -31,8 +30,8 @@ class VenueSchedule
     public  function getScheduleHead($date)
     {
         $head = [
-            ['head_name' => '时间'],
-            ['head_name' => '节次'],
+            ['date'=>'', 'head_name' => '时间','ori_date' => ''],
+            ['date'=>'', 'head_name' => '节次','ori_date' => ''],
         ];
         $calendar = $this->getDateInfo($date);
         $head = array_merge($head, $calendar);
@@ -40,27 +39,82 @@ class VenueSchedule
         return $head;
     }
 
-
     public  function  getSchedulesInUse($date = null)
     {
         if(empty($data))
             $date = date("Y-m-d");
+        
+        $venue_schedules = $course_times = [];
         $schedule = $this->findSchedule($date);
         if($schedule)
         {
-
+            $schedule_start_time = $schedule['start_time'];
+            $schedule_end_time   = $schedule['end_time'];
+            $course_count        = $schedule['course_count'];
+            
+            $schedule['date_between'] = [
+                $schedule['start_time'],
+                $schedule['end_time'],
+            ];
+            
+            
+            // 方便比较 统一转换为时间戳
+            $start_time          = strtotime($schedule_start_time);
+            $end_time            = strtotime($schedule_end_time);
             $schedules_details = $this->getScheduleDetail($schedule);
-            $venue_schedules = $schedules_details['venue_schedules'];
-            //dd($venue_schedules);
-            $week_between = getWeekBE($date);
-            $first_day = $week_between[0];
-            $last_day  = $week_between[1];
-
+            $venue_schedules_data   = $schedules_details['venue_schedules'];
+            $course_times   = $schedules_details['course_times'];
+            $week_between_arr  = $this->getWeekDateArr($date);
             // 从新组装数据 已当前周的开始时间与结束时间进行判断从足数据
-
+            for($w = self::WEEK_START; $w <= self::WEEK_END; $w++ )
+            {
+                $venue_schedules[$w] = [];
+                $week_day      = $week_between_arr[$w];
+                $week_day_time = strtotime($week_day);
+                // 时间比较  
+                if(
+                    isset($venue_schedules_data[$w]) && 
+                    ($start_time <= $week_day_time && $week_day_time <= $end_time)
+                )
+                {
+                    for ($i = 1; $i <= $course_count; $i++)
+                    {
+                        $venue_schedules[$w][$i] = [];
+                        if(isset($venue_schedules_data[$w][$i]))
+                        {
+                            $venue_schedules[$w][$i] = $venue_schedules_data[$w][$i];
+                        }
+                    }
+                }
+            }
         }
+        return  compact('schedule','venue_course','venue_schedules','course_times');
     }
 
+    /**
+     * 获取周日区间数组
+     * @param  string $date 日期
+     * @return array
+     */
+    private function  getWeekDateArr($date)
+    {
+        $week_between = getWeekBE($date);
+        $first_day    = $week_between[0];
+        $last_day     = $week_between[1];
+        $w_first      = self::WEEK_START; // 周开始时间 以 1 开始
+        $tempDate     = $first_day;
+        $tempW        = $w_first;
+        $result       = [];
+        
+        while ($tempDate <= $last_day) 
+        {
+            $result[$tempW] = $tempDate;
+            $tempW ++;
+            $tempDate = date("Y-m-d", strtotime($tempDate ."+ 1 day"));
+        }
+        return $result;
+    }
+    
     /**
      * 获取一个课程表的课程详情
      *
@@ -100,7 +154,8 @@ class VenueSchedule
                     }
                 }
             }
-            $course_times = $this->reBuildCourseTimes($course_times);
+            
+            //$course_times = $this->reBuildCourseTimes($course_times);
             $result = compact('venue_schedules','course_times');
         }
         return $result;
@@ -130,6 +185,7 @@ class VenueSchedule
             $calendar[$tempDate] = [
                 'date'      => date("m-d", $tempTime),
                 'head_name' => $week_mame,
+                'ori_date'  => $tempDate
             ];
             $tempDate = date("Y-m-d", strtotime($tempDate  . " + 1 day"));
         }

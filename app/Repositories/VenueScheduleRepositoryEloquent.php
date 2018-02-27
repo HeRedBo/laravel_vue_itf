@@ -389,7 +389,7 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
         }
         catch (\Exception $e)
         {
-           logResult('【课程状态修改失败】'.$e->__toString());
+           logResult('【课程状态修改失败】'.$e->__toString(),'error');
            return error($e->getMessage());
         }
     }
@@ -422,15 +422,15 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
         }
         catch (\Exception $e)
         {
-            logResult('【课程状态修改失败】'.$e->__toString());
+            logResult('【课程状态修改失败】'.$e->__toString(),'error');
             return error($e->getMessage());
         }
     }
     
-    
     /**
      * 获取道馆当前的课表信息
      * @param Request $request
+     * @return array|void
      * @author Red-Bo
      */
     public  function  getSchedules(Request $request)
@@ -440,14 +440,35 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
         {
             $date = date("Y-m-d");
         }
-        $venueScheduleService  = ServiceFactory::getService("Admin\\VenueSchedule");
-        //$th_fields = $venueScheduleService->getScheduleHead($date); // 表头字段
-        $schedule = $venueScheduleService->getSchedulesInUse($date);
-        var_dump($schedule);
-        
-        
+        try 
+        {
+            $venueScheduleService  = ServiceFactory::getService("Admin\\VenueSchedule");
+            $th_fields = $venueScheduleService->getScheduleHead($date); // 表头字段
+            $schedule = $venueScheduleService->getSchedulesInUse($date);
+            $schedule['fields'] = $th_fields;
+            return success("数据获取成功",$schedule);
+        } 
+        catch (\Exception $e) 
+        {
+            logResult('【获取道馆课程错误】'.$e->__toString(),'error');
+            return error($e->getMessage());
+        }
         
     }
+    
+    public  function saveScheduleExtend(array $request)
+    {
+        // 1、判断请求时间是否已过期
+        
+        // 2、组装数据
+        
+        // 3、判断数据库中是否存在当天的数据
+        
+        // 3.1 有 先删 后添加
+        
+        // 3.2 无 添加数据
+    }
+    
     
     protected  function  reBuildCourseTimes($course_times)
     {
@@ -478,6 +499,5 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
         }
         return  $query->first()->toArray();
     }
-    
     
 }

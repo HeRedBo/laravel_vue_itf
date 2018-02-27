@@ -1,19 +1,15 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use Prettus\Validator\Contracts\ValidatorInterface;
-use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Requests\VenueScheduleCreateRequest;
 use App\Http\Requests\VenueScheduleUpdateRequest;
+use App\Http\Requests\VenueScheduleExtendRequest;
 use App\Repositories\VenueScheduleRepository;
-
 
 class VenueSchedulesController extends ApiController
 {
-
     /**
      * @var VenueScheduleRepository
      */
@@ -150,10 +146,26 @@ class VenueSchedulesController extends ApiController
     
     public function schedules(Request $request)
     {
-        $schedules = $this->repository->getSchedules($request);
-        dd($schedules);
+        $result = $this->repository->getSchedules($request);
+        if($result['status'])
+        {
+            return $this->response
+                    ->setResponseMessage($result['msg'])
+                    ->withData($result['data']);
+        }
+        else
+        {
+            return $this->response->withInternalServer($result['msg']);
+        }
     }
     
-    
-    
+    /**
+     * 保持用户扩展课程表信息
+     * @param VenueScheduleExtendRequest $request
+     * @author Red-Bo
+     */
+    public function saveScheduleExtend(VenueScheduleExtendRequest $request)
+    {
+           
+    }
 }

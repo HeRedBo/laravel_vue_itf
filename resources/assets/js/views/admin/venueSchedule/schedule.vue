@@ -2,105 +2,85 @@
     <div class="row">
         <div class="col-md-12">
             <div class="box box-primary">
-                <div class="box-header">
-                    <el-form 
-                        :model="venueCourseForm"
-                        ref="venueCourseForm"
-                        label-width="160px" 
-                        class="el-form"
-                        :rules="venueCourseFormRules">
-                           <!-- 道馆 -->
-                            <el-form-item label="归属道馆" 
-                                v-show="selectItemVisible" 
-                                prop="venue_id" 
-                            >
-                                <el-select 
-                                    v-model="venueCourseForm.venue_id" 
-                                    placeholder="请选择道馆" 
-                                    style="width:200px"   
-                                    @change="venueChange"
-                                    size="small"
-                                >
-                                      <el-option
-                                         v-for="item in venueOptions"
-                                         :key="item.value"
-                                         :label="item.label"
-                                         :value="item.value"
-                                         >
-                                      </el-option>
-                                    </el-select>
-                            </el-form-item>
-                            <el-form-item label="课表名称" prop="schedule_name" >
-                                <el-input 
-                                    v-model="venueCourseForm.schedule_name" 
-                                    placeholder="课表名称"
-                                    style="width:300px"  
-                                    size="small"
+                <div class="box-header"> 
+					<div class="col-md-12">
+					<!-- 归属道馆 -->
+	                    <div class="input-group input-group-sm">
+	                        <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange" size="small"
+	                        clearable
+	                        >
+	                            <el-option
+	                                   v-for="item in venueOptions"
+	                                   :key="item.value"
+	                                   :label="item.label"
+	                                   :value="item.value"
+	                                   >
+	                            </el-option>
+	                        </el-select>
+	                    </div>
 
-                                 > 
-                                 </el-input>
-                            </el-form-item>
-
-                            <!-- 节次数 -->
-                            <el-form-item label="节次数" prop="course_count">
-                                </el-input-number>
-                                  <el-input
-                                    size="small"
-                                    style="width:300px"  
-                                    placeholder="请输入节次数"
-                                    v-model="venueCourseForm.course_count"
-                                    @change="courseCountChange"
-                                    >
-                                </el-input>
-                            </el-form-item>
-
-                             <!-- 课程有效期 -->
-                            <el-form-item label="课程有效期" prop="date_between">
-                               <el-date-picker
-                                  size="small"
-                                  v-model="venueCourseForm.date_between"
-                                  type="daterange"
-                                  placeholder="选择日期范围">
-                                </el-date-picker>
-                            </el-form-item>
-
-                            <!-- 状态 -->
-                            <el-form-item label="启用状态">
-                                <el-radio-group v-model="venueCourseForm.status">
-                                    <el-radio :label="0">否</el-radio>
-                                    <el-radio :label="1">是</el-radio>
-                                </el-radio-group>
-                            </el-form-item>    
-                    </el-form>                    
+                    	 <!-- 班级 -->
+	                     <!-- <div class="input-group input-group-sm">
+	                         <el-select style="width:160px" v-model="params.class_id" placeholder="班级"  class="filter-item"  size="small"
+	                            clearable
+	                         >
+	                                <el-option
+	                                       v-for="item in classOptions"
+	                                       :key="item.value"
+	                                       :label="item.label"
+	                                       :value="item.value"
+	                                       >
+	                                </el-option>
+	                            </el-select>
+	                    </div>            -->
+					</div>
                 </div>
 
                 <div class="box-body tablew-responsive no-padding">
                     <table class="table table-bordered dataTable table-striped table-hover">
                         <thead>
                             <tr>
-                                <th v-for="field,key in fields" 
-                                     :class="['th_' + key ]"
+                            	<!-- :class="['th_' + key + ' text-color-red']" -->
+                            	<!-- field.head_name.indexOf('星期六') > -1 || 
+								field.head_name.indexOf('星期日') > -1  -->
+                                <th v-for="field,key in fields"
+                                    :class="[((field.date && field.head_name) && 
+										(field.head_name.indexOf('星期') == -1 
+										)
+									 )?'th_' + key + ' text-color-red'
+									 :'th_' + key
+									]"         
                                 >
-                                    {{field.label}}
+                                <template>
+                                	 {{field.head_name}}
+                                </template>
+                                <template v-if="field.date">
+                                	<br>
+                                	{{field.date}}
+                                </template>   
                                 </th>
                             </tr>
                         </thead>
-                        
+
                         <tbody>
-                            <tr  v-for="r in venueCourseForm.course_count" >
+                            <tr  v-for="r in course_count" >
                                 <td v-for="j in total_column" @click="tdClick(j-data_start_column+1,r)"
                                     :class="['td_course_time_' + (j-data_start_column+1) + '_' + r ]"
                                 >
                                     <template v-if="j==1">
-                                        <el-time-picker
+                                       <!--  <el-time-picker
                                             is-range
+                                            disabled
                                             :class="['course_time','course_time_' + r + '_' + j]"
                                             size="small"
                                             v-model="course_times[r]"
                                             @change="inputChange"
                                             @blur="courseTimeChange(r)"
-                                            placeholder="选择时间范围">
-                                        </el-time-picker>
+                                            placeholder="选择时间范围"
+                                            >
+                                        </el-time-picker> -->
+                                        {{course_times[r][0]}} -
+                                        {{course_times[r][1]}}
                                     </template>
                                     <template v-else-if="j==2">
                                         {{r}}
@@ -108,7 +88,6 @@
                                     <template v-else>
                                        <!-- {{j-data_start_column+1}} -->
                                        <!-- {{r}} -->
-
                                         {{
                                              venue_schedules[j-data_start_column+1] ? 
                                                 venue_schedules[j-data_start_column+1][r] ?
@@ -122,9 +101,6 @@
                                              {{ venue_schedules[j-data_start_column+1] ? venue_schedules[j-data_start_column+1][r] ? venue_schedules[j-data_start_column+1][r].remark
                                             ? venue_schedules[j-data_start_column+1][r].remark : '' :'' :'' }}
                                         </span>
-                                       
-
-
                                     </template>
                                 </td>
                             </tr>
@@ -152,6 +128,13 @@
                       <el-form ref="ScheduleForm" 
                       :model="ScheduleForm"  :rules="CourseRules"
                       >
+                      	<el-form-item label="日期" :label-width="formLabelWidth">
+                        <!--   <el-input  v-model="ScheduleForm.date" auto-complete="off" 
+                          size="small">
+                          </el-input> -->
+                          <span>{{ScheduleForm.date}}</span>
+
+                        </el-form-item>
                         <el-form-item label="星期" :label-width="formLabelWidth">
                           <el-input  v-show="0" v-model="ScheduleForm.week" auto-complete="off" 
                           size="small">
@@ -177,11 +160,12 @@
                               </el-option>
                             </el-select>
                         </el-form-item>
-                       <el-form-item label="课程备注" :label-width="formLabelWidth">
+
+                        <el-form-item label="课程备注" :label-width="formLabelWidth">
                           <el-input type="textarea" :rows="2" v-model="ScheduleForm.remark" auto-complete="off" 
                           size="small">
                           </el-input>
-                      </el-form-item>
+                       </el-form-item>
               </el-form>
                   </div>
               </div>
@@ -199,29 +183,6 @@
 import {stack_error,isEmpty,parseTime} from 'config/helper';
 export default {
     name: 'Form',
-    props: {
-        venueCourseForm: {
-            type: Object,
-            default() {
-                return {}
-            }
-        },
-        course_times : {
-            type: Object,
-            default() {
-                return {}
-            }
-        },
-
-        venue_schedules : {
-            type: Object,
-            default() {
-                return {}
-            }
-        }
-    },
-
-
     data() {
         var checkCourseCount = (rule, value, callback) => {
             var patrn = /^[0-9]*$/;
@@ -234,24 +195,13 @@ export default {
                  callback();
             }
         };
-
         return {
-            fields: {
-                course_time: {label: '时间'},
-                section:{label:'节次'},
-                week_1:{label:'周一'},
-                week_2:{label:'周二'},
-                week_3:{label:'周三'},
-                week_4:{label:'周四'},
-                week_5:{label:'周五'},
-                week_6:{label:'周六'},
-                week_7:{label:'周日'}
-            },
+            fields: {},
+            params :{},
             data_start_column: 3,
             total_column : 9,
-          
             limit_data_row : 9,
-
+            course_count : 0,   // 课程总数
             data_row: 7,
             class_Options : [],
             dialogFormVisible: false,
@@ -293,131 +243,88 @@ export default {
                     { required: true, type: 'number', message: '班级不能为空', trigger: 'blur' }
                 ]
             },
+
             formLabelWidth: '110px',
             venueOptions: [],
             classOptions: [],
             classMap : [],
             selectItemVisible : false,
-        } 
+            course_times : {},
+            venue_schedules : {},
+            venueCourseForm:{},
+            schedule : {}
+        }
     },
-    created() {
-        this.getUserVenus();
+    created() 
+    {
+    	this.getUserVenus();
+        this.getSchedule();  
     },
-
     methods:{
 
-        initData(){
-        
-        },
-
+    	getSchedule() 
+    	{
+    		var that = this,params = {};
+            var url = '/venueSchedules/schedules';
+            this.$http({
+                method :'GET',
+                url : url,
+                params : params
+            })
+            .then(function(response) 
+            {
+                let {data} = response;
+                var  respondata = data.data
+                that.fields  = respondata.fields;
+                var schedule = respondata.schedule;
+                that.course_count    = schedule.course_count;
+                that.course_times    = respondata.course_times;
+                that.venue_schedules = respondata.venue_schedules;
+            })
+            .catch(function(error) 
+            {
+                    console.log(error);
+                    stack_error(error);
+            });
+    	},
         inputChange(value,index) {
             //console.log(this.course_times)
             var dom_str  = '.course_time'
             $(dom_str).find("input").removeClass('is-error');
         },
-
-        courseTimeChange(r_key)
-        {
-            var row_course_times = this.course_times[r_key];
-            var total_course_time = this.course_times;
-            var dom_str  = '.course_time_' + r_key + '_1';
-            $(dom_str).find("input").removeClass('is-error');
-            if(!isEmpty(row_course_times))
-            {
-                var row_course_start_time = Date.parse(row_course_times[0]);
-                var row_course_end_time   = Date.parse(row_course_times[1]);
-
-                for (let j in total_course_time) 
-                {
-                    console.log(j);
-                    var t_course_time = total_course_time[j];
-                    console.log(t_course_time);
-
-                    if(j == r_key) 
-                        continue;
-                    if(!isEmpty(t_course_time))
-                    {
-
-                        // 立一个 flag
-                        var flag_1 = true,flag_2 = true,flag_3= true;
-                        var t_start_time_timestamp  = Date.parse(t_course_time[0]);
-                        var t_end_time_timestamp    = Date.parse(t_course_time[1]);
-                        //  比较数据大小
-                        if(
-                            (t_start_time_timestamp <= row_course_start_time ) 
-                            && (row_course_start_time <= t_end_time_timestamp))
-                        {
-                            flag_1 = false;
-                        }
-                        if((t_start_time_timestamp <= row_course_end_time)  &&
-                            (row_course_start_time <= t_end_time_timestamp)
-                            )
-                        {
-                            flag_2 = false;
-                        }
-
-                        // 包围 时间段的判断
-                        if( (row_course_start_time <= t_start_time_timestamp) &&
-                            (row_course_end_time >= t_end_time_timestamp)
-                        )
-                        {
-                            flag_3 = false;
-                        }
-                        
-                        
-                        if(!flag_1 || !flag_2) 
-                        {
-                            $(dom_str).find("input").addClass('is-error');
-                            this.$message.error('课程时间存在冲突，请检查!');
-                            return false;
-                        }
-                        if(!flag_3)
-                        {
-                            $(dom_str).find("input").addClass('is-error');
-                            this.$message.error('课程时间存在冲突，请检查!');
-                            return false;
-                        }
-                        
-
-                    }
-                }
-
-            }
-
-        },
-        clickDebug(r_key)
-        {
-            console.log(r_key);
-        },
-
         tdClick(row_num, col_num)
         {
-
             // 校验道馆的基本信息必填项
             var that = this;
-            var chat_flag_1 = this.validataVenueCourse(function() 
-            {
-                // 处理每个的数据
-                if(((1<=row_num) && (row_num <=7)) && ((col_num >=1) && (col_num <= that.data_row)))
-                {  
-                    if(isEmpty(that.venue_schedules[row_num]) || (!isEmpty(that.venue_schedules[row_num]) && isEmpty(that.venue_schedules[row_num][col_num])))
+             // 处理每个的数据
+            if(((1<=row_num) && (row_num <=7)) && ((col_num >=1) && (col_num <= that.data_row)))
+            {  
+                if(isEmpty(that.venue_schedules[row_num]) || (!isEmpty(that.venue_schedules[row_num]) && isEmpty(that.venue_schedules[row_num][col_num])))
+                {
+                    that.ScheduleForm = {};
+                    that.ScheduleForm.week = row_num;
+                    that.ScheduleForm.section = col_num;
+                    that.ScheduleForm.remark = '';
+                    that.ScheduleForm.date = that.fields[row_num +1 ].ori_date
+                    that.ScheduleForm.start_time = that.course_times[col_num][0];
+                    that.ScheduleForm.end_time = that.course_times[col_num][1];
+                } 
+                else 
+                {
+                    if(!isEmpty(that.venue_schedules[row_num][col_num]))
                     {
-                        that.ScheduleForm = {};
-                        that.ScheduleForm.week = row_num;
-                        that.ScheduleForm.section = col_num;
-                        that.ScheduleForm.remark = '';
-                    } 
-                    else 
-                    {
-                        if(!isEmpty(that.venue_schedules[row_num][col_num]))
-                        {
-                            that.ScheduleForm = that.venue_schedules[row_num][col_num];
-                        } 
-                       
-                    }                
-                    that.dialogFormVisible = true;
-                }
-            });
+                        that.ScheduleForm = that.venue_schedules[row_num][col_num];
+                        that.ScheduleForm.date = that.fields[row_num +1 ].ori_date
+                    }
+                }      
+
+                console.log(that.ScheduleForm); 
+                that.dialogFormVisible = true;
+            }
+            // var chat_flag_1 = this.validataVenueCourse(function() 
+            // {
+               
+            // });
         },
 
         validataVenueCourse(cb)
@@ -438,41 +345,43 @@ export default {
             return false;
         },
 
+
         getUserVenus() 
         {
-                var that = this;
-                var url = '/user/userVenues';
-                this.$http({
-                    method :'GET',
-                    url : url
-                })
-                .then(function(response) 
-                {
+            var that = this;
+            var url = '/user/userVenues';
+            this.$http({
+                method :'GET',
+                url : url
+            })
+            .then(function(response) 
+            {
 
-                        let {data} = response;
-                        var  respondata = data.data
-                        var options = [];
-                        for (var i in respondata ) {
-                        
-                            let label =  respondata[i].name;
-                            options.push({value : respondata[i].id , label: label});
-                        }
-                        that.venueOptions = options;
-                        if(options.length == 1)
-                        {
-                            var venue_id =  options[0].value;
-                            //that.studentForm.venue_id =  venue_id;
-                            that.getClasses(venue_id);
-                        } 
-                        else
-                        {
-                            that.selectItemVisible = true;
-                        }
-                        // that.showCreateButton = true;
-                    })
-                    .catch(function(error) {
-                        stack_error(error);
-                    });
+                let {data} = response;
+                var  respondata = data.data
+                var options = [];
+                for (var i in respondata ) {
+                
+                    let label =  respondata[i].name;
+                    options.push({value : respondata[i].id , label: label});
+                }
+                that.venueOptions = options;
+                if(options.length == 1)
+                {
+                    var venue_id =  options[0].value;
+                    //that.studentForm.venue_id =  venue_id;
+                    that.getClasses(venue_id);
+                } 
+                else
+                {
+                    that.selectItemVisible = true;
+                }
+                    // that.showCreateButton = true;
+            })
+            .catch(function(error) {
+                console.log(error);
+                stack_error(error);
+            });
         },
 
         getClasses(venue_id) {
@@ -504,17 +413,28 @@ export default {
             this.getClasses(value);
         },
 
+        /**
+         * 处理某个指定特殊日期的课程
+         */
         handleCourseRow()
         {
             this.$refs.ScheduleForm.validate(valid => {
             var that = this;
-            if (valid) {
-                var  week = that.ScheduleForm.week;
+            if (valid) 
+            {
+            	// 数据操作入库
+                var  week  = that.ScheduleForm.week;
                 var section = that.ScheduleForm.section;
+
                 if(isEmpty(that.venue_schedules[week]))
                     that.venue_schedules[week] = [];
-                    
+
+                
+
+
+
                 that.venue_schedules[week][section] = that.ScheduleForm;
+
                 let td_dom_class = 'td_course_time_' + that.ScheduleForm.week + '_' + that.ScheduleForm.section;
                 let class_id = that.ScheduleForm.class_id;
                 let class_name = that.classMap[class_id];

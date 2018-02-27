@@ -135,8 +135,6 @@ class Admin extends Authenticatable implements Transformable
         return $roles;
     }
     
-    
-    
     /**
      * 角色整体添加与修改
      *
