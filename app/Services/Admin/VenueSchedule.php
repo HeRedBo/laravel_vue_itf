@@ -5,6 +5,7 @@
  */
 namespace App\Services\Admin;
 
+use Illuminate\Http\Request;
 use App\Services\ServiceFactory;
 use App\Services\Common\Dictionary;
 
@@ -39,13 +40,13 @@ class VenueSchedule
         return $head;
     }
 
-    public  function  getSchedulesInUse($date = null)
+    public  function  getSchedulesInUse(Request $request)
     {
+        $date = $request->get('date');
         if(empty($date))
             $date = date("Y-m-d");
-        
         $venue_schedules = $course_times = [];
-        $schedule = $this->findSchedule($date);
+        $schedule = $this->findSchedule($request);
         if($schedule)
         {
             $schedule_start_time = $schedule['start_time'];
@@ -60,11 +61,11 @@ class VenueSchedule
             // 方便比较 统一转换为时间戳
             $start_time          = strtotime($schedule_start_time);
             $end_time            = strtotime($schedule_end_time);
-            $schedules_details   = $this->getScheduleDetail($schedule);
+            $schedules_details   = $this->getScheduleDetail($schedule, $request);
             $venue_schedules_data   = $schedules_details['venue_schedules'];
             $course_times   = $schedules_details['course_times'];
             $week_between_arr  = $this->getWeekDateArr($date);
-            $venue_schedules_extend_data = $this->getVenueScheduleExtend($schedule_id, $date);
+            $venue_schedules_extend_data = $this->getVenueScheduleExtend($schedule_id, $request);
             // 从新组装数据 已当前周的开始时间与结束时间进行判断从足数据
             for($w = self::WEEK_START; $w <= self::WEEK_END; $w++ )
             {
@@ -128,22 +129,25 @@ class VenueSchedule
         return $result;
     }
     
+    
     /**
      * 获取一个课程表的课程详情
-     *
-     * @param array $schedule
-     * @return mixed
+     * @param array   $schedule
+     * @param Request $request
+     * @return array
+     * @author Red-Bo
      */
-    public  function  getScheduleDetail(array $schedule)
+    public  function  getScheduleDetail(array $schedule, Request $request)
     {
         $result = [];
         if(!empty($schedule))
         {
+            
             $course_count = $schedule['course_count'];
             $schedule_id  =  $schedule['id'];
             $venue_schedule_detail_model = ServiceFactory::getModel("Admin\\VenueScheduleDetail");
-            $details     = $venue_schedule_detail_model->getVenueSchedules($schedule_id);
-
+            $params = $request->all();
+            $details     = $venue_schedule_detail_model->getVenueSchedules($schedule_id,$params);
             $venue_schedules = $course_times = [];
             // 组装课程列表数据与课程时间数据
             for($w = self::WEEK_START; $w <= self::WEEK_END; $w++ )
@@ -205,23 +209,30 @@ class VenueSchedule
         return $calendar;
     }
 
-    public  function  findSchedule($date)
+    public  function  findSchedule($request)
     {
-        $schedule = $this->findScheduleByDate($date);
+        $date = $request->get('date');
+        if(empty($data))
+            $date  = date("Y-m-d");
+        $params = $request->all();
+        $schedule = $this->searchSchedule($params);
         if(empty($schedule))
         {
             $week_between = getWeekBE($date);
             $first_day = $week_between[0];
+            $params['date'] = $first_day;
             if($first_day < $date)
             {
-                $schedule = $this->findScheduleByDate($first_day);
+                $schedule = $this->searchSchedule($params);
             }
         }
         return $schedule;
     }
     
-    protected  function  findScheduleByDate($date)
+    protected  function  searchSchedule(array $params)
     {
+        $date     = isset($params['date']) ? $params['date'] : date("Y-m-d");
+        $venue_id = isset($params['venue_id']) ? (int) $params['venue_id'] : 0;
         $venueSchedule_model = ServiceFactory::getModel("Admin\\VenueSchedule");
         $query = $venueSchedule_model->query();
         $where = [
@@ -229,10 +240,14 @@ class VenueSchedule
             ['end_time','>=',  $date],
             ['status','=', self::VENUE_SCHEDULE_ON_STATUS],
         ];
+        
+        if(!empty($venue_id))
+            $where[] = ['venue_id','=', $venue_id];
         foreach ($where as $v)
         {
             $query->where($v[0], $v[1], $v[2]);
         }
+        
         $query->orderBy('id','desc');
         $result = [];
         $data = $query->first();
@@ -257,15 +272,22 @@ class VenueSchedule
     /**
      * 获取课程表的补充数据
      * @param int $schedule_id  课程表ID
-     * @param string $date
+     * @param string $request
      * @return array
      * @author Red-Bo
      */
-    protected  function getVenueScheduleExtend($schedule_id , $date )
+    protected  function getVenueScheduleExtend($schedule_id , $request)
     {
+        $class_id = $request->get('class_id');
+        $date = $request->get('date');
         $where = [
             ['schedule_id', '=', $schedule_id],
         ];
+        if(!empty($class_id))
+            $where[] = ['class_id','=', $class_id];
+        if(empty($date))
+            $date =date("Y-m-d");
+        
         $date_between = getWeekBE($date);
         $model =   $venueSchedule_model = ServiceFactory::getModel("Admin\\VenueScheduleDetailExtend");
         $query = $model->query()

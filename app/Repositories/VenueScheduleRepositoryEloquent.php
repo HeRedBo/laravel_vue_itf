@@ -444,7 +444,7 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
         {
             $venueScheduleService  = ServiceFactory::getService("Admin\\VenueSchedule");
             $th_fields = $venueScheduleService->getScheduleHead($date); // 表头字段
-            $schedule = $venueScheduleService->getSchedulesInUse($date);
+            $schedule = $venueScheduleService->getSchedulesInUse($request);
             $schedule['fields'] = $th_fields;
             return success("数据获取成功",$schedule);
         } 

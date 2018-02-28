@@ -18,6 +18,21 @@
 	                            </el-option>
 	                        </el-select>
 	                    </div>
+                        
+                        <!-- 班级 -->
+                         <div class="input-group input-group-sm">
+                             <el-select style="width:160px" v-model="params.class_id" placeholder="班级"  class="filter-item"  size="small"
+                                clearable
+                             >
+                                    <el-option
+                                           v-for="item in classOptions"
+                                           :key="item.value"
+                                           :label="item.label"
+                                           :value="item.value"
+                                           >
+                                    </el-option>
+                                </el-select>
+                        </div>    
 					</div>
                     
                     <div class="col-md-6">
@@ -32,8 +47,6 @@
                                     :picker-options="pickerOptions"
                                     @change="seachDataChange"
                                   >
-                                 <template slot="prepend"><< 上一周</template>
-                                 <template slot="append">下一周 >></template>
                                 </el-date-picker>
                            </div>
 
@@ -41,24 +54,8 @@
                         <div class="btn-group btn-group-sm">
                             <button type="submit" class="btn btn-primary" @click="getSchedule"><i class="fa fa-search"></i>
                             </button>
-                           <!--  <a href="javascript:void(0)" class="btn btn-warning" @click="reset"><i class="fa fa-undo"></i></a> -->
+                            <a href="javascript:void(0)" class="btn btn-warning" @click="reset"><i class="fa fa-undo"></i></a>
                         </div>
-
-                             <!-- 归属道馆 -->
-                            <!-- <div class="input-group input-group-sm">
-                                <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange" size="small"
-                                clearable
-                                >
-                                    <el-option
-                                           v-for="item in venueOptions"
-                                           :key="item.value"
-                                           :label="item.label"
-                                           :value="item.value"
-                                           >
-                                    </el-option>
-                                </el-select>
-                            </div> -->
-
                         </div>
                        
                     </div>
@@ -139,11 +136,11 @@
                 </div>
 
                 <div class="box-footer">
-                    <button type="submit" @click="$router.back()" class="btn btn-default">返回</button>
-                    <!-- <button type="submit" @click="$router.push({ path: '/admin/venueSchedule/index' })" class="btn btn-default">返回</button> -->
+                    <!-- <button type="submit" @click="$router.back()" class="btn btn-default">返回</button>
+                    <button type="submit" @click="$router.push({ path: '/admin/venueSchedule/index' })" class="btn btn-default">返回</button>
                     <button type="submit" @click="onSubmit" class="btn btn-info">
                          {{ venueCourseForm.id ? '更新' : '添加' }}
-                    </button>
+                    </button> -->
 
                 </div>
             </div>
@@ -543,6 +540,7 @@ export default {
                 this.$message.error('课程表数据不能为空！');
                 return 
             }
+
             // 数据校验完成 提交数据到后台 
             // 时间数据进行数据格式转换 提交前 js 格林时间需要转换
             var formData = {};
@@ -595,11 +593,8 @@ export default {
             else 
                 return false;
         },
-
         validateVenueSchedule()
         {
-            console.log(this.venue_schedules)
-
             if(isEmpty(this.venue_schedules))
                 return false;
             else 
@@ -636,7 +631,12 @@ export default {
             }
             venueCourseForm.date_between = date_between_res;
             return venueCourseForm;
-        }
+        },
+
+        reset() 
+        {
+            this.params = {};
+        },
     }
 }
 </script>
@@ -654,5 +654,5 @@ export default {
     .text-error {
         color: red;
     }
-    
+
 </style>
