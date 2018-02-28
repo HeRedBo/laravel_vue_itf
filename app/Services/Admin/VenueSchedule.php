@@ -41,7 +41,7 @@ class VenueSchedule
 
     public  function  getSchedulesInUse($date = null)
     {
-        if(empty($data))
+        if(empty($date))
             $date = date("Y-m-d");
         
         $venue_schedules = $course_times = [];
@@ -234,8 +234,11 @@ class VenueSchedule
             $query->where($v[0], $v[1], $v[2]);
         }
         $query->orderBy('id','desc');
-        return $query->first()->toArray();
-
+        $result = [];
+        $data = $query->first();
+        if($data)
+            $result = $data->toArray();
+        return $result;
     }
 
     protected  function  reBuildCourseTimes($course_times)

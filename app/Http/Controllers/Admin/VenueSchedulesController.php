@@ -167,7 +167,7 @@ class VenueSchedulesController extends ApiController
      */
     public function saveScheduleExtend(VenueScheduleExtendRequest $request)
     {
-        logResult(json_encode($request->all()));
+       
         $result = $this->repository->saveScheduleExtend($request->all());
         if($result['status'])
         {

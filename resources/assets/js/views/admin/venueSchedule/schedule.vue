@@ -3,7 +3,7 @@
         <div class="col-md-12">
             <div class="box box-primary">
                 <div class="box-header"> 
-					<div class="col-md-12">
+					<div class="col-md-6">
 					<!-- 归属道馆 -->
 	                    <div class="input-group input-group-sm">
 	                        <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange" size="small"
@@ -18,22 +18,49 @@
 	                            </el-option>
 	                        </el-select>
 	                    </div>
-
-                    	 <!-- 班级 -->
-	                     <!-- <div class="input-group input-group-sm">
-	                         <el-select style="width:160px" v-model="params.class_id" placeholder="班级"  class="filter-item"  size="small"
-	                            clearable
-	                         >
-	                                <el-option
-	                                       v-for="item in classOptions"
-	                                       :key="item.value"
-	                                       :label="item.label"
-	                                       :value="item.value"
-	                                       >
-	                                </el-option>
-	                            </el-select>
-	                    </div>            -->
 					</div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-inline pull-right">
+                            <!--  数据搜索框 -->
+                           <div class="input-group input-group-sm" >
+                                <el-date-picker
+                                    v-model="params.date"
+                                    type="date"
+                                    placeholder="选择日期"
+                                    size="small"
+                                    @change="seachDataChange"
+                                  >
+                                 <template slot="prepend"><< 上一周</template>
+                                 <template slot="append">下一周 >></template>
+                                </el-date-picker>
+                           </div>
+
+                            <!--  按钮分组 -->
+                        <div class="btn-group btn-group-sm">
+                            <button type="submit" class="btn btn-primary" @click="getSchedule"><i class="fa fa-search"></i>
+                            </button>
+                           <!--  <a href="javascript:void(0)" class="btn btn-warning" @click="reset"><i class="fa fa-undo"></i></a> -->
+                        </div>
+
+                             <!-- 归属道馆 -->
+                            <!-- <div class="input-group input-group-sm">
+                                <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange" size="small"
+                                clearable
+                                >
+                                    <el-option
+                                           v-for="item in venueOptions"
+                                           :key="item.value"
+                                           :label="item.label"
+                                           :value="item.value"
+                                           >
+                                    </el-option>
+                                </el-select>
+                            </div> -->
+
+                        </div>
+                       
+                    </div>
                 </div>
 
                 <div class="box-body tablew-responsive no-padding">
@@ -253,7 +280,6 @@ export default {
             venue_schedules : {},
             venueCourseForm:{},
             schedule : {},
-            
         }
     },
     created() 
@@ -262,10 +288,9 @@ export default {
         this.getSchedule();  
     },
     methods:{
-
     	getSchedule() 
     	{
-    		var that = this,params = {};
+    		var that = this,params = this.params;
             var url = '/venueSchedules/schedules';
             this.$http({
                 method :'GET',
@@ -276,7 +301,7 @@ export default {
             {
                 let {data} = response;
                 var  respondata = data.data
-                that.fields  = respondata.fields;
+                that.fields   = respondata.fields;
                 that.schedule = respondata.schedule;
                 that.course_count    = that.schedule.course_count;
                 that.course_times    = respondata.course_times;
@@ -288,6 +313,12 @@ export default {
                     stack_error(error);
             });
     	},
+
+        seachDataChange(value)
+        {
+            this.params.date = value;
+            this.getSchedule();
+        },
         inputChange(value,index) {
             //console.log(this.course_times)
             var dom_str  = '.course_time'
