@@ -494,8 +494,8 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $where = [
                 ['schedule_id','=', $data['schedule_id']],
                 ['schedule_date','=', $data['schedule_date']],
-                ['class_id','=', $data['class_id']],
                 ['week','=', $data['week']],
+                ['section','=', $data['section']],
             ];
             foreach ($where as $v)
             {

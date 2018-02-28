@@ -51,41 +51,54 @@ class VenueSchedule
             $schedule_start_time = $schedule['start_time'];
             $schedule_end_time   = $schedule['end_time'];
             $course_count        = $schedule['course_count'];
-            
+            $schedule_id         = $schedule['id'];
             $schedule['date_between'] = [
                 $schedule['start_time'],
                 $schedule['end_time'],
             ];
             
-            
             // 方便比较 统一转换为时间戳
             $start_time          = strtotime($schedule_start_time);
             $end_time            = strtotime($schedule_end_time);
-            $schedules_details = $this->getScheduleDetail($schedule);
+            $schedules_details   = $this->getScheduleDetail($schedule);
             $venue_schedules_data   = $schedules_details['venue_schedules'];
             $course_times   = $schedules_details['course_times'];
             $week_between_arr  = $this->getWeekDateArr($date);
+            $venue_schedules_extend_data = $this->getVenueScheduleExtend($schedule_id, $date);
             // 从新组装数据 已当前周的开始时间与结束时间进行判断从足数据
             for($w = self::WEEK_START; $w <= self::WEEK_END; $w++ )
             {
                 $venue_schedules[$w] = [];
                 $week_day      = $week_between_arr[$w];
                 $week_day_time = strtotime($week_day);
-                // 时间比较  
-                if(
-                    isset($venue_schedules_data[$w]) && 
-                    ($start_time <= $week_day_time && $week_day_time <= $end_time)
-                )
+                for ($i = 1; $i <= $course_count; $i++)
                 {
-                    for ($i = 1; $i <= $course_count; $i++)
+                    $venue_schedules[$w][$i] = [];
+                    if(
+                    (isset($venue_schedules_data[$w]) &&
+                        ($start_time <= $week_day_time && $week_day_time <= $end_time))
+                    ||
+                    isset($venue_schedules_extend_data[$w])
+                    )
                     {
-                        $venue_schedules[$w][$i] = [];
                         if(isset($venue_schedules_data[$w][$i]))
                         {
                             $venue_schedules[$w][$i] = $venue_schedules_data[$w][$i];
                         }
+                        // 如果存在补充数据则以补充数据表数据为准
+                        if(isset($venue_schedules_extend_data[$w][$i]) && $venue_schedules_extend_data[$w][$i]['class_id'] > 0)
+                        {
+                            
+                            $venue_schedules[$w][$i] = $venue_schedules_extend_data[$w][$i];
+                        }
+                        
                     }
+                    
+                    
                 }
+                
+                // 时间比较  
+                
             }
         }
         return  compact('schedule','venue_course','venue_schedules','course_times');
@@ -233,6 +246,41 @@ class VenueSchedule
             foreach ($v as $kk => $vv) {
                 $date_time = date("Y-m-d H:i:s", strtotime($v[0]));
                 $result[$k][$kk] = DateTimeToGmt($date_time);
+            }
+        }
+        return $result;
+    }
+    
+    /**
+     * 获取课程表的补充数据
+     * @param int $schedule_id  课程表ID
+     * @param string $date
+     * @return array
+     * @author Red-Bo
+     */
+    protected  function getVenueScheduleExtend($schedule_id , $date )
+    {
+        $where = [
+            ['schedule_id', '=', $schedule_id],
+        ];
+        $date_between = getWeekBE($date);
+        $model =   $venueSchedule_model = ServiceFactory::getModel("Admin\\VenueScheduleDetailExtend");
+        $query = $model->query()
+                ->with(['classes']);
+        foreach ($where as $v)
+        {
+            $query->where($v[0], $v[1], $v[2]);
+        }
+        $query->whereBetween("schedule_date",$date_between);
+        $data = $query->get()->toArray();
+        $result = [];
+        if($data)
+        {
+            foreach ($data as $k => $v)
+            {
+                $v['class_name'] = $v['classes']['name'];
+                unset($v['classes']);
+                $result[$v['week']][$v['section']] = $v;
             }
         }
         return $result;

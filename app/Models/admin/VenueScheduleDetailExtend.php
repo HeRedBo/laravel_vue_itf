@@ -18,6 +18,12 @@ class VenueScheduleDetailExtend extends Model implements Transformable
      */
     public $timestamps = false;
     
+    public  function  classes()
+    {
+        return $this->belongsTo(Classes::class,'class_id','id')
+            ->select(['id','name']);
+    }
+    
     // 字段白名单
     protected $fillable = [
         'schedule_id','schedule_date','start_time','end_time','class_id','week','section',
