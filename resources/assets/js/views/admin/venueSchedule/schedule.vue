@@ -29,6 +29,7 @@
                                     type="date"
                                     placeholder="选择日期"
                                     size="small"
+                                    :picker-options="pickerOptions"
                                     @change="seachDataChange"
                                   >
                                  <template slot="prepend"><< 上一周</template>
@@ -270,7 +271,6 @@ export default {
                 //     { required: true, type: 'number', message: '班级不能为空', trigger: 'blur' }
                 // ]
             },
-
             formLabelWidth: '110px',
             venueOptions: [],
             classOptions: [],
@@ -280,8 +280,41 @@ export default {
             venue_schedules : {},
             venueCourseForm:{},
             schedule : {},
+            pickerOptions: {
+                shortcuts: [{
+                    text: '今天',
+                    onClick(picker) {
+                      picker.$emit('pick', new Date());
+                    }
+                  }, {
+                    text: '昨天',
+                    onClick(picker) {
+                      const date = new Date();
+                      date.setTime(date.getTime() - 3600 * 1000 * 24);
+                      picker.$emit('pick', date);
+                    }
+                  }, {
+                    text: '一周前',
+                    onClick(picker) {
+                      const date = new Date();
+                      date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+                      picker.$emit('pick', date);
+                    }
+                  },
+                  {
+                    text: '一周后',
+                    onClick(picker) {
+                      const date = new Date();
+                      date.setTime(date.getTime() + 3600 * 1000 * 24 * 7);
+                      picker.$emit('pick', date);
+                    }
+                  },
+                 ]
+            },
+
         }
     },
+
     created() 
     {
     	this.getUserVenus();
@@ -309,8 +342,8 @@ export default {
             })
             .catch(function(error) 
             {
-                    console.log(error);
-                    stack_error(error);
+                console.log(error);
+                stack_error(error);
             });
     	},
 
@@ -319,8 +352,8 @@ export default {
             this.params.date = value;
             this.getSchedule();
         },
+
         inputChange(value,index) {
-            //console.log(this.course_times)
             var dom_str  = '.course_time'
             $(dom_str).find("input").removeClass('is-error');
         },
@@ -328,7 +361,6 @@ export default {
         {
             // 校验道馆的基本信息必填项
             var that = this;
-            console.log(that.schedule)
              // 处理每个的数据
             if(((1<=row_num) && (row_num <=7)) && ((col_num >=1) && (col_num <= that.data_row)))
             {  
@@ -352,14 +384,8 @@ export default {
                         that.ScheduleForm.schedule_id = that.schedule.id;
                     }
                 }      
-
-                console.log(that.ScheduleForm); 
                 that.dialogFormVisible = true;
             }
-            // var chat_flag_1 = this.validataVenueCourse(function() 
-            // {
-               
-            // });
         },
 
         validataVenueCourse(cb)
@@ -404,18 +430,14 @@ export default {
                 if(options.length == 1)
                 {
                     var venue_id =  options[0].value;
-                    //that.studentForm.venue_id =  venue_id;
                     that.getClasses(venue_id);
                 } 
                 else
                 {
                     that.selectItemVisible = true;
-                }
-
-                    
+                }    
             })
             .catch(function(error) {
-                console.log(error);
                 stack_error(error);
             });
         },
@@ -500,17 +522,6 @@ export default {
             }
 
             });     
-        },
-        courseCountChange(value)
-        {
-            var patrn = /^[0-9]*$/;
-            if (patrn.exec(value) == null || value == "" || value > this.limit_data_row) 
-            {
-                return false;
-            }
-            this.data_row = +value;
-            this.venueCourseForm.course_count =  +value;
-            return true;
         },
 
         // 保存 开始前需要做一数据校验 校验课表数据与课程时间数据
@@ -612,6 +623,7 @@ export default {
             }
             return result;
         },
+
         tranformVenueCourseForm(venueCourseForm)
         {
             var date_between = venueCourseForm.date_between;
@@ -633,15 +645,14 @@ export default {
     .th_course_time {
         width: 10%;
     }
-
     .is-error{
         border-color: #ff4949;
     }
-
     .course_time_form > .el-select, .el-input {
         width: 90%;
     }
     .text-error {
         color: red;
     }
+    
 </style>
