@@ -26,7 +26,7 @@ class VenueScheduleDetailExtend extends Model implements Transformable
     
     // 字段白名单
     protected $fillable = [
-        'schedule_id','schedule_date','start_time','end_time','class_id','week','section',
+        'schedule_id','schedule_date','class_id','week','section',
         'remark','operator_id','created_at',
     ];
     
