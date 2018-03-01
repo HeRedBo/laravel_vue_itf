@@ -63,7 +63,8 @@ class VenueSchedule
             $end_time            = strtotime($schedule_end_time);
             $schedules_details   = $this->getScheduleDetail($schedule, $request);
             $venue_schedules_data   = $schedules_details['venue_schedules'];
-            $course_times   = $schedules_details['course_times'];
+            $venue_schedule_course_time_model = ServiceFactory::getModel("Admin\\VenueScheduleCourseTime");
+            $course_times = $venue_schedule_course_time_model->getScheduleCourseTime($schedule_id);
             $week_between_arr  = $this->getWeekDateArr($date);
             $venue_schedules_extend_data = $this->getVenueScheduleExtend($schedule_id, $request);
             // 从新组装数据 已当前周的开始时间与结束时间进行判断从足数据
@@ -162,18 +163,11 @@ class VenueSchedule
                         if(isset($detail[$i]))
                         {
                             $venue_schedules[$w][$i] = $detail[$i];
-                            // 时间 处理待定
-                            $course_times[$i] = [
-                                $detail[$i]['start_time'],
-                                $detail[$i]['end_time']
-                            ];
                         }
                     }
                 }
             }
-            
-            //$course_times = $this->reBuildCourseTimes($course_times);
-            $result = compact('venue_schedules','course_times');
+            $result = compact('venue_schedules');
         }
         return $result;
     }

@@ -4,35 +4,42 @@
             <div class="box box-primary">
                 <div class="box-header"> 
 					<div class="col-md-6">
-					<!-- 归属道馆 -->
-	                    <div class="input-group input-group-sm">
-	                        <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange" size="small"
-	                        clearable
-	                        >
-	                            <el-option
-	                                   v-for="item in venueOptions"
-	                                   :key="item.value"
-	                                   :label="item.label"
-	                                   :value="item.value"
-	                                   >
-	                            </el-option>
-	                        </el-select>
-	                    </div>
+                        <div class="form-inline">
+                               <!-- 归属道馆 -->
+                                <div class="input-group input-group-sm">
+                                    <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange" size="small"
+                                    clearable
+                                    >
+                                        <el-option
+                                               v-for="item in venueOptions"
+                                               :key="item.value"
+                                               :label="item.label"
+                                               :value="item.value"
+                                               >
+                                        </el-option>
+                                    </el-select>
+                                </div>
+
+                                <!-- 班级 -->
+                             <div class="input-group input-group-sm">
+                                 <el-select style="width:160px" v-model="params.class_id" placeholder="班级"  class="filter-item"  size="small"
+                                    clearable
+                                 >
+                                        <el-option
+                                               v-for="item in classOptions"
+                                               :key="item.value"
+                                               :label="item.label"
+                                               :value="item.value"
+                                               >
+                                        </el-option>
+                                    </el-select>
+                            </div>    
+
+        
+                        </div>
+					
                         
-                        <!-- 班级 -->
-                         <div class="input-group input-group-sm">
-                             <el-select style="width:160px" v-model="params.class_id" placeholder="班级"  class="filter-item"  size="small"
-                                clearable
-                             >
-                                    <el-option
-                                           v-for="item in classOptions"
-                                           :key="item.value"
-                                           :label="item.label"
-                                           :value="item.value"
-                                           >
-                                    </el-option>
-                                </el-select>
-                        </div>    
+                        
 					</div>
                     
                     <div class="col-md-6">
@@ -104,6 +111,7 @@
                                             placeholder="选择时间范围"
                                             >
                                         </el-time-picker> -->
+                                        
                                         {{course_times[r][0]}} -
                                         {{course_times[r][1]}}
                                     </template>

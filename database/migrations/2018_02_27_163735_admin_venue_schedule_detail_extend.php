@@ -18,8 +18,6 @@ class AdminVenueScheduleDetailExtend extends Migration
             $table->increments('id')->comment('主键ID');
             $table->integer('schedule_id')->unsigned()->default('0')->comment('道馆课程表ID');
             $table->date('schedule_date')->comment('时间日期');
-            $table->time('start_time')->comment('课程有效期开始时间');
-            $table->time('end_time')->comment('课程效期结束时间');
             $table->integer('class_id')->unsigned()->default('0')->comment('班级ID');
             $table->tinyInteger('week')->default('0')->comment('星期几');
             $table->tinyInteger('section')->default('0')->comment('节次 表示第几节课');

@@ -10,6 +10,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\VenueScheduleRepository;
 use App\Models\Admin\VenueSchedule;
 use App\Models\Admin\VenueScheduleDetail;
+use App\Models\Admin\VenueScheduleCourseTime;
 use Illuminate\Support\Facades\Event;
 use App\Events\AdminLogger;
 use App\Services\ServiceFactory;
@@ -88,11 +89,12 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $schedule_id = $model->id;
             // 组装新的数据
             $now = getNow();
-            $venue_schedule_detail = [];
+
+            $venue_schedule_detail = $venue_schedule_course_times = [];
             // 从新组装数据
             for ($w = self::WEEK_START; $w <= self::WEEK_END;$w ++ )
             {
-                $venue_schedule = $venue_schedules[$w];
+                $venue_schedule = isset($venue_schedules[$w]) ? $venue_schedules[$w] : [];
                 if($venue_schedule)
                 {
                     for ($i=1; $i<= $course_count; $i++)
@@ -114,16 +116,30 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                                 'operator_id' => $operator_id,
                                 'created_at'  => $now,
                             ];
+                            $venue_schedule_course_times[$schedule['section']] = [
+                                'schedule_id' => $schedule_id,
+                                'section'     => $schedule['section'],
+                                'start_time'  =>  date("H:i:s",strtotime($course_time[0])),
+                                'end_time'    => date("H:i:s",strtotime($course_time[1])),
+                                'operator_id' => $operator_id,
+                                'created_at'  => $now,
+                            ];
                         }
                     }
                 }
             }
+
             if($venue_schedule_detail)
             {
                 $schedule_detail_model = new VenueScheduleDetail();
                 $schedule_detail_model->BatchCreate($venue_schedule_detail);
             }
-            
+            if($venue_schedule_course_times)
+            {
+                $schedule_course_times_model = new  VenueScheduleCourseTime();
+                $schedule_course_times_model->where('schedule_id', $schedule_id)->delete();
+                $schedule_course_times_model->BatchCreate($venue_schedule_course_times);
+            }
             Event::fire(new AdminLogger($venue_course['venue_id'],'create',"添加课程表【{$venue_course['schedule_name']}】"));
             DB::commit();
             return success('数据保存成功！');
@@ -144,6 +160,7 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
      */
     public  function show($id)
     {
+
         try
         {
             $model = $this->model;
@@ -161,6 +178,9 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $venue_schedule_detail_model = new VenueScheduleDetail();
             $details  = $venue_schedule_detail_model->getVenueSchedules($schedule_id);
             $venue_schedules = $course_times = [];
+
+            $schedule_course_times_model = new  VenueScheduleCourseTime();
+            $course_times  = $schedule_course_times_model->getScheduleCourseTime($schedule_id);
             // 组装课程列表数据与课程时间数据
             for($w = self::WEEK_START; $w <= self::WEEK_END; $w++ )
             {
@@ -174,11 +194,6 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                         if(isset($detail[$i]))
                         {
                             $venue_schedules[$w][$i] = $detail[$i];
-                            // 时间 处理待定 需要结合前端整合
-                            $course_times[$i] = [
-                                $detail[$i]['start_time'],
-                                $detail[$i]['end_time']
-                            ];
                         }
                     }
                 }
@@ -245,7 +260,7 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $schedule_id = $id;
             // 组装新的数据
             $now = getNow();
-            $venue_schedule_detail = [];
+            $venue_schedule_detail = $venue_schedule_course_times = [];
             // 从新组装数据
             for ($w = self::WEEK_START; $w <= self::WEEK_END;$w ++ )
             {
@@ -259,15 +274,20 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                             $course_time = $course_times[$i];
                             $schedule    = $venue_schedule[$i];
                             $remark      = !empty($schedule['remark']) ? $schedule['remark'] : '';
-                    
                             $venue_schedule_detail[] = [
                                 'schedule_id' => $schedule_id,
                                 'class_id'    => $schedule['class_id'],
-                                'start_time'  =>  date("H:i:s",strtotime($course_time[0])),
-                                'end_time'    => date("H:i:s",strtotime($course_time[1])),
                                 'week'        => $schedule['week'],
                                 'section'     => $schedule['section'],
                                 'remark'      => $remark,
+                                'operator_id' => $operator_id,
+                                'created_at'  => $now,
+                            ];
+                            $venue_schedule_course_times[$schedule['section']] = [
+                                'schedule_id' => $schedule_id,
+                                'section'     => $schedule['section'],
+                                'start_time'  =>  date("H:i:s",strtotime($course_time[0])),
+                                'end_time'    => date("H:i:s",strtotime($course_time[1])),
                                 'operator_id' => $operator_id,
                                 'created_at'  => $now,
                             ];
@@ -275,6 +295,7 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                     }
                 }
             }
+
             if($venue_schedule_detail)
             {
                 $schedule_detail_model = new VenueScheduleDetail();
@@ -282,7 +303,17 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                 $schedule_detail_model->where('schedule_id', $schedule_id)->delete();
                 $schedule_detail_model->BatchCreate($venue_schedule_detail);
             }
+
+
+            if($venue_schedule_course_times)
+            {
+                $schedule_course_times_model = new  VenueScheduleCourseTime();
+                $schedule_course_times_model->where('schedule_id', $schedule_id)->delete();
+                $schedule_course_times_model->BatchCreate($venue_schedule_course_times);
+            }
+
             Event::fire(new AdminLogger($venue_course['venue_id'],'update',"编辑课程表【{$venue_course['schedule_name']}】"));
+            DB::commit();
             return success('数据更新成功');
         }
         return error('记录不存在，请检查');
@@ -333,6 +364,11 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $venue_schedule_detail_query
                                     ->where('schedule_id', $id)
                                     ->delete();
+
+            // 删除课程数据表数据
+            $schedule_course_times_query = VenueScheduleCourseTime::query();
+            $schedule_course_times_query->where('schedule_id', $id)->delete();
+
             // 删除课表数据
             $venueSchedule->delete();
             Event::fire(new AdminLogger($venue_id,'delete',"删除课程表【{$schedule_name}】"));
@@ -478,17 +514,14 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $data['remark'] = empty($data['remark']) ? '': $data['remark'];
             // 2、组装数据
             $model = ServiceFactory::getModel("Admin\\VenueScheduleDetailExtend");
-
             $fields = [
-                'schedule_id','schedule_date','start_time','end_time','class_id','week','section',
+                'schedule_id','schedule_date','class_id','week','section',
                 'remark','operator_id','created_at',
             ];
-
             foreach ($fields as $v)
             {
                 $model->$v = isset($data[$v]) ? $data[$v] : '';
             }
-
             // 3、判断数据库中是否存在当天的数据
             $query = $model->query();
             $where = [
@@ -552,12 +585,15 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             ['end_time','>=', $now_time],
             ['status','=', self::VENUE_SCHEDULE_ON_STATUS],
         ];
-    
         foreach ($where as $v)
         {
              $query->where($v[0], $v[1], $v[2]);
         }
-        return  $query->first()->toArray();
+        $result = $query->first();
+        $data = [];
+        if($result)
+            $data = $result->toArray();
+        return $data;
     }
     
 }
