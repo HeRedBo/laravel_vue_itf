@@ -62,7 +62,12 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $venue_schedules   = $data['venue_schedules'];
             $course_count      = $venue_course['course_count'];
             $operator_id       = $this->admin_id;
-            
+            //保存之前要校验一下课程表时间是否合法
+            $check =  $this->model->checkScheduleTimeValidity($venue_course);
+            if($check)
+            {
+                return error('课程有效期出现重叠，请检查');
+            }
             $venue_schedule   = [
                 'venue_id'      => $venue_course['venue_id'],
                 'course_count'  => $venue_course['course_count'],
@@ -72,6 +77,8 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                 'status'        => $venue_course['status'],
                 'operator_id'   => $operator_id,
             ];
+            
+            
             
             // 如果状态是启用 在用的状态改为 禁用 启用当前启用的状态课程表
             if(self::VENUE_SCHEDULE_ON_STATUS == $venue_course['status'])
@@ -229,6 +236,13 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $venue_schedules   = $data['venue_schedules'];
             $course_count      = $venue_course['course_count'];
             $operator_id       = $this->admin_id;
+            
+            //保存之前要校验一下课程表时间是否合法
+            $check =  $this->model->checkScheduleTimeValidity($venue_course);
+            if($check)
+            {
+                return error('课程有效期出现重叠，请检查');
+            }
             
             $venue_schedule   = [
                 'venue_id'     => $venue_course['venue_id'],
@@ -490,8 +504,7 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             return error($e->getMessage());
         }
     }
-
-
+    
     /**
      * 保存道馆课程补充数据
      *
