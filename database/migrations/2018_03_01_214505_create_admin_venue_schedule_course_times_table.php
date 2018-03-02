@@ -35,6 +35,6 @@ class CreateAdminVenueScheduleCourseTimesTable extends Migration
      */
     public function down()
     {
-        chema::dropIfExists('admin_venue_schedule_course_times');
+        Schema::dropIfExists('admin_venue_schedule_course_times');
     }
 }
