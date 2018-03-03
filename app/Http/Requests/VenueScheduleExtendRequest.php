@@ -25,7 +25,7 @@ class VenueScheduleExtendRequest extends FormRequest
     {
         return [
              'schedule_id'   => 'required',
-             'schedule_date' => 'required||date',
+             'schedule_date' => 'required|date',
              'start_time'    => 'required',
              'end_time'      => 'required',
              'class_id'      => '',

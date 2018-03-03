@@ -44,6 +44,7 @@ class Dictionary
         return $cardType;
     }
 
+
     static function classStatusOptions($index = false)
     {
 
@@ -75,5 +76,27 @@ class Dictionary
         if($index != false && isset($weekMap[$index]))
             return $weekMap[$index];
         return $weekMap;
+    }
+
+    /**
+     * 学生签到状态字典
+     *
+     * @param bool $index
+     * @return array|mixed
+     */
+    public  static  function  studentSignStatusMap($index = false)
+    {
+        $studentSignMap = [
+            0 => '未签到',
+            1 => '已签到',
+            2 => '迟到',
+            3 => '请假',
+            4 => '旷课'
+        ];
+        if($index != false && isset($studentSignMap[$index]))
+        {
+            return $studentSignMap[$index];
+        }
+        return $studentSignMap;
     }
 }

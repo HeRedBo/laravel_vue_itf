@@ -34,7 +34,9 @@ class Student extends Model implements Transformable
     
     public  function classes()
     {
-        return $this->belongsToMany(Classes::class,'student_class','student_id','class_id');
+        return $this->belongsToMany(Classes::class,'student_class','student_id','class_id')
+                    ->select(['classes.id','classes.name','classes.remark']);
+
     }
 
     public function operator()

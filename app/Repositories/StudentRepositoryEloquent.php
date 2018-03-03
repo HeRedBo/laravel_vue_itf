@@ -2,9 +2,11 @@
 
 namespace App\Repositories;
 
+use App\Services\ServiceFactory;
 use Illuminate\Container\Container as Application;
 
 use Prettus\Repository\Eloquent\BaseRepository;
+use App\Repositories\AdminCommonRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\StudentRepository;
 use App\Models\Admin\Student;
@@ -15,12 +17,15 @@ use Illuminate\Http\Request;
 use App\Services\Admin\StudentCard;
 use App\Services\Admin\VenueBillService;
 use App\Services\Common\Dictionary;
+use Illuminate\Support\Facades\Event;
+use App\Events\AdminLogger;
+
 
 /**
  * Class StudentRepositoryEloquent
  * @package namespace App\Repositories;
  */
-class StudentRepositoryEloquent extends BaseRepository implements StudentRepository
+class StudentRepositoryEloquent extends AdminCommonRepository implements StudentRepository
 {
     protected $fields = [
         'name'          => '',
@@ -299,4 +304,82 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
             return error('学生信息不存在');
         }
     }
+
+    /**
+     * @param array $params
+     * @return mixed
+     */
+    public  function  sign(array $params)
+    {
+        try
+        {
+            $student_ids = $params['student_ids'];
+            $venue_id    = $params['venue_id'];
+            $class_id    = $params['class_id'];
+            $remark      = isset($params['remark']) ? $params['remark']?: '':'';
+            if(!is_array($student_ids))
+                $student_ids = [$student_ids];
+            $query = $this->model->query();
+            $fields = ['id','name','venue_id','sex','picture'];
+            $result = $query->with('classes')
+                            ->whereIn('id', $student_ids)
+                            ->where('venue_id','=', $venue_id)
+                            ->select($fields)
+                            ->get()
+                            ->toArray();
+            $insert_data = [];
+            if($result)
+            {
+                foreach ($result as $v)
+                {
+                    $now = getNow();
+                    $temp_class_id = array_column($v['classes'],'id');
+                    if(in_array($class_id, $temp_class_id))
+                    {
+                        $insert_data[] = [
+                            'venue_id'   => $venue_id,
+                            'student_id' => $v['id'],
+                            'class_id'   => $class_id,
+                            'sign_date'  => $params['sign_date'],
+                            'status'     => $params['status'],
+                            'remark'     => $remark,
+                            'operator_id' => $this->admin_id,
+                            'created_at' => $now,
+                        ];
+                    }
+                }
+            }
+            else
+            {
+                return error('学生信息不存在');
+            }
+            if($insert_data)
+            {
+                $model = ServiceFactory::getModel("Admin\\VenueStudentSign");
+                // 先删旧数据
+                $query = $model->query();
+                $query->where('venue_id','=', $venue_id)
+                      ->where('class_id','=', $class_id)
+                      ->whereIn('student_id',$student_ids)
+                      ->where('sign_date', '=', $params['sign_date'])
+                      ->delete();
+                $res = $model->BatchInsert($insert_data);
+                if($res)
+                {
+                    $student_names = array_column($result,'name');
+                    $student_names = implode(',', $student_names);
+                    Event::fire(new AdminLogger($venue_id,'sign',"【{$student_names}】签到"));
+                    return success('签到成功');
+                }
+            }
+        }
+        catch (\Exception $e)
+        {
+            logResult('【学生签到错误】'. $e->__toString(),'error');
+            return error('签到错误'. $e->getMessage());
+        }
+        return error('签到失败');
+    }
+
+    
 }

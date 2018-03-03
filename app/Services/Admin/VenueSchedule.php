@@ -90,10 +90,8 @@ class VenueSchedule
                         // 如果存在补充数据则以补充数据表数据为准
                         if(isset($venue_schedules_extend_data[$w][$i]) && $venue_schedules_extend_data[$w][$i]['class_id'] > 0)
                         {
-                            
                             $venue_schedules[$w][$i] = $venue_schedules_extend_data[$w][$i];
                         }
-                        
                     }
                     
                     
