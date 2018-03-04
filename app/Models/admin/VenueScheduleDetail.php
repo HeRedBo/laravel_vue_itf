@@ -88,4 +88,36 @@ class VenueScheduleDetail extends Model implements Transformable
         }
         return $result;
     }
+
+    public  function getVenueSchedulesByIds(array $schedule_ids, array $params = [])
+    {
+        $result = [];
+        $class_id = isset($params['class_id']) ? $params['class_id'] : 0;
+        $where = [];
+        if(!empty($class_id))
+            $where[] = ['class_id','=', $class_id];
+
+        $query = $this->query();
+        $query->whereIn('schedule_id', $schedule_ids);
+        foreach ($where as $v)
+        {
+            $query->where($v[0], $v[1], $v[2]);
+        }
+
+        $details   = $query
+                    ->with(['classes'])
+                    ->get();
+        if($details)
+        {
+            $details = $details->toArray();
+            foreach ($details as $detail)
+            {
+                $detail['class_name'] = $detail['classes']['name'];
+                unset($detail['classes']);
+
+                $result[$detail['schedule_id']][$detail['week']][$detail['section']] = $detail;
+            }
+        }
+        return $result;
+    }
 }

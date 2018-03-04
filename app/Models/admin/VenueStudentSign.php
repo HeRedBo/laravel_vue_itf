@@ -21,7 +21,7 @@ class VenueStudentSign extends Model implements Transformable
 
     // 字段白名单
     protected $fillable = [
-        'venue_id','student_id','class_id','sign_date','status',
+        'venue_id','student_id','class_id','sign_date','status','section',
         'remark','operator_id','created_at',
     ];
 

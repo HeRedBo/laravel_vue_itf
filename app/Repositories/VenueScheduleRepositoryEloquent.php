@@ -63,8 +63,18 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $course_count      = $venue_course['course_count'];
             $operator_id       = $this->admin_id;
             //保存之前要校验一下课程表时间是否合法
-            $check =  $this->model->checkScheduleTimeValidity($venue_course);
-            if($check)
+            $start_time = date("Y-m-d 00:00:00",strtotime($venue_course['date_between'][0]));
+            $end_time   = date("Y-m-d 23:59:59",strtotime($venue_course['date_between'][1]));
+            $params = [
+                'venue_id'     => $venue_course['venue_id'],
+                'start_time'   => $start_time,
+                'end_time'     => $end_time,
+                'id'           => isset($venue_course['id']) ? $venue_course['id'] : 0,
+            ];
+
+            //保存之前要校验一下课程表时间是否合法
+            $result = $this->model->getDateBetweenSchedule($params);
+            if($result)
             {
                 return error('课程有效期出现重叠，请检查');
             }
@@ -72,31 +82,18 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                 'venue_id'      => $venue_course['venue_id'],
                 'course_count'  => $venue_course['course_count'],
                 'schedule_name' => $venue_course['schedule_name'],
-                'start_time'    => date("Y-m-h 00:00:00",strtotime($venue_course['date_between'][0])),
-                'end_time'      => date("Y-m-h 23:59:59",strtotime($venue_course['date_between'][1])),
+                'start_time'    => date("Y-m-d 00:00:00",strtotime($venue_course['date_between'][0])),
+                'end_time'      => date("Y-m-d 23:59:59",strtotime($venue_course['date_between'][1])),
                 'status'        => $venue_course['status'],
                 'operator_id'   => $operator_id,
             ];
-            
-            
-            
-            // 如果状态是启用 在用的状态改为 禁用 启用当前启用的状态课程表
-            if(self::VENUE_SCHEDULE_ON_STATUS == $venue_course['status'])
-            {
-                $in_use_schedule =  $this->getCurrentVenueSchedule();
-                if($in_use_schedule && self::VENUE_SCHEDULE_ON_STATUS == $in_use_schedule['status'])
-                {
-                    $this->updateStatus($in_use_schedule['id'], self::VENUE_SCHEDULE_OFF_STATUS);
-                }
-            }
-            
+
             $model = $this->model;
             // 设置字段默认值
             $model = $model->create($venue_schedule);
             $schedule_id = $model->id;
             // 组装新的数据
             $now = getNow();
-
             $venue_schedule_detail = $venue_schedule_course_times = [];
             // 从新组装数据
             for ($w = self::WEEK_START; $w <= self::WEEK_END;$w ++ )
@@ -111,7 +108,6 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                             $course_time = $course_times[$i];
                             $schedule    = $venue_schedule[$i];
                             $remark      = !empty($schedule['remark']) ? $schedule['remark'] : '';
-                    
                             $venue_schedule_detail[] = [
                                 'schedule_id' => $schedule_id,
                                 'class_id'    => $schedule['class_id'],
@@ -123,6 +119,7 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                                 'operator_id' => $operator_id,
                                 'created_at'  => $now,
                             ];
+
                             $venue_schedule_course_times[$schedule['section']] = [
                                 'schedule_id' => $schedule_id,
                                 'section'     => $schedule['section'],
@@ -226,111 +223,112 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
      */
     public function update(array $data, $id)
     {
-        $schedule = $this->find($id);
-        if($schedule)
+        try
         {
-            // 设置字段默认值
-            DB::beginTransaction();
-            $venue_course      = $data['venue_course_form'];
-            $course_times      = $data['course_times'];
-            $venue_schedules   = $data['venue_schedules'];
-            $course_count      = $venue_course['course_count'];
-            $operator_id       = $this->admin_id;
-            
-            //保存之前要校验一下课程表时间是否合法
-            $check =  $this->model->checkScheduleTimeValidity($venue_course);
-            if($check)
+            $schedule = $this->find($id);
+            if($schedule)
             {
-                return error('课程有效期出现重叠，请检查');
-            }
-            
-            $venue_schedule   = [
-                'venue_id'     => $venue_course['venue_id'],
-                'course_count' => $venue_course['course_count'],
-                'schedule_name' => $venue_course['schedule_name'],
-                'start_time'   => date("Y-m-h 00:00:00",strtotime($venue_course['date_between'][0])),
-                'end_time'     => date("Y-m-h 23:59:59",strtotime($venue_course['date_between'][1])),
-                'status'       => $venue_course['status'],
-                'operator_id'  => $operator_id,
-            ];
-    
-            if(self::VENUE_SCHEDULE_ON_STATUS == $schedule->status)
-            {
-                $in_use_schedule =  $this->getCurrentVenueSchedule();
-                if($in_use_schedule &&  $in_use_schedule['id'] != $schedule->id)
+                // 设置字段默认值
+                DB::beginTransaction();
+                $venue_course      = $data['venue_course_form'];
+                $course_times      = $data['course_times'];
+                $venue_schedules   = $data['venue_schedules'];
+                $course_count      = $venue_course['course_count'];
+                $operator_id       = $this->admin_id;
+
+                $start_time = date("Y-m-d 00:00:00",strtotime($venue_course['date_between'][0]));
+                $end_time   = date("Y-m-d 23:59:59",strtotime($venue_course['date_between'][1]));
+                $params = [
+                    'venue_id'     => $venue_course['venue_id'],
+                    'start_time'   => $start_time,
+                    'end_time'     => $end_time,
+                    'id' => isset($venue_course['id']) ? $venue_course['id'] : 0,
+                ];
+                //保存之前要校验一下课程表时间是否合法
+                $result = $this->model->getDateBetweenSchedule($params);
+                if($result)
                 {
-                    if(self::VENUE_SCHEDULE_ON_STATUS == $in_use_schedule['status']
-                        &&  $schedule->status == self::VENUE_SCHEDULE_ON_STATUS
-                    )
-                    {
-                        $this->updateStatus($in_use_schedule['id'], self::VENUE_SCHEDULE_OFF_STATUS);
-                    }
+                    return error('课程有效期出现重叠，请检查');
                 }
-                
-            }
-            
-            // 设置字段默认值
-            $schedule->update($venue_schedule);
-            $schedule_id = $id;
-            // 组装新的数据
-            $now = getNow();
-            $venue_schedule_detail = $venue_schedule_course_times = [];
-            // 从新组装数据
-            for ($w = self::WEEK_START; $w <= self::WEEK_END;$w ++ )
-            {
-                $venue_schedule = $venue_schedules[$w];
-                if($venue_schedule)
+                $venue_schedule   = [
+                    'venue_id'     => $venue_course['venue_id'],
+                    'course_count' => $venue_course['course_count'],
+                    'schedule_name' => $venue_course['schedule_name'],
+                    'start_time'   => $start_time,
+                    'end_time'     => $end_time,
+                    'status'       => $venue_course['status'],
+                    'operator_id'  => $operator_id,
+                ];
+
+                // 设置字段默认值
+                $schedule->update($venue_schedule);
+                $schedule_id = $id;
+                // 组装新的数据
+                $now = getNow();
+                $venue_schedule_detail = $venue_schedule_course_times = [];
+                // 从新组装数据
+                for ($w = self::WEEK_START; $w <= self::WEEK_END;$w ++ )
                 {
-                    for ($i=1; $i<= $course_count; $i++)
+                    $venue_schedule = $venue_schedules[$w];
+                    if($venue_schedule)
                     {
-                        if(isset($venue_schedule[$i]) && !empty($venue_schedule[$i]))
+                        for ($i=1; $i<= $course_count; $i++)
                         {
-                            $course_time = $course_times[$i];
-                            $schedule    = $venue_schedule[$i];
-                            $remark      = !empty($schedule['remark']) ? $schedule['remark'] : '';
-                            $venue_schedule_detail[] = [
-                                'schedule_id' => $schedule_id,
-                                'class_id'    => $schedule['class_id'],
-                                'week'        => $schedule['week'],
-                                'section'     => $schedule['section'],
-                                'remark'      => $remark,
-                                'operator_id' => $operator_id,
-                                'created_at'  => $now,
-                            ];
-                            $venue_schedule_course_times[$schedule['section']] = [
-                                'schedule_id' => $schedule_id,
-                                'section'     => $schedule['section'],
-                                'start_time'  =>  date("H:i:s",strtotime($course_time[0])),
-                                'end_time'    => date("H:i:s",strtotime($course_time[1])),
-                                'operator_id' => $operator_id,
-                                'created_at'  => $now,
-                            ];
+                            if(isset($venue_schedule[$i]) && !empty($venue_schedule[$i]))
+                            {
+                                $course_time = $course_times[$i];
+                                $schedule    = $venue_schedule[$i];
+                                $remark      = !empty($schedule['remark']) ? $schedule['remark'] : '';
+                                $venue_schedule_detail[] = [
+                                    'schedule_id' => $schedule_id,
+                                    'class_id'    => $schedule['class_id'],
+                                    'week'        => $schedule['week'],
+                                    'section'     => $schedule['section'],
+                                    'remark'      => $remark,
+                                    'operator_id' => $operator_id,
+                                    'created_at'  => $now,
+                                ];
+                                $venue_schedule_course_times[$schedule['section']] = [
+                                    'schedule_id' => $schedule_id,
+                                    'section'     => $schedule['section'],
+                                    'start_time'  =>  date("H:i:s",strtotime($course_time[0])),
+                                    'end_time'    => date("H:i:s",strtotime($course_time[1])),
+                                    'operator_id' => $operator_id,
+                                    'created_at'  => $now,
+                                ];
+                            }
                         }
                     }
                 }
+
+                if($venue_schedule_detail)
+                {
+                    $schedule_detail_model = new VenueScheduleDetail();
+                    // 先删后增加 快且方便
+                    $schedule_detail_model->where('schedule_id', $schedule_id)->delete();
+                    $schedule_detail_model->BatchCreate($venue_schedule_detail);
+                }
+
+
+                if($venue_schedule_course_times)
+                {
+                    $schedule_course_times_model = new  VenueScheduleCourseTime();
+                    $schedule_course_times_model->where('schedule_id', $schedule_id)->delete();
+                    $schedule_course_times_model->BatchCreate($venue_schedule_course_times);
+                }
+
+                Event::fire(new AdminLogger($venue_course['venue_id'],'update',"编辑课程表【{$venue_course['schedule_name']}】"));
+                DB::commit();
+                return success('数据更新成功');
             }
-
-            if($venue_schedule_detail)
-            {
-                $schedule_detail_model = new VenueScheduleDetail();
-                // 先删后增加 快且方便
-                $schedule_detail_model->where('schedule_id', $schedule_id)->delete();
-                $schedule_detail_model->BatchCreate($venue_schedule_detail);
-            }
-
-
-            if($venue_schedule_course_times)
-            {
-                $schedule_course_times_model = new  VenueScheduleCourseTime();
-                $schedule_course_times_model->where('schedule_id', $schedule_id)->delete();
-                $schedule_course_times_model->BatchCreate($venue_schedule_course_times);
-            }
-
-            Event::fire(new AdminLogger($venue_course['venue_id'],'update',"编辑课程表【{$venue_course['schedule_name']}】"));
-            DB::commit();
-            return success('数据更新成功');
+            return error('记录不存在，请检查');
+        }catch (\Exception $e)
+        {
+            logResult('【修改道馆课程表错误】'. $e->__toString(),'error');
+            return error($e->getMessage());
         }
-        return error('记录不存在，请检查');
+
+
     }
     
     public  function  index(Request $request)
@@ -371,8 +369,15 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             {
                 return error('数据不存在');
             }
+
+            if($venueSchedule['status'] == self::VENUE_SCHEDULE_ON_STATUS)
+            {
+                return error("课程已启用不可在删除");
+            }
+
             $venue_id = $venueSchedule->venue_id;
             $schedule_name = $venueSchedule->schedule_name;
+
             // 删除道馆课程表详情数据
             $venue_schedule_detail_query = VenueScheduleDetail::query();
             $venue_schedule_detail_query
@@ -394,6 +399,7 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             return error($e->getMessage());
         }
     }
+
     /**
      * 修改数课程转态
      * @param $id
@@ -408,16 +414,8 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $schedule = $this->find($id);
             if($schedule)
             {
-                $in_use_schedule =  $this->getCurrentVenueSchedule();
-                if($in_use_schedule &&
-                    $in_use_schedule['id'] != $schedule->id
-                )
-                {
-                    if($in_use_schedule['status'] == self::VENUE_SCHEDULE_ON_STATUS)
-                    {
-                        $this->updateStatus( $in_use_schedule['id'], self::VENUE_SCHEDULE_OFF_STATUS);
-                    }
-                }
+               if(self::VENUE_SCHEDULE_ON_STATUS ==  $schedule['status'])
+                   return error('该状态不可修改');
                 // 更新数据状态
                 $in_status = [
                     self::VENUE_SCHEDULE_OFF_STATUS,
@@ -451,7 +449,9 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
             $schedule = $this->find($id);
             if($schedule)
             {
-                // 更新数据状态
+                if(self::VENUE_SCHEDULE_ON_STATUS ==  $schedule['status'])
+                    return error('该状态不可修改');
+                    // 更新数据状态
                 $in_status = [
                     self::VENUE_SCHEDULE_OFF_STATUS,
                     self::VENUE_SCHEDULE_ON_STATUS
@@ -575,7 +575,6 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
         }
     }
     
-    
     protected  function  reBuildCourseTimes($course_times)
     {
         $result = [];
@@ -588,25 +587,4 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
         }
         return $result;
     }
-    
-    private  function  getCurrentVenueSchedule()
-    {
-        $now_time = getNow();
-        $query = $this->model->query();
-        $where = [
-            ['start_time','<=', $now_time],
-            ['end_time','>=', $now_time],
-            ['status','=', self::VENUE_SCHEDULE_ON_STATUS],
-        ];
-        foreach ($where as $v)
-        {
-             $query->where($v[0], $v[1], $v[2]);
-        }
-        $result = $query->first();
-        $data = [];
-        if($result)
-            $data = $result->toArray();
-        return $data;
-    }
-    
 }

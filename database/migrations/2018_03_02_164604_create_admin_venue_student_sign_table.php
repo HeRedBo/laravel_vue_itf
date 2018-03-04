@@ -18,6 +18,7 @@ class CreateAdminVenueStudentSignTable extends Migration
             $table->integer('venue_id')->unsigned()->default('0')->comment('道馆ID');
             $table->integer('student_id')->unsigned()->default('0')->comment('学生ID');
             $table->integer('class_id')->unsigned()->default('0')->comment('班级ID');
+            $table->tinyInteger('section')->default('0')->comment('节次 表示第几节课');
             $table->date('sign_date')->comment('签到时间');
             $table->tinyInteger('status')->unsigned()->default('0')->comment('签到状态');
             $table->string('remark', 255)->comment('课程备注信息');

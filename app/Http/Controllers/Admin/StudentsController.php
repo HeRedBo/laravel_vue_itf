@@ -9,6 +9,7 @@ use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Requests\StudentCreateRequest;
 use App\Http\Requests\StudentUpdateRequest;
 use App\Http\Requests\StudentSignRequest;
+use App\Http\Requests\StudentSignCalendar;
 use App\Http\Requests\StudentCardCreateRequest;
 use App\Repositories\StudentRepository;
 use App\Services\Common\Dictionary;
@@ -244,15 +245,26 @@ class StudentsController extends ApiController
             return $this->response->withInternalServer($res['msg']);
     }
 
-
     public  function  sign(StudentSignRequest $request)
     {
         $params = $request->all();
         $res = $this->repository->sign($params);
         if($res['status'] == 1)
-            return $this->response->withCreated($res['msg']);
+            return $this->response->withSuccess($res['msg']);
         else
             return $this->response->withInternalServer($res['msg']);
+    }
+
+
+    public  function  getSignCalendar(StudentSignCalendar $request)
+    {
+        $res = $this->repository->getSignCalendar($request);
+        if($res['status'] == 1)
+            return $this->response->withData($res['data']);
+        else
+            return $this->response->withInternalServer($res['msg']);
+
+
     }
 
 

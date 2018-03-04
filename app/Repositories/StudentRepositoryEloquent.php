@@ -313,6 +313,28 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
     {
         try
         {
+            // 校验当前课程是否有效
+            $venueScheduleService = ServiceFactory::getService("Admin\\VenueSchedule");
+            $params['date'] = $params['sign_date'];
+            $schedule = $venueScheduleService->searchSchedule($params);
+
+            if(empty($schedule))
+            {
+                return error("未找到该时间段课程表，请检查参数");
+            }
+            $schedule_id = $schedule['id'];
+            $request = [
+                'schedule_id' => $schedule_id,
+                'section' => $params['section'],
+                'class_id' => $params['class_id'],
+                'date'    => $params['sign_date'],
+            ];
+            $schedule = $venueScheduleService->getSignDataValidate($request);
+            if(empty($schedule))
+            {
+                error("未找到该时间相关课程，请检查参数是否有有误");
+            }
+
             $student_ids = $params['student_ids'];
             $venue_id    = $params['venue_id'];
             $class_id    = $params['class_id'];
@@ -327,6 +349,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                             ->select($fields)
                             ->get()
                             ->toArray();
+
             $insert_data = [];
             if($result)
             {
@@ -342,6 +365,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                             'class_id'   => $class_id,
                             'sign_date'  => $params['sign_date'],
                             'status'     => $params['status'],
+                            'section'     => $params['section'],
                             'remark'     => $remark,
                             'operator_id' => $this->admin_id,
                             'created_at' => $now,
@@ -353,6 +377,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             {
                 return error('学生信息不存在');
             }
+
             if($insert_data)
             {
                 $model = ServiceFactory::getModel("Admin\\VenueStudentSign");
@@ -378,8 +403,27 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             logResult('【学生签到错误】'. $e->__toString(),'error');
             return error('签到错误'. $e->getMessage());
         }
+
         return error('签到失败');
     }
 
-    
+
+    public function  getSignCalendar(Request $request)
+    {
+
+        try
+        {
+            $service = ServiceFactory::getService("Admin\\VenueSchedule");
+            $result = $service->getSignCalendar($request);
+            return success('数据获取成功过',$result);
+        }catch (\Exception $e)
+        {
+            logResult('【学生签到记录获取错误】'. $e->__toString(),'error');
+            return error('签到错误'. $e->getMessage());
+        }
+
+
+    }
+
+
 }

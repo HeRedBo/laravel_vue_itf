@@ -23,11 +23,13 @@ class StudentSignRequest extends FormRequest
      */
     public function rules()
     {
+        $before_date = date("Y-m-d",strtotime("+1 day"));
         return [
             'venue_id'     => 'required',
             'class_id'     => 'required',
             'student_ids'  => 'required',
-            'sign_date'    => 'required|date',
+            'section'      => 'required',
+            'sign_date'    => 'required|date|before:'.$before_date,
             'status'       => 'required',
         ];
     }
@@ -38,6 +40,7 @@ class StudentSignRequest extends FormRequest
             'venue_id'    => '道馆ID',
             'class_id'    => '班级ID',
             'student_ids' => '签到学生',
+            'section'     => '节次',
             'sign_date'   => '签到日期',
             'status'      => '签到状态',
         ];

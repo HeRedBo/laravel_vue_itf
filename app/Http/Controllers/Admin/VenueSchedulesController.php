@@ -146,6 +146,8 @@ class VenueSchedulesController extends ApiController
     
     public function schedules(Request $request)
     {
+        // 基本参数校验
+
         $result = $this->repository->getSchedules($request);
         if($result['status'])
         {

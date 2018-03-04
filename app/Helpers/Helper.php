@@ -161,8 +161,102 @@ if(!function_exists('getWeekBE'))
      */
     function getWeekBE($day)
     {
-        $last_day = date('Y-m-d',strtotime("$day Sunday"));
-        $first_day= date('Y-m-d',strtotime("$last_day -6 days"));
+        $last_day = date('Y-m-d 23:59:59',strtotime("$day Sunday"));
+        $first_day= date('Y-m-d 00:00:00',strtotime("$last_day -6 days"));
         return array($first_day, $last_day);
     }
 }
+
+
+
+if(!function_exists('getMonthBE'))
+{
+
+    /**
+     * 获取一个月的开始月结束时间
+     * @param  string $date
+     * @return array
+     */
+    function getMonthBE($date = '')
+    {
+        if(empty($date))
+            $date = date("Y-m-d");
+        $first_day = date('Y-m-01 00:00:00', strtotime($date)); //月初
+        $last_day = date('Y-m-d 23:59:59', strtotime("$first_day +1 month -1 day"));//月末
+        return array($first_day, $last_day);
+    }
+
+    if(!function_exists('getMouthWeekCount'))
+    {
+        /**
+         * 获取时间是的某个月的第几周
+         *
+         * @param  string  $date 时间日期
+         * @return int
+         */
+        function getMouthWeekCount($date = null)
+        {
+            if(empty($date))
+            {
+                $date_time = time();
+            }
+            else
+            {
+                $date_time = strtotime($date);
+            }
+
+            $mouth_day_count = date('t', $date_time);
+            $week_count      =  ceil($mouth_day_count/7);
+            return $week_count;
+        }
+    }
+
+    if(!function_exists('getDateWeekOrder'))
+    {
+        /**
+         * 获取某个时间在某个月的月排序
+         * @param string  $date
+         * @return float
+         */
+        function getDateWeekOrder($date = null)
+        {
+            if(empty($date))
+            {
+                $date_time = time();
+            }
+            else
+            {
+                $date_time = strtotime($date);
+            }
+
+            $date_now   =date('j',$date_time); //得到今天是几号
+            $cal_result =ceil($date_now/7); //计算是第几个星期几
+            return $cal_result;
+        }
+    }
+}
+
+
+if(!function_exists('getDateWeek'))
+{
+    function getDateWeek($date = NULL )
+    {
+        if(empty($date))
+        {
+            $date_time = time();
+        }
+        else
+        {
+            $date_time = strtotime($date);
+        }
+        $w = date("w", $date_time);
+        if($w == 0)
+            $w =7;
+        return $w;
+    }
+}
+
+
+
+
+

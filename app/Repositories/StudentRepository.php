@@ -33,5 +33,8 @@ interface StudentRepository extends RepositoryInterface
 
 
     public  function  sign(array $params);
+
+    public  function getSignCalendar(Request $request);
+
     
 }
