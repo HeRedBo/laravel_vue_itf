@@ -101,6 +101,7 @@
                                             @blur="courseTimeChange(r)"
                                             placeholder="选择时间范围">
                                         </el-time-picker>
+
                                     </template>
                                     <template v-else-if="j==2">
                                         {{r}}
@@ -592,7 +593,7 @@ export default {
                     type: 'success'
                 });
                 // 跳转到列表页
-                // that.$message.info('ok');
+                //that.$message.info('ok');
                 that.$router.push({ path: '/admin/venueSchedule/index' })
             })
             .catch(function (error) {
@@ -649,6 +650,7 @@ export default {
             }
             return result;
         },
+        
         tranformVenueCourseForm(venueCourseForm)
         {
             var date_between = venueCourseForm.date_between;

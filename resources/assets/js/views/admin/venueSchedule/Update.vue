@@ -42,7 +42,9 @@
                     console.log('load  venue schedules error')
                     stack_error(error);
                 }); 
-            }
+            },
+
+           
 
         }
     }
