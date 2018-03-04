@@ -24,9 +24,10 @@ class StudentSignCalendar extends FormRequest
     public function rules()
     {
         return [
-            'venue_id' => 'required|numeric',
-            'class_id' => 'numeric',
-            'date'     => 'date',
+            'venue_id'   => 'required|numeric',
+            'student_id' => 'required|numeric|exists:students,id',
+            'class_id'   => 'numeric',
+            'date'       => 'date',
         ];
     }
 
@@ -34,6 +35,7 @@ class StudentSignCalendar extends FormRequest
     {
         return [
             'venue_id'   => '道馆ID',
+            'student_id'   => '学生ID',
             'class_id'   => '班级ID',
             'date'       => '查询日期',
         ];
