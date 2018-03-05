@@ -24,9 +24,10 @@
             </tr>
 
             <tr  v-else v-for="item in _items" :key="items_key" :class="[item.state?'table-'+item.state:null]">
-                <td v-if="checkbox">
+                <td v-if="checkbox" >
                     <input type="checkbox" 
                       :value="item[check_key]"  
+                      @click="checkBoxClick()"
                     />
                 </td>
                 <td v-for="(field,key) in fields">
@@ -164,15 +165,10 @@ export default {
                 //Check all checkboxes
                 $(".box-body input[type='checkbox']").iCheck("check");
            }
+           
            // 获取选中的的值
-           var item = [];
-            $(".box-body input[type='checkbox']:checked").each(function () {
-               item.push(this.value);
-            });
-           this.selectItem = item;
-           console.log(this.selectAll)
+           this.checkBoxClick();
            console.log(this.selectItem);
-
        }
     },
      updated () {
@@ -320,6 +316,17 @@ export default {
             this.loadList();
             console.log(`当前页: ${val}`);
         },
+
+        checkBoxClick()
+        {
+            console.log('1234123')
+            var item = [];
+            $(".box-body input[type='checkbox']:checked").each(function () {
+               item.push(this.value);
+            });
+           this.selectItem = item;
+           console.log(this.selectItem);
+        }
     }
 
 }
