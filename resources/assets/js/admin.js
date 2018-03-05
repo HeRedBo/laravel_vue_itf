@@ -23,6 +23,7 @@ Vue.use(httpPlugin);
 
 require('jstree');
 require('admin-lte');
+require('icheck');
 
 window.swal = require('sweetalert2');
 window.toastr = require('toastr');

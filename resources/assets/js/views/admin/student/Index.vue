@@ -4,14 +4,23 @@
         <div class="box">
           <div class="box-header">
             <div class="row">
-              <div class="col-md-2">
-                <router-link :to="{path:'create'}" class="btn btn-sm btn-success">
-                      学生新增
-                </router-link> 
+              <div class="col-md-4">
+
+                 <button type="button" class="btn btn-default btn-sm checkbox-toggle"  @click="selectAll" >
+                    <i class="fa fa-square-o"></i>
+                </button>
+
+
               </div>
 
-              <div class="col-md-10">
+              <div class="col-md-8">
+
                 <div class="form-inline pull-right">
+
+                    <router-link :to="{path:'create'}" class="btn btn-sm btn-success">
+                      学生新增
+                    </router-link> 
+
                     <!-- 学生姓名 -->
                     <div class="input-group input-group-sm" >
                         <el-input  size="small" class="input-group-sm" placeholder="学生姓名" v-model="params.name" ></el-input>       
@@ -72,13 +81,15 @@
           <vTable ref="table"
             stripped
             hover
+            checkbox
             :searchType=2
             :ajax_url="ajax_url"
             :params="params"
             :items="items"
             :fields="fields"
             :current-page="currentPage"
-            :per-page="perPage"    
+            :per-page="perPage"
+            :selectAll="selectAllStatus"
           > 
 
             <!-- 学生性别 -->
@@ -263,6 +274,7 @@ export default {
         venueOptions : [],
         classOptions : [],
         student_info : {},
+        selectAllStatus : false
       }
     },
     created() 
@@ -379,6 +391,29 @@ export default {
         {
                 this.params = {};
         },
+
+        selectAll()
+        {
+          
+            if (this.selectAllStatus) 
+            {
+                //Uncheck all checkboxes
+               //$(".mailbox-messages input[type='checkbox']").iCheck("uncheck");
+                $(".checkbox-toggle  > .fa").removeClass("fa-check-square-o").addClass('fa-square-o');
+
+            } 
+            else 
+            {
+                //Check all checkboxes
+                //$(".mailbox-messages input[type='checkbox']").iCheck("check");
+                $(".checkbox-toggle > .fa").removeClass("fa-square-o").addClass('fa-check-square-o');
+          }
+          this.selectAllStatus =!this.selectAllStatus;  
+        }
     }
 }
+
+jQuery(document).ready(function($) {
+
+});
 </script>
