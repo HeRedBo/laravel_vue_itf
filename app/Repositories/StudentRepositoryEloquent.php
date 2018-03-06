@@ -59,6 +59,9 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
     protected  $studentCardService;
 
     protected  $venueService;
+    
+    protected $studentService;
+    
 
     /**
      * Specify Model class name
@@ -78,7 +81,11 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
-
+    
+    
+    
+    
+    
     public  function  studentList(Request $request)
     {
         $pageSize = $request->get('pageSize') ?: $this->pageSize;

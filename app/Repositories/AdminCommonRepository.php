@@ -22,9 +22,10 @@ class AdminCommonRepository extends  BaseRepository
     protected  $users = [];
     
     const DEFAULT_PAGE_SIZE = 15; // 默认的分页数
-    
-    public  function  __construct(Application $app)
+    public  function  __construct()
     {
+        
+        $app = new Application();
         parent::__construct($app);
         
         if(Auth::guard(self::GUARD)->check())
