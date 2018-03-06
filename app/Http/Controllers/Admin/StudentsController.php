@@ -267,7 +267,12 @@ class StudentsController extends ApiController
 
     public function signClassOptions(Request $request)
     {
-        $this->repository->signClassOptions($request);
+        $res = $this->repository->signClassOptions($request);
+        if($res['status'] == 1)
+            return $this->response->withData($res['data']);
+        else
+            return $this->response->withInternalServer($res['msg']);
+
     }
 
 

@@ -54,7 +54,7 @@ class VenueSchedule extends  BaseService
                 $schedule['end_time'],
             ];
             $venue_schedules = $this->getVenueScheduleDetailData($schedule, $params);
-            // 方便比较 统一转换为时间戳
+
             $venue_schedule_course_time_model = ServiceFactory::getModel("Admin\\VenueScheduleCourseTime");
             $course_times      = $venue_schedule_course_time_model->getScheduleCourseTime($schedule_id);
         }

@@ -12,6 +12,7 @@ class BaseService
     protected  $admin_name;
     protected  $admin_mobile;
     const GUARD = 'admin';
+    const DEFAULT_PAGE_SIZE = 15;
 
     public  function  __construct()
     {

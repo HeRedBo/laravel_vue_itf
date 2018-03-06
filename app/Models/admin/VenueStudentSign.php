@@ -25,6 +25,11 @@ class VenueStudentSign extends Model implements Transformable
         'remark','operator_id','created_at',
     ];
 
+    public  function classes()
+    {
+        return $this->hasOne(Classes::class, 'id', 'class_id')->select(['id','name','remark']);
+    }
+
 
     public  function  BatchInsert(array $data)
     {

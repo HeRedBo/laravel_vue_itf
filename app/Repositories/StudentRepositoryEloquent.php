@@ -84,21 +84,85 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
     }
     
     public function __construct(StudentService $studentService)
-    { 
+    {
+        parent::__construct();
         $this->studentService = $studentService;
     }
 
     public  function  studentList(Request $request)
     {
         $pageSize = $request->get('pageSize') ?: $this->pageSize;
+        $sex     =  $request->get('sex','-1');
+        $venue_id = $request->get('venue_id');
+        $class_id = $request->get('class_id');
+        $name     = $request->get('name');
+        $sign     = $request->get('sign');
+        $params   = $request->all();
+        $where = [];
 
-        $data =   $this->with(['operator','venues','classes' => function($query) {
-            //$query->where('name','like','%2017 秋季高级版%');
-        }])
-            ->paginate($pageSize)
-            ->toArray();
+        if(!empty($venue_id))
+        {
+            $where[] = ['venue_id','=', $venue_id];
+        }
+        if(!empty($name))
+            $where[] = ['name','like',"%{$name}%"];
 
-        return $data;
+        if(is_numeric($sex) && in_array($sex,[0,1]))
+        {
+            $where[] = ['sex','=',$sex];
+        }
+
+        $orderBy = $request->get('orderBy')?:'id';
+        $sortBy  = $request->get('sortedBy')?:'desc';
+
+        $order_by = [
+            [$orderBy,$sortBy]
+        ];
+
+        $query = $this->model->query();
+
+        if($where)
+        {
+            foreach ($where as $v)
+            {
+                $query->where($v[0], $v[1], $v[2]);
+            }
+        }
+
+        if($order_by)
+        {
+            foreach ($order_by as $v)
+            {
+                $query->orderBy($v[0], $v[1]);
+            }
+        }
+
+
+        $list =  $query->with(['operator','venues','classes'])
+                        ->paginate($pageSize)
+                        ->toArray();
+
+        if(!empty($list['data']))
+        {
+            $data = $list['data'];
+            $student_sign_data = [];
+            if($sign)
+            {
+                $student_ids = array_column($data,'id');
+                $student_sign_data = $this->studentService->getStudentSignData($student_ids, $params);
+            }
+
+            foreach ($data as &$v)
+            {
+                $v['sign_data'] = [];
+                if(isset($student_sign_data[$v['id']]) && !empty($student_sign_data[$v['id']]))
+                {
+                    $v['sign_data'] = $student_sign_data[$v['id']];
+                }
+            }
+            $list['data'] = $data;
+        }
+        return $list;
     }
 
     /**
@@ -446,13 +510,22 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
      */
     public function signClassOptions(Request $request)
     {
-        $params = $request->all();
-        $date     = $request->get('date');
-        if(empty($date))
-            $date = date("Y-m-d");
-        $params['date'] = $date;
-        $result = $this->studentService->signClassOptions($params);
-        dd($result);
+        try
+        {
+            $params = $request->all();
+            $date     = $request->get('date');
+            if(empty($date))
+                $date = date("Y-m-d");
+            $params['date'] = $date;
+            $result = $this->studentService->signClassOptions($params);
+            return success('数据获取成功',$result);
+        }catch (\Exception $e)
+        {
+            logResult('【学生签到课程记录】'. $e->__toString(),'error');
+            return error('签到课程获取失败'. $e->getMessage());
+        }
+
+
 
     }
 
