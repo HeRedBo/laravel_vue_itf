@@ -11,6 +11,7 @@ class BaseService
     protected  $admin_id = 0;
     protected  $admin_name;
     protected  $admin_mobile;
+    const GUARD = 'admin';
 
     public  function  __construct()
     {

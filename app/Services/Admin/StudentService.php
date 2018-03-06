@@ -10,10 +10,11 @@ use App\Services\BaseService;
 
 class StudentService extends BaseService
 {
-
-	public function getSignClassOptions(array $params)
+    
+    
+	public function signClassOptions(array $params)
 	{
-		$result = [];
+		$result   = [];
 		$venue_id = isset($params['venue_id']) ? $params['venue_id'] : 0;
 		$date     = $params['date'];
 		if(!empty($venue_id))
@@ -24,16 +25,10 @@ class StudentService extends BaseService
 				'date'     => $date
 			];
 			$venueSchedule  = $venueScheduleService->searchSchedule($params);
-			
 			if($venueSchedule)
 			{
-
+                $venue_schedules = $venueScheduleService->getVenueScheduleDetailData($venueSchedule, $params);
 			}
-
-
-
-
-			
 		}
 		return $result = [];
 	}

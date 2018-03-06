@@ -265,15 +265,9 @@ class StudentsController extends ApiController
             return $this->response->withInternalServer($res['msg']);
     }
 
-    public function getDebug()
+    public function signClassOptions(Request $request)
     {
-        $result = $this->repository->getStudentService();
-        dd($result);
-    }
-
-    public function getSignClassOptions(Request $request)
-    {
-        
+        $this->repository->signClassOptions($request);
     }
 
 

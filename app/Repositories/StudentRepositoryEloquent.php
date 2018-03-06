@@ -444,14 +444,15 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
      * @param  Request $request 请求参数
      * @return [type]           [description]
      */
-    public function getSignClassOptions(Request $request)
+    public function signClassOptions(Request $request)
     {
         $params = $request->all();
         $date     = $request->get('date');
         if(empty($date))
             $date = date("Y-m-d");
         $params['date'] = $date;
-        $result = $this->studentService->getSignClassOptions($params);
+        $result = $this->studentService->signClassOptions($params);
+        dd($result);
 
     }
 
