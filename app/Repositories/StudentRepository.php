@@ -36,5 +36,7 @@ interface StudentRepository extends RepositoryInterface
 
     public  function getSignCalendar(Request $request);
 
+    public function getSignClassOptions(Request $request);
+
     
 }

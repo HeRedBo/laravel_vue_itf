@@ -19,7 +19,10 @@ class ApiTestController extends ApiController
 {
     protected $student_card_service;
     protected $bill_service;
-    public  function __construct(StudentCard $student_card, VenueBillService $bill_service)
+    public  function __construct(
+        StudentCard $student_card, 
+        VenueBillService $bill_service
+    )
     {
         parent::__construct();
         $this->student_card_service = $student_card;

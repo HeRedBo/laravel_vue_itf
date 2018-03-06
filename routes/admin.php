@@ -78,6 +78,7 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     Route::post('student/saveStudentCard', ['as' => 'admin.student.saveStudentCard', 'uses' => 'StudentsController@saveStudentCard']);
     Route::post('student/sign', ['as' => 'admin.student.sign', 'uses' => 'StudentsController@sign']);
     Route::get('student/getSignCalendar', ['as' => 'admin.student.getSignCalendar', 'uses' => 'StudentsController@getSignCalendar']);
+    Route::get('student/getDebug', ['as' => 'admin.student.getDebug', 'uses' => 'StudentsController@getDebug']);
     Route::resource('student', 'StudentsController');
     
     Route::post('venueBill/createDataType', ['as' => 'admin.venueBill.createDataType', 'uses' => 'VenueBillController@createVenueBillDataType']);

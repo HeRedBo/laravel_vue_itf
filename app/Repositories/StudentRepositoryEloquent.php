@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Services\Admin\StudentCard;
 use App\Services\Admin\VenueBillService;
+use App\Services\Admin\StudentService;
 use App\Services\Common\Dictionary;
 use Illuminate\Support\Facades\Event;
 use App\Events\AdminLogger;
@@ -82,10 +83,11 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
         $this->pushCriteria(app(RequestCriteria::class));
     }
     
-    
-    
-    
-    
+    public function __construct(StudentService $studentService)
+    { 
+        $this->studentService = $studentService;
+    }
+
     public  function  studentList(Request $request)
     {
         $pageSize = $request->get('pageSize') ?: $this->pageSize;
@@ -428,9 +430,29 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             logResult('【学生签到记录获取错误】'. $e->__toString(),'error');
             return error('签到错误'. $e->getMessage());
         }
-
-
     }
 
+    public function getStudentService()
+    {
+        exit;
+        $this->studentService->sayHello();
+        return $this->studentService->sayHello();
+    }
+
+    /**
+     * 获取签到道馆班级课程下拉框
+     * @param  Request $request 请求参数
+     * @return [type]           [description]
+     */
+    public function getSignClassOptions(Request $request)
+    {
+        $params = $request->all();
+        $date     = $request->get('date');
+        if(empty($date))
+            $date = date("Y-m-d");
+        $params['date'] = $date;
+        $result = $this->studentService->getSignClassOptions($params);
+
+    }
 
 }

@@ -263,8 +263,17 @@ class StudentsController extends ApiController
             return $this->response->withData($res['data']);
         else
             return $this->response->withInternalServer($res['msg']);
+    }
 
+    public function getDebug()
+    {
+        $result = $this->repository->getStudentService();
+        dd($result);
+    }
 
+    public function getSignClassOptions(Request $request)
+    {
+        
     }
 
 

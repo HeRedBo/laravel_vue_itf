@@ -8,20 +8,17 @@ namespace App\Services\Admin;
 use Illuminate\Http\Request;
 use App\Services\ServiceFactory;
 use App\Services\Common\Dictionary;
+use  App\Services\BaseService;
 
-class VenueSchedule
+
+class VenueSchedule extends  BaseService
 {
     const VENUE_SCHEDULE_ON_STATUS  = 1; //课程表启用状态
     const VENUE_SCHEDULE_OFF_STATUS = 0; //禁用状态
-
+    
     const WEEK_START = 1; // 周开始
     const WEEK_END   = 7; // 周结束
-
-    public  function __construct()
-    {
-        
-    }
-
+    
     /**
      * 获取课程表表头信息
      * @param $date
@@ -65,13 +62,11 @@ class VenueSchedule
             $venue_schedules_data   = $schedules_details['venue_schedules'];
             $venue_schedule_course_time_model = ServiceFactory::getModel("Admin\\VenueScheduleCourseTime");
             $course_times      = $venue_schedule_course_time_model->getScheduleCourseTime($schedule_id);
-            //$course_times = $this->reBuildCourseTimes($course_times);
             $week_between_arr  = $this->getWeekDateArr($date);
             $venue_schedules_extend_data = $this->getVenueScheduleExtend($schedule_id, $request);
             // 从新组装数据 已当前周的开始时间与结束时间进行判断从足数据
             for($w = self::WEEK_START; $w <= self::WEEK_END; $w++ )
             {
-
                 $venue_schedules[$w] = [];
                 $week_day      = $week_between_arr[$w];
                 $week_day_time = strtotime($week_day);
@@ -101,7 +96,12 @@ class VenueSchedule
         }
         return  compact('schedule','venue_schedules','course_times');
     }
-
+    
+    public function venueScheduleData()
+    {
+        
+    }
+    
     /**
      * 获取周日区间数组
      * @param  string $date 日期
