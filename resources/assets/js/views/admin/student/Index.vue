@@ -4,13 +4,67 @@
         <div class="box">
           <div class="box-header">
             <div class="row">
+
               <div class="col-md-4">
+                    <div class="form-group form-inline">
 
-                 <button type="button" class="btn btn-default btn-sm checkbox-toggle"  @click="selectAll" >
-                    <i class="fa fa-square-o"></i>
+                        <button type="button" class="btn btn-default btn-sm checkbox-toggle"  @click="selectAll" >
+                            <i class="fa fa-square-o"></i>
+                        </button>
+
+                        <button type="button" class="btn btn-default btn-sm checkbox-sign"  @click="sign" >
+                            <i class="fa fa-square-o"></i>
+                            签到
+                        </button>
+                        
+                        <div class="input-group input-group-sm">
+                            <el-dropdown  @command="handleCommand">
+                              <el-button  class="btn btn-default btn-sm" size="small">
+                                  操作<i class="el-icon-caret-bottom el-icon--right"></i>
+                              </el-button>
+                              <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item command="batch_sign">批量签到</el-dropdown-item>
+                              </el-dropdown-menu>
+                          </el-dropdown>
+
+                        </div>
+                        
+                         <div class="btn-group input-group-sm">
+                              <a class="btn btn-sm btn-default"> 操作</a>
+                              <button type="button" class="btn btn-sm btn-default dropdown-toggle" 
+                                  data-toggle="dropdown"
+
+                              >
+                                  <span class="caret"></span>
+                                  <span class="sr-only">Toggle Dropdown</span>
+                              </button>
+
+                              <ul class="dropdown-menu" role="menu">
+                                <li><a href="javascript:void(0)"  class="grid-batch-0">批量签到</a></li>
+                              </ul>
+
+                </div> 
+
+
+                        <button type="button" class="btn btn-default btn-sm checkbox-toggle" @click="getSelctItem">
+                            获取子组件数据
+                        </button>
+                         
+                         <!-- checkbox -->
+
+                       <!--  <div class="input-group input-group-sm" @click="debug">
+                            
+                              <label @click="debug">
+                                    <input type="checkbox" class="student_sign flat-blue" @change="debug" v-model="checkbox_val">
+                                    签到
+                              </label>
+                        </div> -->
+                    </div>
+               <!--  <button type="button" class="btn btn-default btn-sm checkbox-toggle" @click="debug">
+                    显示操作人
                 </button>
-
-
+                    -->
+                  
               </div>
 
               <div class="col-md-8">
@@ -26,6 +80,7 @@
                         <el-input  size="small" class="input-group-sm" placeholder="学生姓名" v-model="params.name" ></el-input>       
                     </div>
                     
+                   
                     <!-- 学生性别 -->
                     <div class="input-group input-group-sm" > 
                          <el-select style="width:90px" size="small" v-model="params.sex" class="filter-item" placeholder="性别">
@@ -38,43 +93,112 @@
                             </el-option>
                         </el-select>
                     </div>
+
                     
-                    <!-- 归属道馆 -->
-                    <div class="input-group input-group-sm">
-                        <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange" size="small"
-                        clearable
-                        >
-                            <el-option
-                                   v-for="item in venueOptions"
-                                   :key="item.value"
-                                   :label="item.label"
-                                   :value="item.value"
-                                   >
-                            </el-option>
-                        </el-select>
-                    </div>
-                    <!-- 班级 -->
-                     <div class="input-group input-group-sm">
-                         <el-select style="width:160px" v-model="params.class_id" placeholder="班级"  class="filter-item"  size="small"
+                     <template v-if="!sign_status">
+                        <!-- 归属道馆 -->
+                        <div class="input-group input-group-sm">
+                            <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange" size="small"
                             clearable
-                         >
+                            >
                                 <el-option
-                                       v-for="item in classOptions"
+                                       v-for="item in venueOptions"
                                        :key="item.value"
                                        :label="item.label"
                                        :value="item.value"
                                        >
                                 </el-option>
                             </el-select>
-                    </div>    
+                        </div>
+                        <!-- 班级 -->
+                         <div class="input-group input-group-sm">
+                             <el-select style="width:160px" v-model="params.class_id" placeholder="班级"  class="filter-item"  size="small"
+                                clearable
+                             >
+                                    <el-option
+                                           v-for="item in classOptions"
+                                           :key="item.value"
+                                           :label="item.label"
+                                           :value="item.value"
+                                           >
+                                    </el-option>
+                                </el-select>
+                        </div> 
+
+                    </template>
+
+
+                    
+                    
                         <!--  按钮分组 -->
                     <div class="btn-group btn-group-sm">
                         <button type="submit" class="btn btn-primary" @click="$refs.table.loadList()"><i class="fa fa-search"></i></button>
                         <a href="javascript:void(0)" class="btn btn-warning" @click="reset"><i class="fa fa-undo"></i></a>
                     </div>
                 </div>
+             </div>
+
             </div>
 
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-inline">
+                         <!-- 归属道馆 -->
+                        <div class="input-group input-group-sm">
+                            <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange" size="small"
+                            clearable
+                            >
+                                <el-option
+                                       v-for="item in venueOptions"
+                                       :key="item.value"
+                                       :label="item.label"
+                                       :value="item.value"
+                                       >
+                                </el-option>
+                            </el-select>
+                         </div>
+                        
+                         <!-- 签到班级 -->
+                         <div class="input-group input-group-sm">
+                             <el-select style="width:160px" v-model="params.sign_class" 
+                                    placeholder="签到班级"  
+                                    class="filter-item"  
+                                    @change="signClassChange"
+                                    size="small"   
+                                clearable
+                             >
+                                    <el-option
+                                           v-for="item in signClassOptions"
+                                           :key="item.value"
+                                           :label="item.label"
+                                           :value="item.value"
+                                           >
+                                    </el-option>
+                                </el-select>
+                        </div> 
+
+                        <!-- 签到日期    -->
+                        <div class="input-group input-group-sm">
+                             <el-date-picker
+                                v-model="params.sign_date"
+                                type   ="date"
+                                placeholder="选择日期"
+                                :picker-options="pickerOptions0"
+                                @change="signDateChange"
+                                size="small"
+                                >
+                        </el-date-picker>
+                        </div>
+                       
+
+
+                    </div>
+                    
+
+                    
+
+
+                </div>
             </div>
           </div>
 
@@ -82,7 +206,6 @@
             stripped
             hover
             checkbox
-            :searchType=2
             :ajax_url="ajax_url"
             :params="params"
             :items="items"
@@ -90,8 +213,12 @@
             :current-page="currentPage"
             :per-page="perPage"
             :selectAll="selectAllStatus"
+           
           > 
-
+            <!-- 学生姓名 -->
+             <template slot="name" slot-scope="item">
+                <span :class="'student_' + item.item.id">{{item.item.name}}</span>
+            </template>
             <!-- 学生性别 -->
             <template slot="sex" slot-scope="item">
                 <span>{{item.item.sex == 1 ? "男":"女"}}</span>
@@ -122,14 +249,43 @@
                  <el-tag v-for="row in item.item.classes"
                       :key="row.id"
                       type="primary"
-                      close-transition>
+                      close-transition
+                  >
                       {{row.name}}
                 </el-tag>
             </template>
-             <!--  操作人 -->
-            <template slot="operator_name" slot-scope="item">
-                <span>{{item.item.operator.name}}</span>
+
+
+             <!--  签到 -->
+            <template slot="sign_data" slot-scope="item">
+
+               <!--  <el-tag v-for="row in item.item.sign_data"
+                      :key="row.id"
+                      type="success"
+                      close-transition
+                  >
+                      {{row.class_name}}
+                </el-tag>
+ -->
+
+                <el-tooltip
+                    v-for="row in item.item.sign_data"
+                    :key="row.id"
+                    effect="dark" :content="row.status_name" placement="right"
+                    >
+
+                    <el-tag 
+                      :key="row.id"
+                      :type="row.type_name"
+                      close-transition
+                     >
+                      {{row.class_name}}
+                    </el-tag>
+                  
+                </el-tooltip>
             </template>
+
+
             <!-- 操作 -->
             <template slot="actions" slot-scope="item">
                 <div class="btn-group">
@@ -142,6 +298,74 @@
           </vTable>
       </div>
     </div>
+
+   <!--  form -->
+    <!-- Form -->
+            <el-dialog title="课程签到" :visible.sync="dialogFormVisible" class="course_time_form" >
+              <div class="row">
+                  <div class="col-md-10">
+                      <el-form ref="ScheduleForm" 
+                      :model="signFrom" 
+                      >
+
+                      <el-form-item label="签到学生" :label-width="formLabelWidth">
+                          <el-tag
+                              :key="tag"
+                              v-for="tag in studnet_names"
+                              :closable="true"
+                              type="primary"
+                              :close-transition="true" 
+                              @close="handleClose(tag)"
+                          >
+                          {{tag}}
+                          </el-tag>
+
+                                                   
+                        </el-form-item>
+                        <el-form-item label="星期" :label-width="formLabelWidth">
+                          <el-input  v-show="0" v-model="signFrom.week" auto-complete="off" 
+                          size="small">
+                          </el-input>
+                          <span></span>
+                        </el-form-item>
+
+                        <el-form-item label="节次" :label-width="formLabelWidth">
+                            <span>第{{signFrom.section}}节课</span>
+                            <el-input v-show="0" v-model="signFrom.section" auto-complete="off" 
+                            size="small">
+                            </el-input>
+                        </el-form-item>
+
+                        <!-- 班级 -->
+                        <el-form-item label="班级"  :label-width="formLabelWidth" prop="class_id">
+                            <el-select v-model="signFrom.class_id" placeholder="请选择班级" size="small">
+                              <el-option
+                                v-for="item in classOptions"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                              </el-option>
+                            </el-select>
+                        </el-form-item>
+                       <el-form-item label="课程备注" :label-width="formLabelWidth">
+                          <el-input type="textarea" :rows="2" v-model="signFrom.remark" auto-complete="off" 
+                          size="small">
+                          </el-input>
+                      </el-form-item>
+              </el-form>
+                  </div>
+              </div>
+
+              <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取 消</el-button>
+                <el-button type="primary" >确 定</el-button>
+              </div>
+
+            </el-dialog>
+
+
+
+
 
     <div id="studnet_view_box" style="display: none">
         <!-- Widget: user widget style 1 -->
@@ -245,7 +469,8 @@
 </template>
 
 <script>
-import {stack_error,parseSearchParam} from 'config/helper';
+
+import {stack_error,parseSearchParam,isEmpty} from 'config/helper';
 export default {
     data() {
       return {
@@ -258,13 +483,20 @@ export default {
             picture:{label:'头像'},
             venues_name : {label:'道馆', need:'venues'},
             class_name : {label:'班级', need:'classes'},
-            operator_name : {label:'操作人', need:'operator'},
+            sign_data : {label:'签到状态', need:'sign_data', hide:true},
             created_at:{label:'创建时间', sortable: true},
             updated_at:{label:'更新时间', sortable: true},
             actions : {label: '操作'}
         },
+        pickerOptions0: {
+          disabledDate(time) {
+            return time.getTime() > Date.now();
+          }
+        },
         ajax_url: "/student",
-        params: {},
+        params: {
+          sign_date : new Date
+        },
         currentPage: 1,
         perPage: 15,
         searchQuery : {},
@@ -273,16 +505,65 @@ export default {
         sexOptions : [],
         venueOptions : [],
         classOptions : [],
+        signClassOptions : [],
         student_info : {},
-        selectAllStatus : false
+        selectAllStatus : false,
+        sign_status : false,
+        checkbox_val:false,
+        selectItmes : [],
+        signFrom : {},
+        dialogFormVisible : false,
+        formLabelWidth: '110px',
+        studnet_names : []
+
+        
       }
     },
+    watch()
+    {
+       
+    },
+    updated () {
+        
+    },
+    
+
     created() 
     {
+      this.checkInit();
       this.getSexOptions();
       this.getUserVenus();
+      
     },
     methods: {
+        getSelctItem()
+        {
+            console.log(this.$refs.table.checkBoxItems());
+        },
+        checkInit()
+        {
+            console.log('init')
+          
+            jQuery(document).ready(function($) {
+                 $(":checkbox").on('ifToggled', function(event){
+                    alert(event.type + ' callback');
+                //console.log(this.checkbox_val);
+                });
+            });   
+        },
+
+        debug()
+        {
+            
+            this.fields.sign_data.hide = !this.fields.sign_data.hide;
+        },
+
+        signDateChange(value)
+        {
+            this.params.date = value;
+        },
+
+
         getSexOptions() {
                 var url = '/student/sexOptions',that = this;
                 this.$http({
@@ -330,30 +611,57 @@ export default {
         },
 
         getClasses(venue_id) {
-                var url = '/class/classOptions', that = this;
-                this.$http({
-                   method :"GET",
-                   url : url,
-                   params : {
-                    venue_id : venue_id
-                   }
-                })
-                .then(function(response) {
-                  var responseJson = response.data,data = responseJson.data
-                  var options = [];
-                  for (var i in data ) {
-                    let label =  data[i].name;
-                    options.push({value : data[i].id , label: label});
-                  } 
-                  that.classOptions = options;
-                })
-                .catch(function(error) {
-                  stack_error(error);
-                }); 
-            },
+            var url = '/class/classOptions', that = this;
+            this.$http({
+               method :"GET",
+               url : url,
+               params : {
+                venue_id : venue_id
+               }
+            })
+            .then(function(response) {
+              var responseJson = response.data,data = responseJson.data
+              var options = [];
+              for (var i in data ) {
+                let label =  data[i].name;
+                options.push({value : data[i].id , label: label});
+              } 
+              that.classOptions = options;
+            })
+            .catch(function(error) {
+              stack_error(error);
+            }); 
+         },
         venueChange(value) {
-            this.getClasses(value)
+            this.getClasses(value);
+            this.getSignClass();
         },
+        getSignClass () 
+        {
+         
+            var url = '/student/signClassOptions', that = this;
+            this.$http({
+               method :"GET",
+               url : url,
+               params : that.params
+            })
+            .then(function(response) {
+              var responseJson = response.data;
+              that.signClassOptions = responseJson.data
+            })
+            .catch(function(error) {
+              stack_error(error);
+            }); 
+        },
+
+        signClassChange(value)
+        {
+
+            var arr = value.split('_');
+            this.params.section  = arr[0];
+            this.params.class_id = arr[1];
+        },
+
         handleEdit(index, row) {
             console.log(index, row);
         },
@@ -407,13 +715,86 @@ export default {
                 //Check all checkboxes
                 //$(".mailbox-messages input[type='checkbox']").iCheck("check");
                 $(".checkbox-toggle > .fa").removeClass("fa-square-o").addClass('fa-check-square-o');
-          }
+            }
           this.selectAllStatus =!this.selectAllStatus;  
+          console.log(this.$refs.table.checkBoxItems());
+          this.selectItmes    = this.$refs.table.checkBoxItems();
+          console.log(this.selectItmes);
+        },
+        sign()
+        {
+            if (this.sign_status) 
+            {
+                //Uncheck all checkboxes
+               //$(".mailbox-messages input[type='checkbox']").iCheck("uncheck");
+                $(".checkbox-sign  > .fa").removeClass("fa-check-square-o").addClass('fa-square-o');
+                this.params.sign = 0;
+
+            } 
+            else 
+            {
+                //Check all checkboxes
+                //$(".mailbox-messages input[type='checkbox']").iCheck("check");
+                $(".checkbox-sign > .fa").removeClass("fa-square-o").addClass('fa-check-square-o');
+                this.params.sign = 1;
+            }
+            this.sign_status =!this.sign_status;
+            this.fields.sign_data.hide = !this.fields.sign_data.hide;
+        },
+        handleCommand(command)
+        {
+          if(command == 'batch_sign')
+          {
+              this.batch_sign();
+          }
+        },
+
+        batch_sign()
+        {
+
+            this.selectItmes = this.$refs.table.checkBoxItems();
+            if(isEmpty(this.selectItmes))
+            {
+               this.$message("请选择需要签到的学生");
+            }
+
+            // 获取学生姓名信息
+            var student_names = [];
+            var temp = {}
+            this.selectItmes.forEach(function(value, index, array) {
+               var name = $(".student_" + value).html();
+               // temp = {index:value, name:name};
+               student_names.push(name);
+               
+            });
+            
+            this.studnet_names = student_names;
+            this.signFrom.venue_id   = this.params.venue_id;
+            this.signFrom.sign_date  = this.params.sign_date;
+            this.signFrom.section    = this.params.section;
+            this.signFrom.sign_class = this.params.sign_class;
+            this.signFrom.student_ids = this.selectItmes;
+            this.signFrom.student_names = student_names;
+            console.log(student_names);
+            this.dialogFormVisible = true;
+            //初始化签到数据 
+            
+            // 显示签到确认页面
+            
+        },
+
+        handleClose(val)
+        {
+           
+          
+            this.signFrom.student_names.splice(this.signFrom.student_names.indexOf(val), 1);
+            //this.signFrom.student_names.sort();
+            console.log(this.signFrom.student_names);
         }
     }
 }
 
-jQuery(document).ready(function($) {
 
-});
+
+
 </script>

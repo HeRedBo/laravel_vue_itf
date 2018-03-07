@@ -8,9 +8,11 @@
             <thead>
                 <tr>
                     <th v-if="checkbox"></th>
-                    <th @click="headClick(field,key)"
+                    <th 
+                         v-for="field,key in fields"
+                        @click="headClick(field,key)"
                         :class="[field.sortable?'sorting':null,sort===key?'sorting_'+(sortDesc?'desc':'asc'):'']"
-                        v-for="field,key in fields"
+                        v-show="!field.hide"
                     >
                     {{field.label}}
                     </th>
@@ -26,11 +28,13 @@
             <tr  v-else v-for="item in _items" :key="items_key" :class="[item.state?'table-'+item.state:null]">
                 <td v-if="checkbox" >
                     <input type="checkbox" 
-                      :value="item[check_key]"  
-                      @click="checkBoxClick()"
+                      :value="item[check_key]" 
                     />
                 </td>
-                <td v-for="(field,key) in fields">
+                <td v-for="(field,key) in fields"
+                     v-show="!field.hide"
+                >
+
                 <slot :name="key" :value="field.need?item[field.need][key]:item[key]" :item="item">{{field.need?item[field.need][key]:item[key]}}</slot>
                 </td>
             </tr>
@@ -68,7 +72,6 @@
 require('admin-lte/plugins/datatables/dataTables.bootstrap.css');
 // require('icheck/skins/minimal/_all.css');
 require('icheck/skins/flat/blue.css');
-
 import {stack_error,parseSearchParam,isEmpty} from 'config/helper';
 
 export default {
@@ -148,7 +151,6 @@ export default {
             layouts: 'total, sizes, prev, pager, next, jumper',
             totalRows: 0,
             listLoading: true
-            // selectItem : []
         }
     },
     watch : {
@@ -159,27 +161,29 @@ export default {
             {
                 //Uncheck all checkboxes
                 $(".box-body input[type='checkbox']").iCheck("uncheck");
-           } 
-           else 
-           {
+            } 
+            else 
+            {
                 //Check all checkboxes
                 $(".box-body input[type='checkbox']").iCheck("check");
-           }
-           
+            }
            // 获取选中的的值
-           this.checkBoxClick();
-           console.log(this.selectItem);
        }
     },
-     updated () {
+
+    updated () {
         $(":checkbox").iCheck({
-            labelHover : false,
+            labelHover : true,
             cursor : true,
             checkboxClass: 'icheckbox_flat-blue',
             radioClass: 'iradio_flat-blue',
             increaseArea : '20%'
         });
     },
+    mounted() {
+
+    },
+    
 
     created() {
 
@@ -192,6 +196,7 @@ export default {
           }
         }
         this.loadList();
+        
     },
 
     computed:{
@@ -207,7 +212,10 @@ export default {
                 return String(v);
             };
             return items;
-        }
+        },
+       
+        
+
     },
     methods :{
         loadList : function() {
@@ -316,16 +324,13 @@ export default {
             this.loadList();
             console.log(`当前页: ${val}`);
         },
-
-        checkBoxClick()
+        checkBoxItems()
         {
-            console.log('1234123')
             var item = [];
             $(".box-body input[type='checkbox']:checked").each(function () {
                item.push(this.value);
             });
-           this.selectItem = item;
-           console.log(this.selectItem);
+           return item;
         }
     }
 

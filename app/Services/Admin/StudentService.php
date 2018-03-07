@@ -3,6 +3,7 @@ namespace App\Services\Admin;
 
 use App\Services\BaseService;
 use App\Services\ServiceFactory;
+use App\Services\Common\Dictionary;
 
 /**
  * 学生信息服务类
@@ -49,9 +50,10 @@ class StudentService extends BaseService
                         // 时间比较
                         $now_time = time();
 
-                        $schedule_details = array_column($schedule_details,NULL,'section');
+                       // $schedule_details = array_column($schedule_details,NULL,'section');
 
                         $result = [];
+
                         foreach ($course_times as $k =>  $course_time)
                         {
                             $start_time = strtotime($course_time[0]);
@@ -63,17 +65,20 @@ class StudentService extends BaseService
 //                                $result[$schedule_details[$k]['section']] = $schedule_details[$k];
 //                            }
 
-                            $result[$schedule_details[$k]['section']] = $schedule_details[$k];
+                            $result[$k] = $schedule_details[$k];
                         }
                     }
                 }
 			}
 		}
+
 		$options = [];
 		if($result)
         {
             foreach ($result as $v)
             {
+                if(empty($v))
+                    continue;
                 $options[] = [
                     'value' => $v['section']. '_'. $v['class_id'],
                     'label' => "【{$v['section']}】". $v['class_name']
@@ -89,14 +94,13 @@ class StudentService extends BaseService
 
     }
 
-
 	public  function  getStudentSignData(array $student_ids, array $params)
     {
         $venue_id = isset($params['venue_id']) ? $params['venue_id'] : 0;
         $section  = isset($params['section']) ? $params['section'] : 0;
         $class_id = isset($params['class_id']) ? $params['class_id'] : 0;
         $date     = isset($params['date']) ? $params['date'] : 0;
-        $data     = [];
+        $data  =  $result  = [];
         if($venue_id)
         {
             $where = [];
@@ -119,17 +123,22 @@ class StudentService extends BaseService
             if($data)
             {
                 $data = $data->toArray();
-
+                $signStatusMap = Dictionary::studentSignStatusMap();
+                $signTypeMap = Dictionary::signTypeMap();
                 foreach ($data as &$v)
                 {
                     $classes = isset($v['classes']) ? $v['classes'] : [];
+                    $v['class_name'] =isset( $classes['name']) ? "【{$v['section']}】". $classes['name'] : '';
+                    $v['status_name'] = isset($signStatusMap[$v['status']]) ? $signStatusMap[$v['status']] : '';
+                    $v['type_name'] = isset($signTypeMap[$v['status']]) ? $signTypeMap[$v['status']] : '';
 
-                    $v['class_name'] =isset( $classes['name']) ?  $classes['name'] : '';
                     unset($v['classes']);
+
+                    $result[$v['student_id']][] = $v;
                 }
             }
         }
-        return array_column($data,NULL,'student_id');
+        return $result;
     }
 
 

@@ -111,6 +111,8 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
         {
             $where[] = ['sex','=',$sex];
         }
+        if(!empty($class_id))
+            $where[] = ['student_class.class_id','=',$class_id];
 
         $orderBy = $request->get('orderBy')?:'id';
         $sortBy  = $request->get('sortedBy')?:'desc';
@@ -120,7 +122,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
         ];
 
         $query = $this->model->query();
-
+        $query->join("student_class",'students.id','=','student_class.student_id');
         if($where)
         {
             foreach ($where as $v)
@@ -137,8 +139,10 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             }
         }
 
-
+        $fields = ["students.*"];
+        $query->groupBy('students.id');
         $list =  $query->with(['operator','venues','classes'])
+                        ->select($fields)
                         ->paginate($pageSize)
                         ->toArray();
 
