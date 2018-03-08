@@ -488,7 +488,8 @@ export default {
         },
         ajax_url: "/student",
         params: {
-          sign_date : new Date
+          sign_date : new Date,
+          date : parseTime(new Date,'{y}-{m}-{d}')
         },
         currentPage: 1,
         perPage: 15,
