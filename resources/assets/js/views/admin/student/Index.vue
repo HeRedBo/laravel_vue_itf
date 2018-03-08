@@ -8,7 +8,11 @@
               <div class="col-md-4">
                     <div class="form-group form-inline">
 
-                        <button type="button" class="btn btn-default btn-sm checkbox-toggle"  @click="selectAll" >
+                        <button type="button" 
+                          class="btn btn-default btn-sm checkbox-toggle"  
+                          @click="selectAll" 
+                          v-show="check_box_select"
+                        >
                             <i class="fa fa-square-o"></i>
                         </button>
 
@@ -17,7 +21,7 @@
                             签到
                         </button>
                         
-                        <div class="input-group input-group-sm">
+                        <div class="input-group input-group-sm" v-show="params.sign">
                             <el-dropdown  @command="handleCommand">
                               <el-button  class="btn btn-default btn-sm" size="small">
                                   操作<i class="el-icon-caret-bottom el-icon--right"></i>
@@ -26,44 +30,16 @@
                                 <el-dropdown-item command="batch_sign">批量签到</el-dropdown-item>
                               </el-dropdown-menu>
                           </el-dropdown>
-
                         </div>
                         
-                         <div class="btn-group input-group-sm">
-                              <a class="btn btn-sm btn-default"> 操作</a>
-                              <button type="button" class="btn btn-sm btn-default dropdown-toggle" 
-                                  data-toggle="dropdown"
-
-                              >
-                                  <span class="caret"></span>
-                                  <span class="sr-only">Toggle Dropdown</span>
-                              </button>
-
-                              <ul class="dropdown-menu" role="menu">
-                                <li><a href="javascript:void(0)"  class="grid-batch-0">批量签到</a></li>
-                              </ul>
-
-                </div> 
-
-
-                        <button type="button" class="btn btn-default btn-sm checkbox-toggle" @click="getSelctItem">
+                      
+                       <!--  <button type="button" class="btn btn-default btn-sm checkbox-toggle" @click="getSelctItem">
                             获取子组件数据
-                        </button>
+                        </button> -->
                          
-                         <!-- checkbox -->
-
-                       <!--  <div class="input-group input-group-sm" @click="debug">
-                            
-                              <label @click="debug">
-                                    <input type="checkbox" class="student_sign flat-blue" @change="debug" v-model="checkbox_val">
-                                    签到
-                              </label>
-                        </div> -->
+                      
                     </div>
-               <!--  <button type="button" class="btn btn-default btn-sm checkbox-toggle" @click="debug">
-                    显示操作人
-                </button>
-                    -->
+            
                   
               </div>
 
@@ -95,7 +71,7 @@
                     </div>
 
                     
-                     <template v-if="!sign_status">
+                     <template v-if="!params.sign">
                         <!-- 归属道馆 -->
                         <div class="input-group input-group-sm">
                             <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange" size="small"
@@ -112,7 +88,7 @@
                         </div>
                         <!-- 班级 -->
                          <div class="input-group input-group-sm">
-                             <el-select style="width:160px" v-model="params.class_id" placeholder="班级"  class="filter-item"  size="small"
+                             <el-select style="width:180px" v-model="params.class_id" placeholder="班级"  class="filter-item"  size="small"
                                 clearable
                              >
                                     <el-option
@@ -142,7 +118,19 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <div class="form-inline">
+                    <div class="form-inline" v-show="params.sign">
+                         <!-- 签到日期    -->
+                        <div class="input-group input-group-sm">
+                             <el-date-picker
+                                v-model="params.sign_date"
+                                type   ="date"
+                                placeholder="请选择签到日期"
+                                :picker-options="pickerOptions0"
+                                @change="signDateChange"
+                                size="small"
+                                >
+                        </el-date-picker>
+                        </div>
                          <!-- 归属道馆 -->
                         <div class="input-group input-group-sm">
                             <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange" size="small"
@@ -160,7 +148,7 @@
                         
                          <!-- 签到班级 -->
                          <div class="input-group input-group-sm">
-                             <el-select style="width:160px" v-model="params.sign_class" 
+                             <el-select style="width:180px" v-model="params.sign_class" 
                                     placeholder="签到班级"  
                                     class="filter-item"  
                                     @change="signClassChange"
@@ -177,18 +165,7 @@
                                 </el-select>
                         </div> 
 
-                        <!-- 签到日期    -->
-                        <div class="input-group input-group-sm">
-                             <el-date-picker
-                                v-model="params.sign_date"
-                                type   ="date"
-                                placeholder="选择日期"
-                                :picker-options="pickerOptions0"
-                                @change="signDateChange"
-                                size="small"
-                                >
-                        </el-date-picker>
-                        </div>
+                       
                        
 
 
@@ -205,7 +182,7 @@
           <vTable ref="table"
             stripped
             hover
-            checkbox
+            :checkbox="check_box_select"
             :ajax_url="ajax_url"
             :params="params"
             :items="items"
@@ -213,8 +190,15 @@
             :current-page="currentPage"
             :per-page="perPage"
             :selectAll="selectAllStatus"
-           
           > 
+            <!-- checkbox -->
+             <template slot="check_box" slot-scope="item">
+                 <input type="checkbox" :value="item.item.id" :disabled="!item.item.can_sign" />
+                 <!-- <el-checkbox  :true-labe="item.item.id"></el-checkbox> -->
+
+            </template>
+
+
             <!-- 学生姓名 -->
              <template slot="name" slot-scope="item">
                 <span :class="'student_' + item.item.id">{{item.item.name}}</span>
@@ -305,7 +289,7 @@
               <div class="row">
                   <div class="col-md-10">
                       <el-form ref="ScheduleForm" 
-                      :model="signFrom" 
+                      :model="signForm" 
                       >
 
                       <el-form-item label="签到学生" :label-width="formLabelWidth">
@@ -322,34 +306,43 @@
 
                                                    
                         </el-form-item>
-                        <el-form-item label="星期" :label-width="formLabelWidth">
-                          <el-input  v-show="0" v-model="signFrom.week" auto-complete="off" 
-                          size="small">
-                          </el-input>
-                          <span></span>
+                        <el-form-item label="道馆" :label-width="formLabelWidth">
+                             <template v-for="option in venueOptions">
+                                   <span v-show="option.value==signForm.venue_id">
+                                    {{option.label}}
+                                   </span>
+                             </template>
                         </el-form-item>
 
-                        <el-form-item label="节次" :label-width="formLabelWidth">
-                            <span>第{{signFrom.section}}节课</span>
-                            <el-input v-show="0" v-model="signFrom.section" auto-complete="off" 
+                        
+                       <!--  签到班级 -->
+                        <el-form-item label="签到班级" :label-width="formLabelWidth">
+                              <template v-for="option in signClassOptions">
+                                 <span v-show="option.value==signForm.sign_class">
+                                  {{option.label}}
+                                 </span>
+                              </template>
+                        </el-form-item>
+                        
+                        <!-- 签到日期 -->
+                        <el-form-item label="签到日期" :label-width="formLabelWidth">
+                            <span>{{signForm.sign_date}}</span>
+                        </el-form-item>
+
+                         <el-form-item label="签到类型" :label-width="formLabelWidth">
+       
+                          
+                            <el-radio-group v-model="signForm.status">
+                                <el-radio :label="1">签到</el-radio>
+                                <el-radio :label="2">迟到</el-radio>
+                                <el-radio :label="3">请假</el-radio>
+                                <el-radio :label="4">旷课</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+        
+                       <el-form-item label="签到备注" :label-width="formLabelWidth">
+                          <el-input type="textarea" :rows="2" v-model="signForm.remark" auto-complete="off" 
                             size="small">
-                            </el-input>
-                        </el-form-item>
-
-                        <!-- 班级 -->
-                        <el-form-item label="班级"  :label-width="formLabelWidth" prop="class_id">
-                            <el-select v-model="signFrom.class_id" placeholder="请选择班级" size="small">
-                              <el-option
-                                v-for="item in classOptions"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                              </el-option>
-                            </el-select>
-                        </el-form-item>
-                       <el-form-item label="课程备注" :label-width="formLabelWidth">
-                          <el-input type="textarea" :rows="2" v-model="signFrom.remark" auto-complete="off" 
-                          size="small">
                           </el-input>
                       </el-form-item>
               </el-form>
@@ -358,7 +351,7 @@
 
               <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" >确 定</el-button>
+                <el-button type="primary" @click="studentSign" :loading="buttonLoading">确 定</el-button>
               </div>
 
             </el-dialog>
@@ -374,7 +367,7 @@
             <table class="table  table-bordered" style="font-size: 14px">
                 <tbody>
                 <tr>
-                    <th>姓名</th>
+                    <th>姓名</th>studentSign
                     <td> {{student_info.name}} </td>
                     <th>性别</th>
                     <td> {{student_info.sex_map?student_info.sex_map[student_info.sex]:''}} </td>
@@ -470,7 +463,7 @@
 
 <script>
 
-import {stack_error,parseSearchParam,isEmpty} from 'config/helper';
+import {stack_error,parseSearchParam,isEmpty,parseTime} from 'config/helper';
 export default {
     data() {
       return {
@@ -484,7 +477,7 @@ export default {
             venues_name : {label:'道馆', need:'venues'},
             class_name : {label:'班级', need:'classes'},
             sign_data : {label:'签到状态', need:'sign_data', hide:true},
-            created_at:{label:'创建时间', sortable: true},
+            // created_at:{label:'创建时间', sortable: true},
             updated_at:{label:'更新时间', sortable: true},
             actions : {label: '操作'}
         },
@@ -508,15 +501,13 @@ export default {
         signClassOptions : [],
         student_info : {},
         selectAllStatus : false,
-        sign_status : false,
-        checkbox_val:false,
         selectItmes : [],
-        signFrom : {},
+        signForm : {},
         dialogFormVisible : false,
         formLabelWidth: '110px',
-        studnet_names : []
-
-        
+        studnet_names : [],
+        buttonLoading: false,
+        check_box_select : false
       }
     },
     watch()
@@ -530,28 +521,15 @@ export default {
 
     created() 
     {
-      this.checkInit();
       this.getSexOptions();
       this.getUserVenus();
-      
     },
     methods: {
         getSelctItem()
         {
             console.log(this.$refs.table.checkBoxItems());
         },
-        checkInit()
-        {
-            console.log('init')
-          
-            jQuery(document).ready(function($) {
-                 $(":checkbox").on('ifToggled', function(event){
-                    alert(event.type + ' callback');
-                //console.log(this.checkbox_val);
-                });
-            });   
-        },
-
+       
         debug()
         {
             
@@ -561,6 +539,12 @@ export default {
         signDateChange(value)
         {
             this.params.date = value;
+            // 刷新课程下拉框
+            this.getSignClass();
+            // 刷新列表
+            this.$refs.table.loadList();
+            $(".box-body input[type='checkbox']").iCheck("uncheck");
+
         },
 
 
@@ -633,9 +617,20 @@ export default {
             }); 
          },
         venueChange(value) {
+
             this.getClasses(value);
-            this.getSignClass();
+            if(this.params.sign)
+            {
+              this.getSignClass();
+            }
+
+            // 刷新页面
+            this.$refs.table.loadList();
+            $(".box-body input[type='checkbox']").iCheck("uncheck");
+
+
         },
+
         getSignClass () 
         {
          
@@ -656,10 +651,11 @@ export default {
 
         signClassChange(value)
         {
-
             var arr = value.split('_');
             this.params.section  = arr[0];
             this.params.class_id = arr[1];
+            this.$refs.table.loadList();
+            $(".box-body input[type='checkbox']").iCheck("uncheck");
         },
 
         handleEdit(index, row) {
@@ -716,14 +712,13 @@ export default {
                 //$(".mailbox-messages input[type='checkbox']").iCheck("check");
                 $(".checkbox-toggle > .fa").removeClass("fa-square-o").addClass('fa-check-square-o');
             }
-          this.selectAllStatus =!this.selectAllStatus;  
-          console.log(this.$refs.table.checkBoxItems());
-          this.selectItmes    = this.$refs.table.checkBoxItems();
-          console.log(this.selectItmes);
+            this.selectAllStatus =!this.selectAllStatus;  
+            this.selectItmes    = this.$refs.table.checkBoxItems();
+            console.log(this.selectItmes);
         },
         sign()
         {
-            if (this.sign_status) 
+            if (this.params.sign) 
             {
                 //Uncheck all checkboxes
                //$(".mailbox-messages input[type='checkbox']").iCheck("uncheck");
@@ -738,8 +733,9 @@ export default {
                 $(".checkbox-sign > .fa").removeClass("fa-square-o").addClass('fa-check-square-o');
                 this.params.sign = 1;
             }
-            this.sign_status =!this.sign_status;
+            
             this.fields.sign_data.hide = !this.fields.sign_data.hide;
+            this.check_box_select = !this.check_box_select;
         },
         handleCommand(command)
         {
@@ -755,7 +751,20 @@ export default {
             this.selectItmes = this.$refs.table.checkBoxItems();
             if(isEmpty(this.selectItmes))
             {
-               this.$message("请选择需要签到的学生");
+                this.$message.error("请选择需要签到的学生!");
+                return;
+            }
+
+            if(!this.params.venue_id)
+            {
+               this.$message.error("请选择需要签到道馆!");
+               return;
+            }
+
+            if(!this.params.sign_class)
+            {
+              this.$message.error("请选择需要签到的班级");
+               return;
             }
 
             // 获取学生姓名信息
@@ -763,19 +772,21 @@ export default {
             var temp = {}
             this.selectItmes.forEach(function(value, index, array) {
                var name = $(".student_" + value).html();
-               // temp = {index:value, name:name};
-               student_names.push(name);
-               
+               student_names.push(name);   
             });
-            
-            this.studnet_names = student_names;
-            this.signFrom.venue_id   = this.params.venue_id;
-            this.signFrom.sign_date  = this.params.sign_date;
-            this.signFrom.section    = this.params.section;
-            this.signFrom.sign_class = this.params.sign_class;
-            this.signFrom.student_ids = this.selectItmes;
-            this.signFrom.student_names = student_names;
-            console.log(student_names);
+
+            console.log(this.params);
+            this.studnet_names          = student_names;
+            this.signForm.venue_id      = this.params.venue_id;
+            this.signForm.sign_date     = parseTime(this.params.sign_date,'{y}-{m}-{d}');
+            this.signForm.section       = this.params.section;
+            this.signForm.class_id       = this.params.class_id;
+            this.signForm.sign_class    = this.params.sign_class;
+            this.signForm.student_ids   = this.selectItmes;
+
+            this.signForm.student_names = student_names;
+            this.signForm.status = 1;
+           
             this.dialogFormVisible = true;
             //初始化签到数据 
             
@@ -785,11 +796,54 @@ export default {
 
         handleClose(val)
         {
-           
           
-            this.signFrom.student_names.splice(this.signFrom.student_names.indexOf(val), 1);
-            //this.signFrom.student_names.sort();
-            console.log(this.signFrom.student_names);
+            if(this.signForm.student_ids.length == 1)
+            {
+               
+                 this.$message.error("签到学生数不能在少了啊！");
+                 return;
+            }  
+
+            var index = this.signForm.student_names.indexOf(val);
+            this.signForm.student_names.splice(index, 1);
+            this.signForm.student_ids.splice(index, 1);
+        
+            console.log(this.signForm.student_ids.length);
+        },
+
+        studentSign()
+        {
+            // 学生信息签到 
+            console.log('asdas');
+              var that = this;
+              let url = '/student/sign'
+              let method = 'post';
+              that.buttonLoading = true;
+              this.$http({
+                  method :method,
+                  url : url,
+                  data : that.signForm
+              })
+              .then(function(response) {
+                  var {data} = response; 
+                  that.dialogFormVisible = false;
+                  that.buttonLoading = false;
+                  that.dialogFormVisible = false;
+                  that.signForm = {};
+
+                  that.$message({
+                      showClose: true,
+                      message: data.message,
+                      type: 'success'
+                  });
+                  that.$refs.table.loadList();
+                  $(".box-body input[type='checkbox']").iCheck("uncheck");
+                  // 跳转到列表页
+              })
+              .catch(function(error) {
+                  that.buttonLoading = false;
+                  stack_error(error);
+              });
         }
     }
 }

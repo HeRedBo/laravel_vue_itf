@@ -27,10 +27,14 @@
 
             <tr  v-else v-for="item in _items" :key="items_key" :class="[item.state?'table-'+item.state:null]">
                 <td v-if="checkbox" >
-                    <input type="checkbox" 
-                      :value="item[check_key]" 
-                    />
+                    <slot name="check_box" :value="item[check_key]" :item="item">
+                       <!--   <input type="checkbox" 
+                        :value="item[check_key]" 
+                        /> -->
+                    </slot>
+                   
                 </td>
+
                 <td v-for="(field,key) in fields"
                      v-show="!field.hide"
                 >
@@ -161,6 +165,7 @@ export default {
             {
                 //Uncheck all checkboxes
                 $(".box-body input[type='checkbox']").iCheck("uncheck");
+
             } 
             else 
             {
@@ -172,6 +177,7 @@ export default {
     },
 
     updated () {
+       
         $(":checkbox").iCheck({
             labelHover : true,
             cursor : true,
@@ -252,6 +258,7 @@ export default {
                 that.totalRows = responseData.total;
                 that.pageSize  =  parseInt(responseData.per_page);
                 that.items     = responseData.data;
+
             })
             .catch(function(error)
             {
@@ -328,7 +335,9 @@ export default {
         {
             var item = [];
             $(".box-body input[type='checkbox']:checked").each(function () {
-               item.push(this.value);
+                if($(this).attr("disabled")!="disabled") {
+                     item.push(this.value);
+                }
             });
            return item;
         }

@@ -159,10 +159,13 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             foreach ($data as &$v)
             {
                 $v['sign_data'] = [];
+                $v['can_sign'] = 1;
                 if(isset($student_sign_data[$v['id']]) && !empty($student_sign_data[$v['id']]))
                 {
                     $v['sign_data'] = $student_sign_data[$v['id']];
+                    $v['can_sign'] = 0;
                 }
+
             }
             $list['data'] = $data;
         }
@@ -466,6 +469,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                       ->where('sign_date', '=', $params['sign_date'])
                       ->delete();
                 $res = $model->BatchInsert($insert_data);
+
                 if($res)
                 {
                     $student_names = array_column($result,'name');
