@@ -41,11 +41,13 @@ class Student extends Model implements Transformable
 
     public function operator()
     {
-        return $this->hasOne(Admin::class, 'id', 'operator_id');
+        return $this->hasOne(Admin::class, 'id', 'operator_id')
+                    ->select(['id','name','username','picture','email']);
     }
 
     public  function  venues() {
-        return $this->hasOne(Venue::class, 'id', 'venue_id');
+        return $this->hasOne(Venue::class, 'id', 'venue_id')
+                        ->select(['id','name','logo','logo_thumb']);
     }
     
     /**

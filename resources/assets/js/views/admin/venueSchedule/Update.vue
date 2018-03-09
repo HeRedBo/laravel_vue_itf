@@ -9,7 +9,7 @@
 
 <script>
     import VenueScheduleForm from './Form';
-    import { stack_error } from 'config/helper';
+    import { stack_error,isEmpty} from 'config/helper';
     export default {
         components: { VenueScheduleForm },
         data() {
@@ -35,7 +35,8 @@
                     var responseJson = response.data;
                     var data = responseJson.data;
                     that.venueCourseForm = data.venue_course;
-                    that.course_times    = data.course_times;
+                    var  course_times    = data.course_times;
+                    that.course_times    = that.transfromTime(course_times);
                     that.venue_schedules = data.venue_schedules;
                 })
                 .catch(function (error) {
@@ -44,8 +45,21 @@
                 }); 
             },
 
-           
+            transfromTime(course_times)
+            {
+                var result = {};
+                if(!isEmpty(course_times))
+                {　　　　         
+　                  for(let i in course_times)
+                    {
+                        result[i]= [];
+                        result[i][0] = new Date(course_times[i][0]);
+                        result[i][1] = new Date(course_times[i][1]);
+                    }
+                }
+                return result;
 
+            }
         }
     }
 

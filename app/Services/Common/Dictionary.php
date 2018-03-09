@@ -105,9 +105,9 @@ class Dictionary
     {
 
         $signTypeMap = [
-            0 => 'gray',
+            0 => '',
             1 => 'success',
-            2 => 'primary',
+            2 => 'gray',
             3 => 'warning',
             4 => 'danger'
         ];

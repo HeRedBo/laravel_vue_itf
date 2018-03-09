@@ -22,6 +22,7 @@ use App\Services\Common\Dictionary;
 
 class StudentCard
 {
+
     /**
      * @var StudentNumberCardRepositoryEloquent
      */
@@ -280,13 +281,13 @@ class StudentCard
                 $consume_time = $now_time - $start_time;
                 $student_card['percentage'] = round(($consume_time / $total_time),2) * 100;
             }
+
             // 次卡
             if($student_card['type'] == 2) {
                 $total_class_number   = $student_card['total_class_number']; // 总课程数
                 $residue_class_number = $student_card['residue_class_number']; //  已经使用课程数
                 $student_card['percentage'] = round(($residue_class_number/$total_class_number),2) * 100;
             }
-            $student_card['percentage'] = (string) $student_card['percentage'];
             // 获取卡编号
             $student_card['student_card_number'] = '';
             $number_card_id = $student_card['number_card_id'];

@@ -6,6 +6,11 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-inline pull-right">
+                             <router-link :to="{path:'create'}" class="btn btn-sm btn-success">
+                              用户新增
+                            </router-link> 
+
+
                             <!-- 角色 -->
                              <div class="input-group input-group-sm">
                                  <el-select style="width:160px" v-model="params.role_id" placeholder="角色"  class="filter-item"  size="small"
@@ -120,7 +125,7 @@
                 <!-- 操作 -->
                 <template slot="actions" slot-scope="item">
                     <div class="btn-group">
-                        <!-- <a href="#" @click.prevent="view(item.item)" class="btn btn-success btn-xs">查看</a> -->
+                        <a href="#" @click.prevent="view(item.item)" class="btn btn-success btn-xs">查看</a>
                         <router-link target="_blank" :to="{path:'update/'+ item.item.id}" class="btn  bg-orange btn-xs">编辑</router-link>
                         <a @click="handleDelete(item.item.id)" class="btn btn-danger btn-xs">删除</a>
 

@@ -330,15 +330,15 @@
                         </el-form-item>
 
                          <el-form-item label="签到类型" :label-width="formLabelWidth">
-       
-                          
-                            <el-radio-group v-model="signForm.status">
-                                <el-radio :label="1">签到</el-radio>
-                                <el-radio :label="2">迟到</el-radio>
-                                <el-radio :label="3">请假</el-radio>
-                                <el-radio :label="4">旷课</el-radio>
-                            </el-radio-group>
-                        </el-form-item>
+                              <el-radio-group v-model="signForm.status">
+                                  <el-radio :label="1">签到</el-radio>
+                                  <el-radio :label="2">迟到</el-radio>
+                                  <el-radio :label="3">请假</el-radio>
+                                  <el-radio :label="4">旷课</el-radio>
+                              </el-radio-group>
+                         </el-form-item>
+
+
         
                        <el-form-item label="签到备注" :label-width="formLabelWidth">
                           <el-input type="textarea" :rows="2" v-model="signForm.remark" auto-complete="off" 
@@ -431,7 +431,7 @@
                 </tr>
                 <tr>
                     <td colspan="7">
-                        <el-progress :text-inside="true" :stroke-width="15" :percentage="student_info.in_user_student_card ? student_info.in_user_student_card.percentage: 0"></el-progress>
+                        <el-progress :text-inside="true" :stroke-width="15" :percentage="student_info.in_user_student_card?student_info.in_user_student_card.percentage:0"></el-progress>
                     </td>
                 </tr>
 
@@ -444,7 +444,6 @@
                     <th colspan="2">联系人手机号码</th>
                     <th colspan="2">联系人邮箱</th>
                 </tr>
-
                 <tr v-for="row in student_info.user_contacts"  :key="row.id">
                     <td>{{row.relation_name}}</td>
                     <td colspan="2">{{row.contact_name}}</td>
@@ -453,10 +452,8 @@
                 </tr>
                 </tbody>
             </table>
-    
         </div>
         <!-- /.widget-user -->
-    
     </div>
   </div>
 </template>
@@ -503,12 +500,15 @@ export default {
         student_info : {},
         selectAllStatus : false,
         selectItmes : [],
-        signForm : {},
+        signForm : {
+          status : 1
+        },
         dialogFormVisible : false,
         formLabelWidth: '110px',
         studnet_names : [],
         buttonLoading: false,
-        check_box_select : false
+        check_box_select : false,
+        
       }
     },
     watch()
@@ -530,7 +530,6 @@ export default {
         {
             console.log(this.$refs.table.checkBoxItems());
         },
-       
         debug()
         {
             
@@ -544,8 +543,6 @@ export default {
             this.getSignClass();
             // 刷新列表
             this.$refs.table.loadList();
-            $(".box-body input[type='checkbox']").iCheck("uncheck");
-
         },
 
 
@@ -627,9 +624,6 @@ export default {
 
             // 刷新页面
             this.$refs.table.loadList();
-            $(".box-body input[type='checkbox']").iCheck("uncheck");
-
-
         },
 
         getSignClass () 
@@ -656,7 +650,7 @@ export default {
             this.params.section  = arr[0];
             this.params.class_id = arr[1];
             this.$refs.table.loadList();
-            $(".box-body input[type='checkbox']").iCheck("uncheck");
+            
         },
 
         handleEdit(index, row) {
@@ -776,7 +770,6 @@ export default {
                student_names.push(name);   
             });
 
-            console.log(this.params);
             this.studnet_names          = student_names;
             this.signForm.venue_id      = this.params.venue_id;
             this.signForm.sign_date     = parseTime(this.params.sign_date,'{y}-{m}-{d}');
@@ -784,9 +777,9 @@ export default {
             this.signForm.class_id       = this.params.class_id;
             this.signForm.sign_class    = this.params.sign_class;
             this.signForm.student_ids   = this.selectItmes;
-
             this.signForm.student_names = student_names;
-            this.signForm.status = 1;
+            // this.signForm.status = '2';
+            
            
             this.dialogFormVisible = true;
             //初始化签到数据 
@@ -838,7 +831,7 @@ export default {
                       type: 'success'
                   });
                   that.$refs.table.loadList();
-                  $(".box-body input[type='checkbox']").iCheck("uncheck");
+                  
                   // 跳转到列表页
               })
               .catch(function(error) {

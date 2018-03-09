@@ -185,6 +185,17 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
 
             $schedule_course_times_model = new  VenueScheduleCourseTime();
             $course_times  = $schedule_course_times_model->getScheduleCourseTime($schedule_id);
+
+            $course_times_temp = [];
+            foreach ($course_times as $k =>  $course_time)
+            {
+                $course_times_temp[$k] = [
+                    date("Y-m-d H:i:s",strtotime($course_time[0])),
+                    date("Y-m-d H:i:s",strtotime($course_time[1])),
+                ];
+            }
+            $course_times = $course_times_temp;
+
             // 组装课程列表数据与课程时间数据
             for($w = self::WEEK_START; $w <= self::WEEK_END; $w++ )
             {
@@ -203,7 +214,7 @@ class VenueScheduleRepositoryEloquent extends AdminCommonRepository implements V
                 }
             }
             
-            $course_times = $this->reBuildCourseTimes($course_times);
+            //$course_times = $this->reBuildCourseTimes($course_times);
             $data = compact('venue_course','venue_schedules','course_times');
             return success('数据获取成功', $data);
         }

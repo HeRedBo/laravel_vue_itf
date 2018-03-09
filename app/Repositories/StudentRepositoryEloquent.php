@@ -162,10 +162,9 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                 $v['can_sign'] = 1;
                 if(isset($student_sign_data[$v['id']]) && !empty($student_sign_data[$v['id']]))
                 {
-                    $v['sign_data'] = $student_sign_data[$v['id']];
                     $v['can_sign'] = 0;
+                    $v['sign_data'] = $student_sign_data[$v['id']];
                 }
-
             }
             $list['data'] = $data;
         }
