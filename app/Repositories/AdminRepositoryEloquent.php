@@ -4,7 +4,7 @@ namespace App\Repositories;
 use Exception;
 use App\Models\Admin\Admin;
 use Illuminate\Http\Request;
-use App\Models\Admin\Logger;
+use App\Models\Admin\AdminLogger;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\AdminRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
@@ -268,7 +268,7 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
             $venue_id  = $request->get('venue_id')?:0;
             $pageSize  = $request->get('pageSize') ?: self::DEFAULT_PAGE_SIZE;
             $user_name = $request->get('user_name','');
-            $query     = Logger::query()->with(['users']);
+            $query     = AdminLogger::query()->with(['users']);
             
             $query->join('venues', 'admin_logger.venue_id', '=', 'venues.id')
                     ->join('admin','admin_logger.user_id', '=', 'admin.id')

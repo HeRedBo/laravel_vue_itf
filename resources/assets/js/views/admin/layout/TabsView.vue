@@ -21,9 +21,9 @@ export default {
          if(this.isActive(view.path)) {
            const latestView = views.slice(-1)[0];
            if(latestView) {
-             this.$route.push(latestView.path);
+             this.$router.push(latestView.path);
            } else {
-             this.$route.push('/');
+             this.$router.push('/admin');
            }
          }
         
@@ -31,10 +31,10 @@ export default {
        $event.preventDefault();
     },
     generateRoute() {
-
       if (this.$route.matched[this.$route.matched.length - 1].name) {
         return this.$route.matched[this.$route.matched.length - 1]
       }
+
       this.$route.matched[0].path = '/'
       return this.$route.matched[0]
     },
@@ -45,9 +45,9 @@ export default {
       this.$store.dispatch('addVisitedViews', this.generateRoute())
     }
   },
+
   watch : {
     $route() {
-      console.log('route')
       this.addViewTabs();
     }
   }

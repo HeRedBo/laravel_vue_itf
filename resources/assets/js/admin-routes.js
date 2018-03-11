@@ -192,7 +192,13 @@ export default [
                         path: 'studentCardList/:id',
                         name : '学生卡券列表',
                         component : () => import('views/admin/student/StudentCardList.vue')
-                    }
+                    },
+                    {
+                        path: 'SignCalendar/:venue_id/:student_id',
+                        name : '学生签到日历',
+                        component : () => import('views/admin/student/SignCalendar.vue')
+                    }, 
+
                 ]
             },
             {

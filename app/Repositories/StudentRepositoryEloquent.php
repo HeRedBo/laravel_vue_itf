@@ -154,11 +154,17 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             {
                 $student_ids = array_column($data,'id');
                 $student_sign_data = $this->studentService->getStudentSignData($student_ids, $params);
+
             }
 
             foreach ($data as &$v)
             {
-                $v['sign_data'] = [];
+                $v['sign_data'][] = [
+                    'id' => current($v['classes'])['id'],
+                    'type_name' => '',
+                    'status_name' => '未签到',
+                    'class_name' => current($v['classes'])['name'],
+                ];
                 $v['can_sign'] = 1;
                 if(isset($student_sign_data[$v['id']]) && !empty($student_sign_data[$v['id']]))
                 {

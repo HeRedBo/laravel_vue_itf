@@ -37,6 +37,9 @@ class ApiTestController extends ApiController
 
     public  function  ApiTest()
     {
+
+        $date = "2018-03-04";
+        dd(getMouthWeekCount($date));
         $json = '{"card_id":3,"operation":"\u4fee\u6539\u5361\u5238\u72b6\u6001","field":["\u5361\u5238\u542f\u7528\u72b6\u6001"],"oldValue":["\u672a\u542f\u7528"],"newValue":["\u542f\u7528"]}';
         $data = json_decode($json,true);
         dd($data);

@@ -206,7 +206,7 @@ if(!function_exists('getMonthBE'))
             }
 
             $mouth_day_count = date('t', $date_time);
-            $week_count      =  ceil($mouth_day_count/7);
+            $week_count      = (int)ceil($mouth_day_count/7);
             return $week_count;
         }
     }
@@ -228,9 +228,8 @@ if(!function_exists('getMonthBE'))
             {
                 $date_time = strtotime($date);
             }
-
             $date_now   =date('j',$date_time); //得到今天是几号
-            $cal_result =ceil($date_now/7); //计算是第几个星期几
+            $cal_result =ceil ($date_now / 7); //计算是第几个星期几
             return $cal_result;
         }
     }
@@ -255,6 +254,63 @@ if(!function_exists('getDateWeek'))
         return $w;
     }
 }
+
+if(!function_exists('getDateCalendarX'))
+{
+    function getDateCalendarX($date = NULL)
+    {
+        if(empty($date))
+            $date_time = time();
+        else
+            $date_time = strtotime($date);
+
+        $mouth_start_day = date("Y-m-01", $date_time);
+        $mouth_start_day_week = date('w', strtotime($mouth_start_day));
+        if($mouth_start_day_week == 0)
+            $mouth_start_day_week = 7;
+        $mouth_day = date('j', $date_time);
+        $offset  = $mouth_start_day_week-1;
+        $val     = round(($mouth_day + $offset)/7,2) * 100;
+        $min     = floor(($mouth_day + $offset)/7) *100;
+        $max     = ceil(($mouth_day + $offset) / 7) * 100;
+        $centre_line = round(($min + $max) /2,2);
+        if($val == $min && $val == $max)
+        {
+            $val = $val/100;
+        }
+        if ($val > $min && $val < $max)
+        {
+            if($val < $centre_line)
+            {
+                $val = ceil($val/100);
+            }
+            if($val > $centre_line && $val < $max)
+            {
+                $val =  ceil($val/100);
+            }
+
+        }
+        return $val;
+    }
+}
+
+if(!function_exists('getMouthXLength'))
+{
+    function getMouthXLength($date = null)
+    {
+        if(empty($date))
+            $date_time = time();
+        else
+            $date_time = strtotime($date);
+
+        $first_day = date('Y-m-01',$date_time);
+        $last_day = date('Y-m-d',strtotime("$first_day +1 month -1 day"));
+        return getDateCalendarX($last_day);
+    }
+}
+
+
+
 
 
 

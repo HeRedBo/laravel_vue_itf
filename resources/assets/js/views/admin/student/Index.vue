@@ -251,22 +251,31 @@
                       {{row.class_name}}
                 </el-tag>
  -->
-
-                <el-tooltip
+                
+              
+                   <el-tooltip
                     v-for="row in item.item.sign_data"
-                    :key="row.id"
-                    effect="dark" :content="row.status_name" placement="right"
+                      :key="row.id"
+                      effect="dark" 
+                      :content="row.status_name" 
+                      placement="right"
                     >
 
                     <el-tag 
                       :key="row.id"
                       :type="row.type_name"
+                      
                       close-transition
                      >
-                      {{row.class_name}}
+                     <a  @click="oneSign(item.item.id,row.id,item.item.can_sign)">
+                        {{row.class_name}}
+                     </a>
                     </el-tag>
                   
                 </el-tooltip>
+
+               
+               
             </template>
 
 
@@ -276,7 +285,7 @@
                     <a href="javascript:;" @click="view(item.item)" class="btn btn-success btn-xs">查看</a>
                     <router-link :to="{path:'update/'+  item.item.id}" class="btn bg-orange btn-xs">编辑</router-link>
                     <router-link target="_blank"  :to="{path:'studentCardList/'+ item.item.id}" class="btn bg-info btn-xs">学生卡券</router-link>
-                    <!-- <a href="#"  @click.prevent="$refs.table.onDel(item.item.id)"  class="btn btn-danger btn-xs">删除</a> -->
+                    <router-link target="_blank"  :to="{path:'SignCalendar/'+ item.item.venue_id + '/' +item.item.id}" class="btn bg-primary btn-xs">签到日历</router-link>  
                 </div>
             </template>
           </vTable>
@@ -742,7 +751,6 @@ export default {
 
         batch_sign()
         {
-
             this.selectItmes = this.$refs.table.checkBoxItems();
             if(isEmpty(this.selectItmes))
             {
@@ -779,30 +787,56 @@ export default {
             this.signForm.student_ids   = this.selectItmes;
             this.signForm.student_names = student_names;
             // this.signForm.status = '2';
-            
-           
             this.dialogFormVisible = true;
             //初始化签到数据 
-            
             // 显示签到确认页面
-            
+        },
+        oneSign(student_id,class_id, can_sign)
+        {
+          if(!this.params.venue_id)
+            {
+               this.$message.error("请选择需要签到道馆!");
+               return;
+            }
+
+            if(!this.params.sign_class)
+            {
+              this.$message.error("请选择需要签到的班级");
+               return;
+            }
+        
+           var  student_ids = []
+           student_ids.push(student_id);
+           var student_names = [];
+           student_ids.forEach(function(value, index, array) {
+               var name = $(".student_" + value).html();
+               student_names.push(name);   
+           });
+
+          this.studnet_names          = student_names;
+          this.signForm.venue_id      = this.params.venue_id;
+          this.signForm.sign_date     = parseTime(this.params.sign_date,'{y}-{m}-{d}');
+          this.signForm.section       = this.params.section;
+          this.signForm.class_id      = this.params.class_id;
+          this.signForm.sign_class    = this.params.sign_class;
+          this.signForm.student_ids   = student_ids;
+          this.signForm.student_names = student_names;
+
+          this.dialogFormVisible = true;
         },
 
         handleClose(val)
         {
-          
+        
             if(this.signForm.student_ids.length == 1)
             {
                
                  this.$message.error("签到学生数不能在少了啊！");
                  return;
-            }  
-
+            }
             var index = this.signForm.student_names.indexOf(val);
             this.signForm.student_names.splice(index, 1);
             this.signForm.student_ids.splice(index, 1);
-        
-            console.log(this.signForm.student_ids.length);
         },
 
         studentSign()

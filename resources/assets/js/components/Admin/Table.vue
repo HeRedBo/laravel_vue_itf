@@ -149,7 +149,7 @@ export default {
             sort: null,
             sortDesc: true,
             currentPage: 1,
-            pageSizes: [ 15, 20, 50, 100, 200],
+            pageSizes: [15, 20, 50, 100, 200],
             pageSize: 15,
             initPage : 15,
             layouts: 'total, sizes, prev, pager, next, jumper',
@@ -196,8 +196,9 @@ export default {
         if(this.perPage)
         {
           this.pageSize = this.perPage;
-          this.initPage = this.perPage;
-          if(this.pageSizes.indexOf(this.perPage) !== false ) {
+          this.initPage = this.perPage; 
+          if(this.pageSizes.indexOf(this.perPage) === '-1' ) 
+          {
             this.pageSizes.unshift(this.perPage);
           }
         }
@@ -230,7 +231,6 @@ export default {
             var orderBy = this.sort;
             var sortedBy = this.sortDesc?'desc':'asc';
             var params = { pageSize :this.pageSize, page:this.currentPage, orderBy:orderBy,sortedBy:sortedBy}
-            console.log(params);
             if(this.searchType == 1)
             {
                 if(typeof this.params !== 'undefined') {

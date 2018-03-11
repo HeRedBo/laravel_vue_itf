@@ -89,11 +89,6 @@ class StudentService extends BaseService
 	}
 
 
-	public  function studentList(array $params)
-    {
-
-    }
-
 	public  function  getStudentSignData(array $student_ids, array $params)
     {
         $venue_id = isset($params['venue_id']) ? $params['venue_id'] : 0;
@@ -131,9 +126,7 @@ class StudentService extends BaseService
                     $v['class_name'] =isset( $classes['name']) ? "【{$v['section']}】". $classes['name'] : '';
                     $v['status_name'] = isset($signStatusMap[$v['status']]) ? $signStatusMap[$v['status']] : '';
                     $v['type_name'] = isset($signTypeMap[$v['status']]) ? $signTypeMap[$v['status']] : '';
-
                     unset($v['classes']);
-
                     $result[$v['student_id']][] = $v;
                 }
             }

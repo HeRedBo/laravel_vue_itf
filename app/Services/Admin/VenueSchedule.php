@@ -239,7 +239,7 @@ class VenueSchedule extends  BaseService
 
 
     // ========================  签到日历表相关程序(start) ==================================;
-    public  function getSignCalendar(Request $request)
+    public function getSignCalendar(Request $request)
     {
         // 获取课程表数据
         $date = $request->get('date');
@@ -247,29 +247,32 @@ class VenueSchedule extends  BaseService
         {
             $date = date("Y-m-d");
         }
-
         $mouth_between = getMonthBE($date);
         $venue_id = $request->get('venue_id');
         $class_id = $request->get('class_id');
+        $student_id = $request->get('student_id');
         $params = [
-            'venue_id' => $venue_id,
-            'start_time' => $mouth_between[0],
-            'end_time' => $mouth_between[1],
+            'venue_id'    => $venue_id,
+            'start_time'  => $mouth_between[0],
+            'end_time'    => $mouth_between[1],
         ];
         $venueScheduleModel = ServiceFactory::getModel("Admin\\VenueSchedule");
         $schedules = $venueScheduleModel->getDateBetweenSchedule($params);
-        $params['class_id'] = $class_id;
-        $venue_schedules = [];
-        if($schedules)
-        {
-            $venue_schedules = $this->buildScheduleData($schedules,$params);
-        }
-        return compact('venue_schedules');
+        $params['class_id']   = $class_id;
+        $params['student_id'] = $student_id;
+        $venue_schedules = $this->buildScheduleData($schedules,$params);
+        $mouth_end_day =  $mouth_between[1];
+        $course_count = getMouthXLength($mouth_end_day);
+        $schedule= [
+            'course_count' => $course_count
+        ];
+        return compact('schedule','venue_schedules');
     }
 
-    public  function  buildScheduleData(array $schedules, $params = [])
+    public function  buildScheduleData(array $schedules, $params = [])
     {
         $venue_schedules  = [];
+        $calendarMaps  = $schedule_details = $venue_schedules_extend_data = $student_sign_data =[];
         if($schedules)
         {
             $course_count_arr = array_column($schedules,'course_count');
@@ -279,65 +282,122 @@ class VenueSchedule extends  BaseService
             $params['course_count'] = $max_course_count;
             $schedule_details = $this->getScheduleDetails($schedule_ids, $params);
             $venue_schedules_extend_data = $this->getVenueSchedulesExtend($schedule_ids, $params);
-
-            $start_date_time = $params['start_time'];
-            $end_date_time   = $params['end_time'];
-            $temp_date_time  = $start_date_time;
-
+            $student_sign_data = $this->getStudentSignData($params);
             // 从新组装数据 已当前周的开始时间与结束时间进行判断从足数据
-            while ($temp_date_time <= $end_date_time)
-            {
-                $mouth_temp_time = strtotime($temp_date_time);
-                $mouth_temp_date = date("Y-m-d", $mouth_temp_time);
-                $w = date('w', $mouth_temp_time);
-                if($w == 0)
-                    $w = 7;
-                $schedule_id = isset($calendarMaps[$mouth_temp_date]) ?$calendarMaps[$mouth_temp_date] : 0;
-                $start_time = $end_time = 0;
-                if($schedule_id)
-                {
-                    $schedules = array_column($schedules,NULL,'id');
-                    $schedule  = $schedules[$schedule_id];
-                    $schedule_start_time = $schedule['start_time'];
-                    $schedule_end_time   = $schedule['end_time'];
-                    // 方便比较 统一转换为时间戳
-                    $start_time  = strtotime($schedule_start_time);
-                    $end_time    = strtotime($schedule_end_time);
-
-                    $venue_schedule_extend_data = isset($venue_schedules_extend_data[$schedule_id]) ? $venue_schedules_extend_data[$schedule_id] : [];
-                    $schedule_detail            = isset($schedule_details[$schedule_id]) ? $schedule_details[$schedule_id] : [];
-                }
-                $i = getDateWeekOrder($temp_date_time);
-                $temp_data = [
-                    'date' => date('j',$mouth_temp_time)
-                ];
-                $venue_schedules[$w][$i] = $temp_data;
-                if(
-                    $schedule_id &&
-                    (isset($schedule_detail[$w]) &&
-                        ($start_time <= $mouth_temp_time && $mouth_temp_time <= $end_time))
-                )
-                {
-                    if(isset($schedule_detail[$w][$i]))
-                    {
-                        $temp_data = array_merge($venue_schedules[$w][$i], $schedule_detail[$w][$i]);
-                        $venue_schedules[$w][$i] = $temp_data;
-                    }
-                }
-
-                if($schedule_id && isset($venue_schedule_extend_data[$w]) && ($start_time <= $mouth_temp_time && $mouth_temp_time <= $end_time))
-                {
-                    // 如果存在补充数据则以补充数据表数据为准
-                    if(isset($venue_schedule_extend_data[$w][$i]) && $venue_schedule_extend_data[$w][$i]['class_id'] > 0)
-                    {
-                        $temp_data = array_merge($temp_data,$venue_schedule_extend_data[$w][$i]);
-                        $venue_schedules[$w][$i] = $temp_data;
-                    }
-                }
-                $temp_date_time = date("Y-m-d", strtotime("{$temp_date_time} + 1 day"));
-            }
         }
+
+        $start_date_time = $params['start_time'];
+        $end_date_time   = $params['end_time'];
+        $temp_date_time  = $start_date_time;
+
+        while ($temp_date_time <= $end_date_time)
+        {
+            $mouth_temp_time = strtotime($temp_date_time);
+            $mouth_temp_date = date("Y-m-d", $mouth_temp_time);
+            $w    = date('w', $mouth_temp_time);
+            if($w == 0)
+            {
+                $w = 7;
+            }
+            $schedule_id = isset($calendarMaps[$mouth_temp_date]) ?$calendarMaps[$mouth_temp_date] : 0;
+            $start_time = $end_time = 0;
+            if($schedule_id)
+            {
+                $schedules = array_column($schedules,NULL,'id');
+                $schedule  = $schedules[$schedule_id];
+
+                $schedule_start_time = $schedule['start_time'];
+                $schedule_end_time   = $schedule['end_time'];
+                // 方便比较 统一转换为时间戳
+                $start_time  = strtotime($schedule_start_time);
+                $end_time    = strtotime($schedule_end_time);
+                $venue_schedule_extend_data = isset($venue_schedules_extend_data[$schedule_id]) ? $venue_schedules_extend_data[$schedule_id] : [];
+                $schedule_detail            = isset($schedule_details[$schedule_id]) ? $schedule_details[$schedule_id] : [];
+
+            }
+            $i = getDateCalendarX($temp_date_time);
+            $lunar_name = $this->getDataLunarName($temp_date_time);
+            $temp_data = [
+                'date_num'       => date('j',$mouth_temp_time),
+                'date'           => $mouth_temp_date,
+                'lunar_name'     => $lunar_name,
+                'week'          => $w,
+                'schedule_data' => []
+            ];
+            $venue_schedules[$w][$i] = $temp_data;
+            if(
+                $schedule_id &&
+                (isset($schedule_detail[$w]) &&
+                    ($start_time <= $mouth_temp_time && $mouth_temp_time <= $end_time))
+            )
+            {
+                if(isset($schedule_detail[$w]))
+                {
+
+                    $temp_data['schedule_data']  =$schedule_detail[$w];
+                    $venue_schedules[$w][$i] = $temp_data;
+                }
+            }
+
+            if($schedule_id && isset($venue_schedule_extend_data[$w]) && ($start_time <= $mouth_temp_time && $mouth_temp_time <= $end_time))
+            {
+                // 如果存在补充数据则以补充数据表数据为准
+                if(isset($venue_schedule_extend_data[$w][$i]) && $venue_schedule_extend_data[$w][$i]['class_id'] > 0)
+                {
+                    $temp_data['schedule_data']  = $venue_schedule_extend_data[$w];
+                    $venue_schedules[$w][$i] = $temp_data;
+                }
+            }
+
+            //  这里组装学生的签到数据
+            if(!empty($venue_schedules[$w][$i]['schedule_data']))
+            {
+                //  &&
+                $schedule_data_tmp = $venue_schedules[$w][$i]['schedule_data'];
+                $student_sign_tmp = [];
+                if(isset($student_sign_data[$temp_date_time]))
+                    $student_sign_tmp  = $student_sign_data[$temp_date_time];
+                foreach ($schedule_data_tmp as &$v)
+                {
+                    if(empty($v))
+                        continue;
+                    $v['status_name'] = '未签到';
+                    $v['type_name'] = '';
+                    $v['class_name'] = "【{$v['section']}】". $v['class_name']?: '';
+                    if(isset($student_sign_tmp[$v['section']]))
+                    {
+                        $sign_tmp = $student_sign_tmp[$v['section']];
+                        $v['status_name'] = $sign_tmp['status_name'];
+                        $v['type_name'] = $sign_tmp['type_name'];
+                    }
+                }
+                $venue_schedules[$w][$i]['schedule_data'] = array_filter($schedule_data_tmp);
+            }
+            $temp_date_time = date("Y-m-d", strtotime("{$temp_date_time} + 1 day"));
+        }
+
         return $venue_schedules;
+    }
+
+    protected function  getDataLunarName($date = NULL)
+    {
+        $lunar_service = ServiceFactory::getService("Common\\Lunar");
+        if(empty($date))
+            $date_time = time();
+        else
+            $date_time = strtotime($date);
+        // 阴历日历处理
+        $year  = date("Y",$date_time);
+        $month = date("m",$date_time);
+        $date = date("d",$date_time);
+
+        $lunar_result = $lunar_service->convertSolarToLunar($year, $month, $date);
+        $lunar_name = $lunar_result[2];
+        if($lunar_name == '初一')
+        {
+            $lunar_name =  $lunar_result[1];
+        }
+        return $lunar_name;
     }
 
     private function calendarScheduleMaps($schedules, $params)
@@ -431,6 +491,24 @@ class VenueSchedule extends  BaseService
             $tempDate =  date("Y-m-d", strtotime($tempDate));
             $result[$week] = $tempDate;
             $tempDate = date("Y-m-d 00:00:00", strtotime($tempDate ."+ 1 day"));
+        }
+        return $result;
+    }
+
+    protected  function  getStudentSignData(array $params)
+    {
+        $studentService = ServiceFactory::getService("Admin\\StudentService");
+        $student_id     = $params['student_id'];
+        $student_ids    = [$student_id];
+        $student_sign_data = $studentService->getStudentSignData($student_ids, $params);
+        $result = [];
+        if($student_sign_data)
+        {
+            $student_sign_data = $student_sign_data[$student_id];
+            foreach ($student_sign_data as $k => $v)
+            {
+                $result[$v['sign_date']][$v['section']] = $v;
+            }
         }
         return $result;
     }

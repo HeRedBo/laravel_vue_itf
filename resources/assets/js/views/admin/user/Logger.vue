@@ -92,6 +92,7 @@ export default {
             del: {},
             listLoading: true,
             buttonLoading: false,
+            selectItemVisible : false,
             venueOptions: []
         }
     },
@@ -130,10 +131,15 @@ export default {
                   
           })
           .catch(function(error) {
-              console.log(error);
               stack_error(error);
           });
         },
+        venueChange(value)
+        {
+            this.params.params = value;
+            this.$refs.table.loadList();
+            
+        }
     }
 }
 
