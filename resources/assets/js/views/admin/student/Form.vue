@@ -106,7 +106,7 @@
                         </el-form-item>
                         
                         <!-- 是否自动创建会员卡号 -->
-                        <el-form-item label="自动创建会员卡号" v-if="studentForm.id==0">
+                        <el-form-item label="自动创建会员卡号" v-if="studentForm.id==0||!studentForm.card_number">
                             <el-radio-group v-model="studentForm.auto_create_number">
                                 <el-radio :label="0">否</el-radio>
                                 <el-radio :label="1">是</el-radio>

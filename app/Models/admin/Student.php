@@ -110,10 +110,10 @@ class Student extends Model implements Transformable
         $card_data = Card::whereIn('id', $card_id_arr)->get()->toArray();
         $card_data = array_column($card_data,NUll,'id');
         $card_snap_model = new CardSnap();
-
         foreach ($cards as $card)
         {
             $card_info = isset($card_data[$card['card_id']]) ? $card_data[$card['card_id']] : [];
+           
             if($card_info)
             {
                 // 创建卡券快照

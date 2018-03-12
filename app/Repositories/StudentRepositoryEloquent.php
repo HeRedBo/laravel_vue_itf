@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use App\Services\Admin\StudentCard;
 use App\Services\Admin\VenueBillService;
 use App\Services\Admin\StudentService;
+use App\Services\Admin\VenueSchedule;
 use App\Services\Common\Dictionary;
 use Illuminate\Support\Facades\Event;
 use App\Events\AdminLogger;
@@ -63,7 +64,10 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
     
     protected $studentService;
     
-
+    protected  $class_sign_start_minute = 20; //  班级签到开始分钟 既什么时候一接口可以提前多少分钟签到
+    protected  $sign_can_modify_minute = 10; // 签到多久后可以修改
+    
+    
     /**
      * Specify Model class name
      *
@@ -145,33 +149,105 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                         ->select($fields)
                         ->paginate($pageSize)
                         ->toArray();
-
         if(!empty($list['data']))
         {
             $data = $list['data'];
-            $student_sign_data = [];
+            $student_sign_data    = [];
+            $date_venue_schedules = [];
+            $course_times         = [];
             if($sign)
             {
                 $student_ids = array_column($data,'id');
                 $student_sign_data = $this->studentService->getStudentSignData($student_ids, $params);
-
+                $venueScheduleService = ServiceFactory::getService("Admin\\VenueSchedule");
+                $venueSchedule = $venueScheduleService->getSchedulesInUse($request);
+                $venue_schedules = $venueSchedule['venue_schedules'];
+                $course_times    = $venueSchedule['course_times'];
+                $date = $request->get('date');
+                if(empty($date))
+                    $date = date("Y-m-d");
+                $w   = getDateWeek($date);
+                $date_venue_schedules = isset($venue_schedules[$w]) ? $venue_schedules[$w] : [];
             }
-
+            $time      = time();
+            $sign_data = [];
+            
             foreach ($data as &$v)
             {
-                $v['sign_data'][] = [
-                    'id' => current($v['classes'])['id'],
-                    'type_name' => '',
-                    'status_name' => '未签到',
-                    'class_name' => current($v['classes'])['name'],
-                ];
-                $v['can_sign'] = 1;
-                if(isset($student_sign_data[$v['id']]) && !empty($student_sign_data[$v['id']]))
+                $v['sign_data']  = [];
+                $v['can_sign']   = 0;
+                $classes  = $v['classes'];
+                $class_ids = array_column($classes,'id');
+                $classes   = array_column($classes,NULL,'id');
+                $student_id = $v['id'];
+                $sign_class_data = $sign_data = [];
+                if($date_venue_schedules)
                 {
-                    $v['can_sign'] = 0;
-                    $v['sign_data'] = $student_sign_data[$v['id']];
+                    foreach ($date_venue_schedules as $date_venue_schedule)
+                    {
+                        if(empty($date_venue_schedule))
+                        {
+                            continue;
+                        }
+                        $class_id    = $date_venue_schedule['class_id'];
+                        $section     = $date_venue_schedule['section'];
+                        $course_time = $course_times[$section];
+                        $class_sign_start_minute = $this->class_sign_start_minute;
+                        $course_start_time = strtotime($course_time[0]);
+                        $compare_time    = $time + $class_sign_start_minute * 60;
+                        
+                        if(in_array($class_id,$class_ids))
+                        {
+                            $status_name  = '未签到';
+                            $type_name    = '';
+                            $sign_at     = '';
+                            $status     = 0;
+                            $can_sign   = 1;
+                            $class_name = "【{$section}】". $date_venue_schedule['class_name'];
+                            $student_sign = isset($student_sign_data[$student_id]) ? $student_sign_data[$student_id]: [];
+                            if($student_sign)
+                            {
+                                $student_sign = array_column($student_sign,NULL, 'section');
+                                $student_sign = isset($student_sign[$section]) ? $student_sign[$section] : [];
+                                if($student_sign)
+                                {
+                                    $status_name = $student_sign['status_name'];
+                                    $type_name   = $student_sign['type_name'];
+                                    $sign_at     = $student_sign['created_at'];
+                                    $status      = $student_sign['status'];
+                                }
+                            }
+                            
+                            if($status == 0 && $compare_time < $course_start_time)
+                            {
+                                $can_sign = 0;
+                            }
+                            if($status > 0  )
+                            {
+                                
+                                 $sign_at_time = strtotime($sign_at);
+                                 $sign_at_compare_time = $sign_at_time + $this->sign_can_modify_minute * 60;
+                                 if($sign_at_compare_time < $time)
+                                 {
+                                     $can_sign = 0;
+                                 }
+                            }
+                            $sign_class_data = $classes[$class_id];
+                            $sign_class_data['status_name'] = $status_name;
+                            $sign_class_data['type_name']   = $type_name;
+                            $sign_class_data['sign_at']     = $sign_at;
+                            $sign_class_data['status']      = $status;
+                            $sign_class_data['class_name']  = $class_name;
+                            $sign_class_data['can_sign']    = $can_sign;
+                            $sign_class_data['section']     = $section;
+                            $sign_data[] = $sign_class_data;
+                            $v['can_sign'] = $can_sign;
+                        }
+                    }
                 }
+                $v['sign_data'] = $sign_data;
             }
+            
             $list['data'] = $data;
         }
         return $list;
@@ -260,7 +336,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                         continue;
                     }
                 }
-                $student->$field = is_null($data[$field]) ? $this->fields[$field] : $data[$field];
+                $student->$field = (!isset($data[$field]) || is_null($data[$field])) ? $this->fields[$field] : $data[$field];
             }
 
             if($old_picture != $data['picture'])

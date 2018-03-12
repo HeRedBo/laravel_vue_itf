@@ -88,14 +88,14 @@ class StudentService extends BaseService
         return $options;
 	}
 
-
+    
 	public  function  getStudentSignData(array $student_ids, array $params)
     {
         $venue_id = isset($params['venue_id']) ? $params['venue_id'] : 0;
         $section  = isset($params['section']) ? $params['section'] : 0;
         $class_id = isset($params['class_id']) ? $params['class_id'] : 0;
         $date     = isset($params['date']) ? $params['date'] : 0;
-        $data  =  $result  = [];
+        $result   = [];
         if($venue_id)
         {
             $where = [];
@@ -106,6 +106,9 @@ class StudentService extends BaseService
                 $where[] = ['section','=', $section];
             if(!empty($class_id))
                 $where[] = ['class_id','=', $class_id];
+            
+            
+            
             $model = ServiceFactory::getModel("Admin\\VenueStudentSign");
             $query = $model->query();
             foreach ($where as $v)
@@ -133,8 +136,8 @@ class StudentService extends BaseService
         }
         return $result;
     }
-
-
+    
+    
 
 
 

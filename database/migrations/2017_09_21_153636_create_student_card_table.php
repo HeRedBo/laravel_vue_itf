@@ -20,6 +20,7 @@ class CreateStudentCardTable extends Migration
             $table->integer('number_card_id')->default('0')->comment('会员卡记录ID');
             $table->unsignedInteger('student_id')->default('0')->comment('归属学生记录ID');
             $table->integer('card_id')->default('0')->comment('卡券ID');
+            $table->integer('card_snap_id')->default('0')->comment('卡券快照记录ID');
             $table->integer('number')->default('1')->comment('购买数量');
             $table->decimal('card_price', 10, 2)->default('0')->comment('卡券价格');
             $table->integer('total_class_number')->default('0')->comment('课堂总数');

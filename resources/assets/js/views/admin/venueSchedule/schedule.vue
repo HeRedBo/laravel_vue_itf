@@ -457,11 +457,12 @@ export default {
                    }
                 })
                 .then(function(response) {
-                  var responseJson = response.data,data = responseJson.data
+                  var responseJson = response.data,data = responseJson.data;
                   var options =[], classMap =  [];
-                  for (var i in data ) {
+
+                  for (let i in data ) {
                     let label =  data[i].name;
-                    options.push({value : data[i].id , label: label});
+                    options.push({value : data[i].id ,label: label});
                     classMap[data[i].id] = label;
                   } 
                   that.classOptions = options;

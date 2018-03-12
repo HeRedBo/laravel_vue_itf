@@ -496,15 +496,16 @@ export default {
             var that = this;
             var changeStatus = status ? 0 : 1;
             swal({
-            title: '是否修改卡券状态?',
-            text: '你是否要继续执行该操作!?', // 
-            type: 'warning',
-            showCancelButton: true,
-            confirmButtonText: '确认',
-            cancelButtonText: '取消',
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            }).then(function() 
+                title: '是否修改卡券状态?',
+                text: '你是否要继续执行该操作!?', // 
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确认',
+                cancelButtonText: '取消',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+            })
+            .then(function() 
             {
 
               var url =  '/card/changeStatus';

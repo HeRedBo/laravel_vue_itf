@@ -579,6 +579,7 @@ export default {
 
     .el-tag {
       margin-bottom: 5px;
+      margin-left: 4px;
     }
 
 

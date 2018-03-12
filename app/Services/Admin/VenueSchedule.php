@@ -54,9 +54,9 @@ class VenueSchedule extends  BaseService
                 $schedule['end_time'],
             ];
             $venue_schedules = $this->getVenueScheduleDetailData($schedule, $params);
-
             $venue_schedule_course_time_model = ServiceFactory::getModel("Admin\\VenueScheduleCourseTime");
             $course_times      = $venue_schedule_course_time_model->getScheduleCourseTime($schedule_id);
+          
         }
         return  compact('schedule','venue_schedules','course_times');
     }

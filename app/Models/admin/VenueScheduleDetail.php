@@ -61,7 +61,7 @@ class VenueScheduleDetail extends Model implements Transformable
     {
         $result = [];
         $class_id = isset($params['class_id']) ? $params['class_id'] : 0;
-        $week = isset($params['week']) ? $params['week'] : 0;
+        $week     = isset($params['week']) ? $params['week'] : 0;
 
         $where = [
             ['schedule_id','=', $schedule_id]

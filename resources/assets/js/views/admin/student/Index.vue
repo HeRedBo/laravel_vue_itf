@@ -267,7 +267,7 @@
                       
                       close-transition
                      >
-                     <a  @click="oneSign(item.item.id,row.id,item.item.can_sign)">
+                     <a  @click="oneSign(item.item.id,row)">
                         {{row.class_name}}
                      </a>
                     </el-tag>
@@ -520,7 +520,7 @@ export default {
         
       }
     },
-    watch()
+    watch : 
     {
        
     },
@@ -624,15 +624,13 @@ export default {
             }); 
          },
         venueChange(value) {
-
             this.getClasses(value);
             if(this.params.sign)
             {
               this.getSignClass();
             }
-
             // 刷新页面
-            this.$refs.table.loadList();
+            //this.$refs.table.loadList();
         },
 
         getSignClass () 
@@ -702,13 +700,11 @@ export default {
 
         selectAll()
         {
-          
             if (this.selectAllStatus) 
             {
                 //Uncheck all checkboxes
                //$(".mailbox-messages input[type='checkbox']").iCheck("uncheck");
                 $(".checkbox-toggle  > .fa").removeClass("fa-check-square-o").addClass('fa-square-o');
-
             } 
             else 
             {
@@ -718,7 +714,6 @@ export default {
             }
             this.selectAllStatus =!this.selectAllStatus;  
             this.selectItmes    = this.$refs.table.checkBoxItems();
-            console.log(this.selectItmes);
         },
         sign()
         {
@@ -736,10 +731,16 @@ export default {
                 //$(".mailbox-messages input[type='checkbox']").iCheck("check");
                 $(".checkbox-sign > .fa").removeClass("fa-square-o").addClass('fa-check-square-o');
                 this.params.sign = 1;
+                // 获取签到班级
+                if(this.params.venue_id)
+                {
+                  this.getSignClass();
+                }
+                this.$refs.table.loadList();
             }
-            
             this.fields.sign_data.hide = !this.fields.sign_data.hide;
-            this.check_box_select = !this.check_box_select;
+            this.check_box_select      = !this.check_box_select;
+            
         },
         handleCommand(command)
         {
@@ -791,19 +792,19 @@ export default {
             //初始化签到数据 
             // 显示签到确认页面
         },
-        oneSign(student_id,class_id, can_sign)
+        oneSign(student_id, sign_data)
         {
+          var can_sign = sign_data.can_sign;
+          if(can_sign == 0)
+          {
+             return;
+          }
           if(!this.params.venue_id)
-            {
+          {
                this.$message.error("请选择需要签到道馆!");
                return;
-            }
-
-            if(!this.params.sign_class)
-            {
-              this.$message.error("请选择需要签到的班级");
-               return;
-            }
+          }
+           
         
            var  student_ids = []
            student_ids.push(student_id);
@@ -812,16 +813,15 @@ export default {
                var name = $(".student_" + value).html();
                student_names.push(name);   
            });
-
           this.studnet_names          = student_names;
           this.signForm.venue_id      = this.params.venue_id;
           this.signForm.sign_date     = parseTime(this.params.sign_date,'{y}-{m}-{d}');
-          this.signForm.section       = this.params.section;
-          this.signForm.class_id      = this.params.class_id;
-          this.signForm.sign_class    = this.params.sign_class;
+          this.signForm.section       = sign_data.section;
+          this.signForm.class_id      = sign_data.id;
+          var sign_class = sign_data.section +'_' + sign_data.id;
+          this.signForm.sign_class    = sign_class;
           this.signForm.student_ids   = student_ids;
           this.signForm.student_names = student_names;
-
           this.dialogFormVisible = true;
         },
 
@@ -875,8 +875,12 @@ export default {
         }
     }
 }
-
-
-
-
 </script>
+<style type="text/css">
+  .box-body .el-tag {
+   /* display: block;*/
+    margin-bottom: 5px;
+    margin-left: 4px;
+  }
+
+</style>

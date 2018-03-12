@@ -351,7 +351,7 @@ $(function () {
                 },
                 dialogTitle : '新增卡券',
                 buttonLoading: false,
-                cardUseStatus:1,
+                cardUseStatus:0,
                 card : {},
                 student_info : {}
             }
@@ -437,6 +437,7 @@ $(function () {
                 card.card_id = card.id;
                 card.is_new = 1;
                 card.status = 1;
+                card.id = 0;
                 var that = this;
                 this.$prompt('请输入卡券数量', '卡券数量', {
                     confirmButtonText: '确定',
@@ -494,6 +495,7 @@ $(function () {
                 }
                 let url = '/student/saveStudentCard'
                 let method = 'post';
+
                 // 请求接口保存用户卡券信息
                 this.$http({
                       method :method,
