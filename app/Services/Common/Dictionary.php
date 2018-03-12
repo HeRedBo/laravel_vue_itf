@@ -44,6 +44,24 @@ class Dictionary
         return $cardType;
     }
 
+    /**
+     * 学生卡券状态字典
+     *
+     * @param bool $index
+     * @return array|mixed
+     */
+    public  static  function  StudentCardStatusMap($index = false)
+    {
+        $studentCardStatusMap = [
+            0  => '未启用',
+            1  => '启用',
+            2  => '停用'
+        ];
+        if($index != false && isset($studentCardStatusMap[$index]))
+            return $studentCardStatusMap[$index];
+        return $studentCardStatusMap;
+    }
+
 
     static function classStatusOptions($index = false)
     {

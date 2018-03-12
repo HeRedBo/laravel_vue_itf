@@ -14,15 +14,21 @@ class BaseService
     const GUARD = 'admin';
     const DEFAULT_PAGE_SIZE = 15;
 
+
     public  function  __construct()
     {
+
         if(Auth::guard(self::GUARD)->check())
         {
             $this->admin_id     = auth(self::GUARD)->user()->id;
             $this->admin_name   = auth(self::GUARD)->user()->name;
             $this->admin_mobile = auth(self::GUARD)->user()->phone;
+
         }
     }
+
+
+
 
 
 

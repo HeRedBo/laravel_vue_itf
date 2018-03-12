@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
  * Desc:
  */
 
-class OperationLogServices
+class OperationLogService
 {
     protected  $table = 'admin_data_operate_logger';
     protected  $code  = 1;
@@ -107,14 +107,30 @@ class OperationLogServices
     
     protected  function  saveOperateData(array $logData)
     {
-              
+
+
         $type          = $logData['type'];
         $log           = $logData['data']['log'];
-        $type_id       = $logData['data']['type_id'];
-        $created_at    = $logData['data']['created_at'];
-        $operator_id   = $logData['data']['operator_id'];
-        $operator_name = $logData['data']['operator_name'];
-        $operation     = $logData['data']['operation'];
+
+
+//        $type_id       = $logData['data']['type_id'];
+//        $created_at    = $logData['data']['created_at'];
+//        $operator_id   = $logData['data']['operator_id'];
+//        $operator_name = $logData['data']['operator_name'];
+//        $operation     = $logData['data']['operation'];
+//        $operate_data = [
+//            'type'         => $type,
+//            'type_id'      => $type_id,
+//            'operation'     =>$operation,
+//            'content'      => json_encode($filed_map),
+//            'created_at'    => $created_at,
+//            'operator_id'   => $operator_id,
+//            'operator_name' => $operator_name,
+//        ];
+
+        $operate_data  = $logData['data'];
+        unset($operate_data['log']);
+
         $filed_map    = $row_data = [];
         foreach ($log as $k => $v) {
             $row_data['field']        = $v['field'];
@@ -123,17 +139,8 @@ class OperationLogServices
             $filed_map[]              = $row_data;
         }
 
-
-        $operate_data = [
-            'type'         => $type,
-            'type_id'      => $type_id,
-            'operation'     =>$operation,
-            'content'      => json_encode($filed_map),
-            'created_at'    => $created_at,
-            'operator_id'   => $operator_id,
-            'operator_name' => $operator_name,
-        ];
-
+        $operate_data['type'] = $type;
+        $operate_data['content'] = json_encode($filed_map);
         if($operate_data)
         {
             try

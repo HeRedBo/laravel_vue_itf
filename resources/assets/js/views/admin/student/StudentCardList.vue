@@ -83,13 +83,27 @@
                     </div>
                 </div>
                 <!-- 学生卡券列表表 -->
-                <vTable ref="table" stripped hover :searchType=1 :ajax_url="ajax_url" :params="params" :items="items" :fields="fields" :current-page="currentPage"
-                    :per-page="perPage">
+                <vTable ref="table" 
+                       stripped hover 
+                        :searchType=1 
+                        :ajax_url="ajax_url" 
+                        :params="params" 
+                        :items="items" 
+                        :fields="fields" 
+                        :current-page="currentPage"
+                        :per-page="perPage"
+                        >
 
                     <!-- 状态 -->
-                    <template slot="status" slot-scope="item">
+                 <!--    <template slot="status" slot-scope="item">
                         <a href="javascript:void(0)" data-toggle="tooltip" :title="item.item.status==1 ? '启用':'未启用'">
                             <i :class="['fa','fa-circle',item.item.status==1?'text-success':'text-danger']"></i>
+                        </a>
+                    </template> -->
+
+                     <template slot="status" slot-scope="item">
+                        <a href="javascript:void(0)" data-toggle="tooltip" :title="item.item.status==1?'启用':item.item.status==0?'未启用':'已停用'">
+                            <i  :class="['fa','fa-circle',item.item.status==1?'text-success':item.item.status==0?'text-info':'text-danger']"></i>
                         </a>
                     </template>
 
@@ -103,11 +117,26 @@
                     </template>
 
                     <template slot="start_time" slot-scope="item">
-                        <span>{{item.item.type==2?'--':item.item.start_time}}</span>
+                        <span v-if="item.item.status==2">
+                            <del>
+                                {{item.item.type==2?'--':item.item.start_time}}
+                            </del>
+                        </span>
+                        <span v-else>
+                             {{item.item.type==2?'--':item.item.start_time}}
+                        </span>
                     </template>
 
                     <template slot="end_time" slot-scope="item">
-                        <span>{{item.item.type==2?'--':item.item.end_time}}</span>
+                         <span v-if="item.item.status==2">
+                            <del>
+                                {{item.item.type==2?'--':item.item.end_time}}
+                            </del>
+                        </span>
+                        <span v-else>
+                             {{item.item.type==2?'--':item.item.end_time}}
+                        </span>
+                       <!--  <span>{{item.item.type==2?'--':item.item.end_time}}</span> -->
                     </template>
 
 

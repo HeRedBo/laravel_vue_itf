@@ -12,8 +12,6 @@ class StudentCard extends Model implements Transformable
     protected $fillable = [];
     protected  $table = 'student_card';
 
-
-
     public  function  card()
     {
         return $this->belongsTo(Card::class,'card_id','id');

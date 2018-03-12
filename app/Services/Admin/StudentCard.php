@@ -9,6 +9,7 @@
 
 namespace App\Services\Admin;
 
+use App\Services\ServiceFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\StudentNumberCardRepositoryEloquent;
@@ -17,11 +18,22 @@ use App\Repositories\StudentRepositoryEloquent;
 use Illuminate\Support\Facades\Redis;
 use App\Models\Admin\StudentNumberCard;
 use App\Models\Admin\Student;
+use App\Models\Admin\CardSnap;
 use App\Models\admin\StudentCard as studentCardModel;
 use App\Services\Common\Dictionary;
+use  App\Services\BaseService;
+use Illuminate\Support\Facades\Event;
+use App\Events\AdminLogger;
 
-class StudentCard
+
+
+class StudentCard extends  BaseService
 {
+
+    const STUDENT_CARD_CLOSE_STATUS = 2; // 卡券停用状态
+    const STUDENT_CARD_ON_STATUS = 1; // 卡券启用状态
+    const QI_CARD_TYPE   = 1; // 1 期卡 2 次卡
+    const CI_CARD_TYPE   = 2; // 1 期卡 2 次卡
 
     /**
      * @var StudentNumberCardRepositoryEloquent
@@ -30,6 +42,20 @@ class StudentCard
     protected  $venueRepository;
     protected  $studentRepository;
     protected  $venues_student_number_card_redis_key = 'venues_student_number_card_redis_key:';
+
+    protected $attributeValue = [
+        'total_class_number' => '课堂总数',
+        'residue_class_number' => '已上课程数',
+        'start_time' => '卡券有效期开始时间',
+        'end_time' => '卡券有效期结束时间',
+        'card_price' => '卡券价格',
+        'status' => '卡券有效状态',
+        'operator_id' => '操作人ID',
+        'operator_name' => '操作用户姓名',
+    ];
+
+
+
     
     public  function __construct(
         StudentNumberCardRepositoryEloquent $studentNumberCardRepository,
@@ -37,6 +63,7 @@ class StudentCard
         StudentRepositoryEloquent $studentRepository
     )
     {
+        parent::__construct();
         $this->studentNumberCardRepository = $studentNumberCardRepository;
         $this->venueRepository             = $venueRepository;
         $this->studentRepository           = $studentRepository;
@@ -162,23 +189,29 @@ class StudentCard
             {
                 return error('学生不归属当前道馆 不可操作');
             }
-            $student_number_card = StudentNumberCard::where("student_id",'=', $student_id)->first();
-            if($student && $student_number_card) 
+
+            if(empty($student))
             {
-                // 保存用户购买的卡券
-                $number_card_id = $student_number_card->id;
-                $user_card = $student->giveCardTo($studentCards, date("Y-m-d H:i:s"),$number_card_id);
-                if($user_card && is_array($user_card))
-                {
-                    $bill_service->createUserCardBill($user_card,$venue_id);
-                }
-                return success('学生卡券创建成功');
-            } 
-            else 
-            {
-                logResult('【学生卡券创建错误】学生信息不存在');
                 return error('学生信息不存在');
-            } 
+            }
+            $student_number_card = StudentNumberCard::where("student_id",'=', $student_id)->first();
+            if(empty($student_number_card))
+            {
+                return error('学生会员卡未存在');
+            }
+
+            // 保存用户购买的卡券
+            $number_card_id = $student_number_card->id;
+            $user_card = $student->giveCardTo($studentCards, date("Y-m-d H:i:s"),$number_card_id);
+
+            if($user_card && is_array($user_card))
+            {
+                $bill_service->createUserCardBill($user_card,$venue_id);
+            }
+            return success('学生卡券创建成功');
+
+
+
         } 
         catch (\Exception $e) 
         {
@@ -328,5 +361,163 @@ class StudentCard
             $student_number_card = $student_card_info->number;
         }
         return $student_number_card;
+    }
+
+
+    public  function  changeStudentCardStatus(Request $request)
+    {
+        try
+        {
+            $id     = $request->get('id');
+            $status = $request->get('status');
+            $remark = $request->get('remark') ?: '';
+            $model  = new studentCardModel();
+            $student_card = $model->find($id);
+            if(empty($student_card))
+            {
+                return error("未找到相关卡券记录");
+            }
+            $student_id = $student_card->student_id;
+            $student = Student::find($student_id);
+            $venue_id = $student->venue_id;
+            $common_service = ServiceFactory::getService("Common\\Common");
+            $admin_venue_ids = $common_service->getUserVenueIds();
+            if(!in_array($venue_id, $admin_venue_ids))
+            {
+                return error("你无权操作！");
+            }
+            $student_card_status_map = Dictionary::StudentCardStatusMap();
+            $old_status = $student_card->status;
+
+            if($status <= $old_status)
+            {
+                return error("当前卡券为为". $student_card_status_map[$old_status]. "不可修改为".$student_card_status_map[$status]);
+            }
+            if($old_status == self::STUDENT_CARD_CLOSE_STATUS)
+            {
+                return error("当前卡券为". $student_card_status_map[$old_status]. "不可在修改");
+            }
+            if($status == self::STUDENT_CARD_ON_STATUS)
+            {
+                // 开启卡券 校验是否有启用使用中的卡券信息
+                $now = getNow();
+                $where = [
+                     ['id','!=', $id],
+                     ['student_id','=',$student_id],
+                    ['start_time','<=', $now],
+                    ['end_time','>=', $now],
+                    ['status','=', self::STUDENT_CARD_ON_STATUS]
+                ];
+                $query = $model->query();
+
+                foreach ($where as $v)
+                {
+                    $query->where($v[0], $v[1], $v[2]);
+                }
+                // 有使用中卡券 提示用不不得修改 必须停掉使用中的卡券信息
+                $result = $query->get()->toArray();
+                if(!empty($result))
+                {
+                    return error("存在使用中的卡券，不能修改，如仍要修改，请停用使用中的卡券");
+                }
+
+            }
+
+            // 修改状态
+            $card_snap_id = $student_card->card_snap_id;
+            $card_info    = CardSnap::find($card_snap_id);
+
+            $total_class_number = $residue_class_number = 0;
+            $start_time = $end_time = NULL;
+
+
+            $card_type = $card_info->type;
+            $unit      = $card_info->unit;
+            $number    = $card_info->number;
+
+            if(self::QI_CARD_TYPE == $card_type)
+            {
+                $start_time = $request->get('start_time');
+                if(empty($effective_date))
+                    $start_time = getNow();
+                $end_time  = strtotime("$number $unit", strtotime($start_time));
+                $end_time  = date("Y-m-d H:i:s", $end_time);
+            }
+            if(self::CI_CARD_TYPE == $card_type)
+            {
+                $total_class_number = $number;
+            }
+            $update_data = [
+                'total_class_number' => $total_class_number,
+                'start_time'         => $start_time,
+                'end_time'           => $end_time,
+                'status'             => $status,
+                'operator_id'        => $this->admin_id,
+                'operator_name'      => $this->admin_name,
+                'remark'             => $remark,
+            ];
+
+            $old_card_data  = $student_card->toArray();
+            //
+            foreach ($update_data as $k => $v)
+            {
+                $student_card->$k = $v;
+            }
+            $student_card->save();
+            // 记录数据日志
+            $log_data = $this->buildStudentCardLog($old_card_data,$update_data,'修改卡券状态');
+            if($log_data)
+            {
+
+                $student_log_service = ServiceFactory::getService("Logs\\StudentCardLogService");
+                $student_log_service->addCardLog($log_data);
+            }
+            // 记录操作日志
+            Event::fire(new AdminLogger($venue_id,'update',"修改学生【{$student->name}】的卡券【[{$id}]{$card_info->name}】状态为".  $student_card_status_map[$status]));
+            return success("卡券状态修改成功");
+        }
+        catch (\Exception $e)
+        {
+            logResult('【修改学生卡券状态】'. $e->__toString(),'error');
+            return error($e->getMessage());
+        }
+    }
+
+    protected function buildStudentCardLog(array $oldData, array $newData, $operation = '')
+    {
+        $operation = $operation ? $operation : '修改用户卡券';
+        $field = $newValues = $oldValues =[];
+        $student_card_status_map = Dictionary::StudentCardStatusMap();
+
+        foreach ($oldData as $k => $v)
+        {
+            if(!isset($newData[$k]))
+                continue;
+            if($newData[$k] != $v)
+            {
+                if($k == 'status')
+                {
+                    $oldData['status'] = $student_card_status_map[$v];
+                    $newData['status'] = $student_card_status_map[$newData[$k]];
+                }
+
+                if(isset($this->attributeValue[$k]))
+                {
+                    $field[] = $this->attributeValue[$k];
+                    $oldValues[] = $oldData[$k];
+                    $newValues[] = $newData[$k];
+                }
+            }
+        }
+
+        $params = [
+            'student_card_id'=> $oldData['id'],
+            'student_id'=> $oldData['student_id'],
+            'operation' => $operation,
+            'field'     => $field,
+            'oldValue'  => $oldValues,
+            'newValue'  => $newValues,
+        ];
+        return !empty($params['field']) ? $params : [];
     }
 }

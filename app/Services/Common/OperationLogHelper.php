@@ -83,6 +83,20 @@ class OperationLogHelper
                      ]
                  ],
             ],
+
+            //后台卡券数据操作日志
+            'student_card' => [
+                'student_id'        => ['type'=>'integer'],
+                'student_card_id'   => ['type'=>'integer'],
+                'operation'         => ['type'=>'string'],
+                'log' => [
+                    'properties' => [
+                        'field'     => ['type'=>'string'],
+                        'oldValue'  => ['type'=>'string'],
+                        'newValue'  => ['type'=>'string'],
+                    ]
+                ],
+            ],
         ];
     }
 }

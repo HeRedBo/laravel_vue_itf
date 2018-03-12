@@ -11,6 +11,7 @@ use App\Http\Requests\StudentUpdateRequest;
 use App\Http\Requests\StudentSignRequest;
 use App\Http\Requests\StudentSignCalendar;
 use App\Http\Requests\StudentCardCreateRequest;
+use App\Http\Requests\ChangeStudentCardStatusRequest;
 use App\Repositories\StudentRepository;
 use App\Services\Common\Dictionary;
 use App\Services\Admin\StudentCard;
@@ -27,6 +28,7 @@ class StudentsController extends ApiController
     protected $repository;
     protected $student_card_service;
     protected $billService ;
+
 
 
     public function __construct(StudentRepository $repository,StudentCard $student_card,VenueBillService $billService)
@@ -244,6 +246,27 @@ class StudentsController extends ApiController
         else
             return $this->response->withInternalServer($res['msg']);
     }
+
+
+    /**
+     * 修改学生卡券状态
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public  function  changeStudentCardStatus(ChangeStudentCardStatusRequest $request)
+    {
+        // 数据合法性校验
+        $res = $this->student_card_service->changeStudentCardStatus($request);
+        dd($res);
+
+
+    }
+
+
+
+
 
     public  function  sign(StudentSignRequest $request)
     {

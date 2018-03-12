@@ -12,7 +12,7 @@
 export default {
   computed : {
      visitedViews () {
-        return this.$store.state.app.visitedViews.slice(-6);
+        return this.$store.state.app.visitedViews.slice(-7);
      }
   },
   methods : {
@@ -31,12 +31,14 @@ export default {
        $event.preventDefault();
     },
     generateRoute() {
-      if (this.$route.matched[this.$route.matched.length - 1].name) {
-        return this.$route.matched[this.$route.matched.length - 1]
-      }
 
-      this.$route.matched[0].path = '/'
-      return this.$route.matched[0]
+      // if (this.$route.matched[this.$route.matched.length - 1].name) {
+      //   return this.$route.matched[this.$route.matched.length - 1]
+      // }
+     
+
+      // this.$route.matched[0].path = '/'
+      return this.$route;
     },
     isActive(path) {
       return path === this.$route.path;
@@ -48,6 +50,8 @@ export default {
 
   watch : {
     $route() {
+       console.log('this.$route');
+      console.log(this.$route);
       this.addViewTabs();
     }
   }

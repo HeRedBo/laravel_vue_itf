@@ -79,6 +79,7 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     Route::post('student/sign', ['as' => 'admin.student.sign', 'uses' => 'StudentsController@sign']);
     Route::get('student/getSignCalendar', ['as' => 'admin.student.getSignCalendar', 'uses' => 'StudentsController@getSignCalendar']);
     Route::get('student/signClassOptions', ['as' => 'admin.student.signClassOptions', 'uses' => 'StudentsController@signClassOptions']);
+    Route::post('student/changeStudentCardStatus', ['as' => 'admin.student.changeStudentCardStatus', 'uses' => 'StudentsController@changeStudentCardStatus']);
     Route::resource('student', 'StudentsController');
     
     Route::post('venueBill/createDataType', ['as' => 'admin.venueBill.createDataType', 'uses' => 'VenueBillController@createVenueBillDataType']);

@@ -195,12 +195,13 @@ export default {
 
         if(this.perPage)
         {
-          this.pageSize = this.perPage;
-          this.initPage = this.perPage; 
-          if(this.pageSizes.indexOf(this.perPage) === '-1' ) 
-          {
-            this.pageSizes.unshift(this.perPage);
-          }
+           this.pageSize = this.perPage;
+           this.initPage = this.perPage; 
+
+           if(this.pageSizes.indexOf(this.perPage) === -1) 
+           {
+                this.pageSizes.unshift(this.perPage);
+           }
         }
         this.loadList();
         
