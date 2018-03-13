@@ -19,6 +19,7 @@ use App\Services\Admin\VenueBillService;
 use App\Services\Admin\StudentService;
 use App\Services\Admin\VenueSchedule;
 use App\Services\Common\Dictionary;
+use App\Services\Logs\StudentCardLogService;
 use Illuminate\Support\Facades\Event;
 use App\Events\AdminLogger;
 
@@ -67,7 +68,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
     protected  $class_sign_start_minute = 20; //  班级签到开始分钟 既什么时候一接口可以提前多少分钟签到
     protected  $sign_can_modify_minute = 10; // 签到多久后可以修改
     
-    
+    const STUDENT_CARD_LOGGER_TYPE ='student_card';
     /**
      * Specify Model class name
      *
@@ -616,6 +617,46 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
 
 
 
+    }
+
+    /**
+     * 获取学生卡券操作日志
+     * @param Request $request
+     */
+    public function getStudentCardLogger(Request $request)
+    {
+
+        $student_id = $request->get('student_id');
+        if(empty($student_id))
+            return error("学生ID不能为空！");
+        $where =  [
+            ['student_id','=', $student_id],
+        ];
+        $orderBy = $request->get('orderBy')?:'id';
+        $sortBy  = $request->get('sortedBy')?:'desc';
+        $pageSize = $request->get('pageSize') ?: self::DEFAULT_PAGE_SIZE;
+        $operator_name  = $request->get('operator_name');
+        $card_name  = $request->get('card_name');
+        $search_time   = $request->get('search_time');
+        if($operator_name)
+        {
+            $where[] = ['operator_name','like',"%{$operator_name}%"];
+        }
+        if(!empty($card_name))
+            $where[] = ['card_name','=', $card_name];
+
+        if($search_time && is_array($search_time))
+        {
+            $where[] = ['created_at','>=', $search_time[0]];
+            $where[] = ['created_at','<=', $search_time[1]];
+        }
+
+        $order_by = [
+            [$orderBy,$sortBy]
+        ];
+        $studentCardLogServices = new StudentCardLogService();
+        $data =  $studentCardLogServices->searchLog(self::STUDENT_CARD_LOGGER_TYPE, $where,$order_by,$pageSize);
+        return success("数据获取成功",$data);
     }
 
 }

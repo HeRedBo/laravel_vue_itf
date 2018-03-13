@@ -121,6 +121,7 @@ export default [
                         name : '操作日志',
                         component : () => import('views/admin/user/Logger.vue')
                     },
+
                 ]
             },
             // {
@@ -198,6 +199,11 @@ export default [
                         name : '学生签到日历',
                         component : () => import('views/admin/student/SignCalendar.vue')
                     }, 
+                     {
+                        path: 'StudentCardLogger/:student_id',
+                        name : '学生卡券操作日志',
+                        component : () => import('views/admin/student/StudentCardLogger.vue')
+                    }
 
                 ]
             },

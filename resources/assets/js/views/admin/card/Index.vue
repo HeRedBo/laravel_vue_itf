@@ -157,25 +157,19 @@
                 </el-form-item>
 
                 <el-form-item label="启用状态"> 
-                    <el-switch v-model="CardForm.status" on-text="" off-text=""></el-switch>
-                    <!-- <el-switch v-model="cardStatus" on-text="" off-text=""> -->
+
+                  <!--   <el-switch v-model="CardForm.status" on-text="" off-text=""></el-switch> -->
+                    <!--  <el-switch v-model="cardStatus" on-text="" off-text=""> -->
+
+                         <el-radio-group v-model="CardForm.status">
+                            <el-radio :label="0">未启用</el-radio>
+                            <el-radio :label="1">启用</el-radio>
+                          </el-radio-group>
                 </el-switch>
                 
                 
 
                 </el-form-item>
-
-            <!-- <el-form-item label="test">
-                <el-tooltip :content="'Switch value: ' + cardStatus" placement="top">
-                  <el-switch
-                    v-model="cardStatus"
-                    on-color="#13ce66"
-                    off-color="#ff4949"
-                    on-value="100"
-                    off-value="0">
-                  </el-switch>
-                </el-tooltip>
-            </el-form-item> -->
 
                 <el-form-item label="卡券说明">
                     <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6}" v-model="CardForm.explain"></el-input>
@@ -250,7 +244,6 @@
 
             </div>
             <!-- /.widget-user -->
-
         </div>
 
     </div>
@@ -310,7 +303,7 @@ export default {
                 unit : '',
                 card_price : '',
                 explain : '',
-                status : false,
+                // status : 0,
             },
 
             CardRules: {
@@ -364,7 +357,8 @@ export default {
         handleCreate () {
             var venue_id = this.CardForm.venue_id;
             this.CardForm = {
-                type: 1
+                type: 1,
+                status :0,
             };
             if(venue_id)
             {
@@ -582,7 +576,7 @@ export default {
         }
     },  
     watch: {  
-            'params.type': 'filterSearchParams',  
+        'params.type': 'filterSearchParams',  
     }  
    
 }

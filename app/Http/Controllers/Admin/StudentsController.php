@@ -265,6 +265,21 @@ class StudentsController extends ApiController
     }
 
 
+    public  function  cardLogger(Request $request)
+    {
+        $res = $this->repository->getStudentCardLogger($request);
+        if($res['status'] == 1)
+        {
+            return $this->response
+                ->setResponseData($res['data'])
+                ->withSuccess($res['msg']);
+        }
+        else
+            return $this->response->withInternalServer($res['msg']);
+
+    }
+
+
 
 
 

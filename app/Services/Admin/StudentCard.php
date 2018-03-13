@@ -9,6 +9,7 @@
 
 namespace App\Services\Admin;
 
+use App\Models\Admin\Card;
 use App\Services\ServiceFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +35,7 @@ class StudentCard extends  BaseService
     const STUDENT_CARD_ON_STATUS = 1; // 卡券启用状态
     const QI_CARD_TYPE   = 1; // 1 期卡 2 次卡
     const CI_CARD_TYPE   = 2; // 1 期卡 2 次卡
+    const CARD_STATUS_OK = 1;
 
     /**
      * @var StudentNumberCardRepositoryEloquent
@@ -183,14 +185,8 @@ class StudentCard extends  BaseService
         {
             $student_id      = $request->get('student_id');
             $studentCards    = $request->get('user_cards');
-            $venue_id        = $request->get('venue_id');
             $student         = Student::find($student_id);
-            // 如果学生不归属当前道馆 不可编辑
-            if($student['venue_id']  !=  $venue_id)
-            {
-                return error('学生不归属当前道馆 不可操作');
-            }
-
+            $venue_id      = $student->venue_id;
             if(empty($student))
             {
                 return error('学生信息不存在');
@@ -204,7 +200,6 @@ class StudentCard extends  BaseService
             // 保存用户购买的卡券
             $number_card_id = $student_number_card->id;
             $user_card = $student->giveCardTo($studentCards, date("Y-m-d H:i:s"),$number_card_id);
-
             if($user_card && is_array($user_card))
             {
                 $bill_service->createUserCardBill($user_card,$venue_id);
@@ -522,5 +517,35 @@ class StudentCard extends  BaseService
             'newValue'     => $newValues,
         ];
         return !empty($params['field']) ? $params : [];
+    }
+
+    /**
+     * 获取学生卡券下拉框
+     * @param array $params
+     * @return array
+     */
+    public function getStudentCardOptions(array $params)
+    {
+        $student_id = isset($params['student_id']) ? $params['student_id'] : 0;
+        if(empty($student_id))
+            return error("学生ID不能为空");
+
+        $student = Student::find($student_id);
+        if(empty($student))
+            return error("未找到相关学生信息");
+        $venue_id = $student->venue_id;
+
+        $fields = ['id','name','card_price','unit','status','number'];
+        $where = [
+            ['status' ,'=',self::CARD_STATUS_OK],
+            ['venue_id' ,'=', $venue_id],
+        ];
+        $query = Card::query();
+        foreach ($where as $v)
+        {
+            $query->where($v[0], $v[1], $v[2]);
+        }
+        $data = $query->select($fields)->get()->toArray();
+        return success("数据获取成功",$data);
     }
 }

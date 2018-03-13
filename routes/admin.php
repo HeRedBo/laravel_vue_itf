@@ -68,6 +68,7 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     Route::post('card/changeStatus', ['as' => 'admin.card.changeStatus', 'uses' => 'CardsController@changeStatus']);
     Route::get('card/cardLogger', ['as' => 'admin.card.cardLogger', 'uses' => 'CardsController@cardLogger']);
     Route::get('card/cardTypeOptions', ['as' => 'admin.card.cardTypeOptions', 'uses' => 'CardsController@cardTypeOptions']);
+    Route::get('card/studentCardOptions', ['as' => 'admin.card.studentCardOptions', 'uses' => 'CardsController@studentCardOptions']);
     Route::resource('card', 'CardsController');
     
     // students
@@ -80,6 +81,7 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     Route::get('student/getSignCalendar', ['as' => 'admin.student.getSignCalendar', 'uses' => 'StudentsController@getSignCalendar']);
     Route::get('student/signClassOptions', ['as' => 'admin.student.signClassOptions', 'uses' => 'StudentsController@signClassOptions']);
     Route::post('student/changeStudentCardStatus', ['as' => 'admin.student.changeStudentCardStatus', 'uses' => 'StudentsController@changeStudentCardStatus']);
+    Route::get('student/cardLogger', ['as' => 'admin.student.cardLogger', 'uses' => 'StudentsController@cardLogger']);
     Route::resource('student', 'StudentsController');
     
     Route::post('venueBill/createDataType', ['as' => 'admin.venueBill.createDataType', 'uses' => 'VenueBillController@createVenueBillDataType']);

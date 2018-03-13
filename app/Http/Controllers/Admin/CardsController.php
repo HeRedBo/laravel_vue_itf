@@ -12,6 +12,7 @@ use App\Http\Requests\CardUpdateRequest;
 use App\Repositories\CardRepository;
 use App\Validators\CardValidator;
 use App\Services\Common\Dictionary;
+use App\Services\Admin\StudentCard;
 
 
 class CardsController extends ApiController
@@ -27,10 +28,13 @@ class CardsController extends ApiController
      */
     protected $validator;
 
-    public function __construct(CardRepository $repository)
+    protected $student_card_service;
+
+    public function __construct(CardRepository $repository,StudentCard $student_card)
     {
         parent::__construct();
         $this->repository = $repository;
+        $this->student_card_service = $student_card;
         
     }
 
@@ -221,6 +225,28 @@ class CardsController extends ApiController
         $data = $this->repository->findWhere($where,$fields)->toArray();
         $data = array_column($data,NULL,'id');
         return $this->response->withData($data);
+    }
+
+    /**
+     * 通过学生ID获取学生道馆卡券下拉框
+     * @param Request $request
+     */
+    public  function  studentCardOptions(Request $request)
+    {
+        $params = $request->all();
+        $res  = $this->student_card_service->getStudentCardOptions($params);
+        if($res['status'] == 1)
+        {
+            $data  = $res['data'];
+            $data = array_column($data,NULL,'id');
+            return $this
+                    ->response->setResponseData($data)
+                    ->withSuccess($res['msg']);
+        }
+        else
+            return $this->response->withInternalServer($res['msg']);
+
+
     }
 
 

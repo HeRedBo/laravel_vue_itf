@@ -42,7 +42,7 @@
 
                                 <tr v-show="student_info.in_user_student_card&&student_info.in_user_student_card.type==2">
                                   
-                                    <th>卡券总次数/th>
+                                    <th>卡券总次数</th>
                                     <td> {{student_info.in_user_student_card ? student_info.in_user_student_card.total_class_number : 0 }} </td>
                                     <th>卡券消费次数</th>
                                     <td> {{student_info.in_user_student_card ? student_info.in_user_student_card.residue_class_number : 0 }}</td>
@@ -77,9 +77,14 @@
             </div>
             <div class="box-body">
                 <div class="row">
-                    <div class="col-md-12">
-                        <button  @click="handleCreate" type="button" class="btn btn-sm btn-success">添加卡券
-                            </button>
+                    <div class="col-md-6">
+                        <button  @click="handleCreate" type="button" class="btn btn-sm btn-success">        添加卡券
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-inline pull-right">
+                             <router-link target="_blank"  :to="{path:'/admin/student/StudentCardLogger/'+ params.student_id}" class="btn bg-info">操作日志</router-link>
+                        </div>
                     </div>
                 </div>
                 <!-- 学生卡券列表表 -->
@@ -162,19 +167,6 @@
                 label-width="80px"
                 style='width:65%;margin-left:5px;'
             >
-                <!-- 道馆 -->
-                <el-form-item label="道馆" v-show="selectItemVisible" prop="venue_id" >
-                        <el-select v-model="StudentCard.venue_id" placeholder="请选择道馆" style="width:100%" @change="venueChange">
-                          <el-option
-                             v-for="item in venueOptions"
-                             :key="item.value"
-                             :label="item.label"
-                             :value="item.value"
-
-                             >
-                          </el-option>
-                        </el-select>
-                </el-form-item>
                 <!-- 卡券种类 -->
                 <el-form-item label="购卡类型">
                         <el-select v-model="StudentCard.card_id" @change="selectCard"  placeholder="请选择需要购买的卡" style="width:100%" >
@@ -350,24 +342,52 @@
 
                      <tr>
                         <th>卡券有效期开始时间</th>
-                        <td><span>{{card.type==2?'--':card.start_time}}</span></td>
+                        <td>
+                            <span v-if="card.status==2">
+                                <del>
+                                    {{card.type==2?'--':card.start_time}}
+                                </del>
+                            </span>
+                            <span v-else>
+                                 {{card.type==2?'--':card.start_time}}
+                            </span>
+                          
+                        </td>
                         <th>卡券有效期结束时间</th>
-                        <td><span>{{card.type==2?'--':card.end_time}}</span></td>
+                        <td>
+                             <span v-if="card.status==2">
+                                <del>
+                                    {{card.type==2?'--':card.end_time}}
+                                </del>
+                            </span>
+                            <span v-else>
+                                 {{card.type==2?'--':card.end_time}}
+                            </span>
+                        </td>
                     </tr>
                     
                     <tr>
+                        
+                        <th>卡券状态</th>
+                        <td>{{card.status_name}}</td>
                         <th>操作备注</th>
                         <td>{{card.remark}}</td>
-                        <th>操作人</th>
-                        <td>{{card.operator_name}}</td>
                     </tr>
-
+                
                     <tr>
                         <th>创建时间</th>
                         <td>{{card.created_at}}</td>
 
                         <th>最新更新时间</th>
                         <td>{{card.updated_at}}</td>
+                    </tr>
+
+                    <tr>
+                       
+                        <th>操作人</th>
+                        <td>{{card.operator_name}}</td>
+                        <th></th>
+                        <td></td>
                     </tr>
                     
                     </tbody>
@@ -437,8 +457,6 @@ $(function () {
                 selectItemVisible: false,
                 dialogFormVisible:false,
                 dialogStatusFormVisible:false,
-                sexOptions: [],
-                venueOptions: [],
                 cardOptions: [],
                 StudentCard : {
                     user_cards: []
@@ -466,7 +484,7 @@ $(function () {
         },
         created() {
            this.initData();
-           this.getUserVenus();
+           this.getUserCardOptions();
            this.getStudnetInfo();
 
         },
@@ -476,56 +494,14 @@ $(function () {
                 var that = this,id = this.$route.params.id;
                 this.params.student_id=id;
             },
-            getUserVenus()
+            getUserCardOptions()
             {
-                var that = this;
-                var url = '/user/userVenues';
-                this.$http({
-                    method :'GET',
-                    url : url
-                })
-                .then(function(response)
-                {
-
-                    let {data} = response;
-                    var  respondata = data.data
-                    var options = [];
-                    for (var i in respondata ) {
-
-                        let label =  respondata[i].name;
-                        options.push({value : respondata[i].id , label: label});
-                    }
-                    that.venueOptions = options;
-                    if(options.length == 1)
-                    {
-                        var venue_id =  options[0].value;
-                        that.StudentCard.venue_id =  venue_id;
-
-                        that.getCardOptions(venue_id);
-                    }
-                    else
-                    {
-                        that.selectItemVisible = true;
-                    }
-                        // that.showCreateButton = true;
-                })
-                .catch(function(error) {
-                    console.log(error);
-                    stack_error(error);
-                });
-            },
-
-            venueChange(value) {
-              this.getCardOptions(value)
-            },
-
-            getCardOptions(venue_id) {
-                var url = '/card/cardOptions', that = this;
+                var url = '/card/studentCardOptions', that = this;
                 this.$http({
                    method :"GET",
                    url : url,
                    params : {
-                    venue_id : venue_id
+                     student_id : that.params.student_id
                    }
                 })
                 .then(function(response) {
@@ -551,10 +527,10 @@ $(function () {
                     inputErrorMessage: '卡券购买数量必须是大于0数值'
                 }).then(({ value }) => {
                     card.buy_number = value;
-                    card.status = that.cardUseStatus?0:1;
-                    if(!this.cardUseStatus) {
-                      this.cardUseStatus = 1;
-                    }
+                    card.status = 0;// that.cardUseStatus?0:1;
+                    // if(!this.cardUseStatus) {
+                    //   this.cardUseStatus = 1;
+                    // }
                     card.total_price = parseFloat(card.card_price * value).toFixed(2);
                     that.StudentCard.user_cards.push(card);
                 }).catch(() => {
