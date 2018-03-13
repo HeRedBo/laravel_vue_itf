@@ -146,24 +146,25 @@ class StudentCard extends  BaseService
                 $DB->where($v[0], $v[1], $v[2]);
             }
         }
-
-
         $DB->orderBy($orderBy, $sortBy);
         $fields = [
-            "student_card.*",
-            "card_snap.type",
-            DB::raw("card_snap.name as card_name"),
-            DB::raw("card_snap.card_price as price"),
-            DB::raw("admin.name as operator_name"),
+                "student_card.*",
+                "card_snap.type",
+                DB::raw("card_snap.name as card_name"),
+                DB::raw("card_snap.card_price as price"),
+                DB::raw("admin.name as operator_name"),
         ];
         $list = $DB->select($fields)->paginate($pageSize)->toArray();
         if($list['data'])
         {
             $data = $list['data'];
+          
             foreach ($data as &$v)
             {
                 $v->type_name = Dictionary::CardTyeMap($v->type);
+                $v->status_name = Dictionary::StudentCardStatusMap($v->status);
             }
+            
             $list['data'] = $data;
         }
         return $list;
@@ -468,7 +469,6 @@ class StudentCard extends  BaseService
             $log_data = $this->buildStudentCardLog($old_card_data,$update_data,'修改卡券状态');
             if($log_data)
             {
-
                 $student_log_service = ServiceFactory::getService("Logs\\StudentCardLogService");
                 $student_log_service->addCardLog($log_data);
             }

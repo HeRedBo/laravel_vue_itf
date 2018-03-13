@@ -94,15 +94,13 @@
                         :per-page="perPage"
                         >
 
-                    <!-- 状态 -->
-                 <!--    <template slot="status" slot-scope="item">
-                        <a href="javascript:void(0)" data-toggle="tooltip" :title="item.item.status==1 ? '启用':'未启用'">
-                            <i :class="['fa','fa-circle',item.item.status==1?'text-success':'text-danger']"></i>
-                        </a>
-                    </template> -->
-
+            
                      <template slot="status" slot-scope="item">
-                        <a href="javascript:void(0)" data-toggle="tooltip" :title="item.item.status==1?'启用':item.item.status==0?'未启用':'已停用'">
+                        <a  href="javascript:void(0)" 
+                            data-toggle="tooltip" 
+                            :title="item.item.status_name"
+                            @click="changeStudentCardStatus(item.item)"
+                            >
                             <i  :class="['fa','fa-circle',item.item.status==1?'text-success':item.item.status==0?'text-info':'text-danger']"></i>
                         </a>
                     </template>
@@ -267,6 +265,52 @@
             </div>
         </el-dialog>
 
+        <!-- 修改状态显示层 dialog-->
+        <el-dialog :title="dialogTitle" :visible.sync="dialogStatusFormVisible" style="z-index:120;" >       
+            <el-form class="small-space" 
+                ref="changeStatusForm" 
+                :model="changeStatusForm"
+                :rules="statusRules"
+                label-position="right"
+                label-width="120px"
+                style='width: 400px; margin-left:50px;'
+            >
+                <el-form-item label="学生卡券ID">
+                    <h4>{{changeStatusForm.id}}</h4>
+                </el-form-item>
+
+                <el-form-item label="修改状态"> 
+                     <el-radio-group v-model="changeStatusForm.status">
+                        <el-radio :label="1" v-show="changeStatusForm.old_status<1">启用</el-radio>
+                        <el-radio :label="2" v-show="changeStatusForm.old_status<=2" >停用</el-radio>
+                    </el-radio-group>
+
+                </el-form-item>
+                <!-- 期卡的生效时间 -->
+                <el-form-item label="期卡生效时间" v-show="changeStatusForm.status==1&&changeStatusForm.type==1" prop="start_time">
+                        <el-date-picker
+                                v-model="changeStatusForm.start_time"
+                                type="datetime"
+                                placeholder="选择开始时间"
+                                format="yyyy-MM-dd HH:mm:ss"
+                                >
+                        </el-date-picker>
+                </el-form-item>
+                <el-form-item label="操作备注"  prop="remark">
+                    <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6}" v-model="changeStatusForm.remark"></el-input>
+                </el-form-item>
+                 <span class="text-red">
+                    <strong>注意：</strong>
+                 </span> 
+                <span class="text-light-blue">卡券状态一经修改无法再操作！请谨慎操作！</span>
+            </el-form>
+
+            <div slot="footer" class="dialog-footer">
+              <el-button @click="dialogStatusFormVisible = false">取 消</el-button>
+              <el-button type="primary" @click="handleChangeStatus" :loading="buttonLoading">确 定</el-button>
+            </div>
+        </el-dialog>
+
 
         <div id="card_view_box" style="display: none">
             <!-- Widget: user widget style 1 -->
@@ -310,7 +354,13 @@
                         <th>卡券有效期结束时间</th>
                         <td><span>{{card.type==2?'--':card.end_time}}</span></td>
                     </tr>
-
+                    
+                    <tr>
+                        <th>操作备注</th>
+                        <td>{{card.remark}}</td>
+                        <th>操作人</th>
+                        <td>{{card.operator_name}}</td>
+                    </tr>
 
                     <tr>
                         <th>创建时间</th>
@@ -319,12 +369,7 @@
                         <th>最新更新时间</th>
                         <td>{{card.updated_at}}</td>
                     </tr>
-                    <tr>
-                        <th>操作人</th>
-                        <td>{{card.operator_name}}</td>
-                        <th></th>
-                        <td></td>
-                    </tr>
+                    
                     </tbody>
                 </table>
 
@@ -343,9 +388,28 @@ $(function () {
     });
 });
 
-    import { stack_error, parseSearchParam } from 'config/helper';
+    import { stack_error, parseSearchParam,isEmpty,parseTime} from 'config/helper';
     export default {
         data() {
+            const validateStartTime = (rule, value, callback) => 
+            {
+                if (this.changeStatusForm.status == 1 && this.changeStatusForm.type == 1) 
+                {
+                    if(!value)
+                        return callback(new Error('卡券生效时间不能为空！'));
+                }
+                callback(); 
+            }
+            const validateRemark =  (rule, value, callback) => 
+            {
+                if (this.changeStatusForm.status == 2) 
+                {
+                    if(isEmpty(this.changeStatusForm.remark))
+                        return callback(new Error('修改备注信息不能为空'));
+                }
+                callback(); 
+            };
+
             return {
                 items: [],
                 fields: {
@@ -372,6 +436,7 @@ $(function () {
                 listLoading: true,
                 selectItemVisible: false,
                 dialogFormVisible:false,
+                dialogStatusFormVisible:false,
                 sexOptions: [],
                 venueOptions: [],
                 cardOptions: [],
@@ -382,7 +447,21 @@ $(function () {
                 buttonLoading: false,
                 cardUseStatus:0,
                 card : {},
-                student_info : {}
+                student_info : {},
+                changeStatusForm : {
+                    id : 0,
+                    status : '',
+                    renark: 0,
+                    start_time : new Date(),
+                },
+                statusRules : {
+                    start_time : [
+                        { validator: validateStartTime, trigger: 'blur' },
+                    ],
+                     remark : [{
+                        validator: validateRemark, trigger: 'blur'}
+                   ]
+                }
             }
         },
         created() {
@@ -392,13 +471,11 @@ $(function () {
 
         },
         methods: {
-
             initData()
             {
                 var that = this,id = this.$route.params.id;
                 this.params.student_id=id;
             },
-
             getUserVenus()
             {
                 var that = this;
@@ -460,7 +537,6 @@ $(function () {
                   stack_error(error);
                 });
             },
-
             selectCard(value){
                 var card = this.cardOptions[value];
                 card.card_id = card.id;
@@ -544,6 +620,7 @@ $(function () {
                     that.StudentCard.user_cards = [];
                     // 刷新列表数据
                     that.$refs.table.loadList();
+                    
                 })
                 .catch(function(error) {
                       stack_error(error);
@@ -587,6 +664,70 @@ $(function () {
                     .catch(function (error) {
                         stack_error(error);
                     }); 
+            },
+            changeStudentCardStatus(row)
+            {
+                console.log(row);
+                if(row.status >=2)
+                    return;
+
+                this.changeStatusForm.id = row.id;
+                this.changeStatusForm.old_status = row.status;
+                this.changeStatusForm.type       = row.type;
+                this.changeStatusForm.status = row.status +1;
+                // 显示操作框
+                this.dialogStatusFormVisible = true;
+
+            },
+            statusTimeChange(value)
+            {
+                console.log(value);
+                this.changeStatusForm.start_time =value;
+            },
+            handleChangeStatus()
+            {
+                this.$refs.changeStatusForm.validate(valid => {
+                var that = this;
+                if (valid) 
+                {
+                    // 时间处理
+                    that.changeStatusForm.start_time = parseTime(that.changeStatusForm.start_time);
+                    // 数据校验通过 
+                     that.buttonLoading = true;
+                    var url = '/student/changeStudentCardStatus', that = this;
+                    this.$http({
+                       method :"POST",
+                       url : url,
+                       data : that.changeStatusForm
+                    })
+                .then(function(response) 
+                {
+                     // 提示
+                     var {data} = response;
+                     that.$message({
+                          showClose: true,
+                          message: data.message,
+                          type: 'success'
+                    });
+                    that.dialogStatusFormVisible = false;
+                    that.changeStatusForm = {};
+                     // 刷新列表数据
+                    that.$refs.table.loadList();
+                    that.buttonLoading = false;
+                })
+                .catch(function(error) 
+                {
+                  that.buttonLoading = false;
+                  stack_error(error);
+                });
+                } 
+                else 
+                {
+                    console.log('error submit!!')
+                    return false
+                }
+
+            });
             }
         }
     }

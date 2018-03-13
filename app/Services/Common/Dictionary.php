@@ -12,7 +12,7 @@ class Dictionary
             'mouth' => '月',
             'year' => '年'
         ];
-        if($index != false && isset($unitOptions))
+        if($index !== false && isset($unitOptions))
             return $unitOptions[$index];
         return $unitOptions;
     }
@@ -26,7 +26,7 @@ class Dictionary
 
         ];
 
-        if($index != false && isset($sexOptions[$index]))
+        if($index !== false && isset($sexOptions[$index]))
             return $sexOptions[$index];
         return $sexOptions;
     }
@@ -39,7 +39,7 @@ class Dictionary
             2  => '次卡'
         ];
 
-        if($index != false && isset($cardType[$index]))
+        if($index !== false && isset($cardType[$index]))
             return $cardType[$index];
         return $cardType;
     }
@@ -57,7 +57,7 @@ class Dictionary
             1  => '启用',
             2  => '停用'
         ];
-        if($index != false && isset($studentCardStatusMap[$index]))
+        if($index !== false && isset($studentCardStatusMap[$index]))
             return $studentCardStatusMap[$index];
         return $studentCardStatusMap;
     }
@@ -91,7 +91,7 @@ class Dictionary
             5 => '星期五',
             6 => '星期六',
         ];
-        if($index != false && isset($weekMap[$index]))
+        if($index !== false && isset($weekMap[$index]))
             return $weekMap[$index];
         return $weekMap;
     }

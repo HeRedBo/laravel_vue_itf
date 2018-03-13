@@ -89,7 +89,7 @@
             <el-form class="small-space" 
                 ref="CardForm" 
                 :model="CardForm"
-                :rules="RoleRules"
+                :rules="CardRules"
                 label-position="right"
                 label-width="120px"
                 style='width: 400px; margin-left:50px;'
@@ -313,7 +313,7 @@ export default {
                 status : false,
             },
 
-            RoleRules: {
+            CardRules: {
                 name: [
                     { required: true, message: '请输入班级名称', trigger: 'blur'},
                     { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' },

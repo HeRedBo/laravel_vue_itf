@@ -257,11 +257,11 @@ class StudentsController extends ApiController
      */
     public  function  changeStudentCardStatus(ChangeStudentCardStatusRequest $request)
     {
-        // 数据合法性校验
         $res = $this->student_card_service->changeStudentCardStatus($request);
-        dd($res);
-
-
+        if($res['status'] == 1)
+            return $this->response->withSuccess($res['msg']);
+        else
+            return $this->response->withInternalServer($res['msg']);
     }
 
 
