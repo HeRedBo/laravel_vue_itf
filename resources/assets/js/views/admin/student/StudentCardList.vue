@@ -675,6 +675,7 @@ $(function () {
                 this.changeStatusForm.old_status = row.status;
                 this.changeStatusForm.type       = row.type;
                 this.changeStatusForm.status = row.status +1;
+                this.changeStatusForm.start_time = new Date();
                 // 显示操作框
                 this.dialogStatusFormVisible = true;
 

@@ -183,7 +183,7 @@ export default {
               week_7: {label: '星期日'},
             },
             params :{
-              venue_id : 0
+            
             },
             data_start_column: 3,
             total_column : 7,
@@ -256,15 +256,17 @@ export default {
     created() 
     {
         this.getUserVenus();
-        this.initParams();
+       
+        this.initParmas();
         this.getSignCalendar();  
     },
     methods:{
 
-       initParams()
+       initParmas()
        {
-           this.params.venue_id = this.$route.params.venue_id;
-           this.params.student_id = this.$route.params.student_id;
+           this.params.venue_id = +this.$route.params.venue_id;
+           this.params.student_id = +this.$route.params.student_id;
+           //this.getSignCalendar();
        },
       
         getSignCalendar() 
@@ -354,6 +356,9 @@ export default {
                 {
                     that.selectItemVisible = true;
                 }
+
+                // 从新赋值
+                //that.params.venue_id = +that.$route.params.venue_id ;
                 
             })
             .catch(function(error) {
