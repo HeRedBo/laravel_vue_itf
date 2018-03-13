@@ -88,6 +88,7 @@ class OperationLogHelper
             'student_card' => [
                 'student_id'        => ['type'=>'integer'],
                 'student_card_id'   => ['type'=>'integer'],
+                'card_name'         => ['type'=>'string'],
                 'operation'         => ['type'=>'string'],
                 'log' => [
                     'properties' => [

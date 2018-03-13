@@ -48,8 +48,9 @@ class StudentCardLogService extends  OperationLogService
         $data = [
             'type' => 'student_card',
             'data' => [
-                'student_id'     => $params['student_id'],
+                'student_id'      => $params['student_id'],
                 'student_card_id' => $params['student_card_id'],
+                'card_name'       => $params['card_name'],
                 'operation'       => $params['operation'],
                 'log'             => [],
             ]

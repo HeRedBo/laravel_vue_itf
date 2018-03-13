@@ -459,6 +459,8 @@ class StudentCard extends  BaseService
             ];
 
             $old_card_data  = $student_card->toArray();
+            $old_card_data['card_name'] = $card_info->name;
+
             //
             foreach ($update_data as $k => $v)
             {
@@ -512,11 +514,12 @@ class StudentCard extends  BaseService
 
         $params = [
             'student_card_id'=> $oldData['id'],
-            'student_id'=> $oldData['student_id'],
-            'operation' => $operation,
-            'field'     => $field,
-            'oldValue'  => $oldValues,
-            'newValue'  => $newValues,
+            'student_id'    => $oldData['student_id'],
+            'card_name'     => $oldData['card_name'],
+            'operation'    => $operation,
+            'field'        => $field,
+            'oldValue'     => $oldValues,
+            'newValue'     => $newValues,
         ];
         return !empty($params['field']) ? $params : [];
     }

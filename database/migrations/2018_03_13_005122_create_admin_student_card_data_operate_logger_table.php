@@ -19,6 +19,7 @@ class CreateAdminStudentCardDataOperateLoggerTable extends Migration
             $table->string('type',60)->default('')->comment('数据类型,自定义的数据类型格式 如 order,card');
             $table->unsignedInteger('student_id')->default('0')->comment('学生记录ID');
             $table->unsignedInteger('student_card_id')->default('0')->comment('学生卡券记录ID');
+            $table->string('card_name',60)->default('')->comment('卡券名称');
             $table->string('operation',255)->default('')->comment('操作描述');
             $table->text('content')->comment('日志内容 存json数据格式');
             $table->unsignedInteger('operator_id')->default('0')->comment('操作用户ID');
