@@ -167,7 +167,15 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             $student_sign_data    = [];
             $date_venue_schedules = [];
             $course_times         = [];
-            if($sign)
+            $date = $request->get('date');
+            if(empty($date))
+                $date = date("Y-m-d");
+            
+            
+            $sign_time = strtotime($date);
+            $time      = time();
+            //  签到器签到时间必须小于当天
+            if($sign && $sign_time  <  $time )
             {
                 $student_ids = array_column($data,'id');
                 $student_sign_data = $this->studentService->getStudentSignData($student_ids, $params);
@@ -175,29 +183,27 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                 $venueSchedule = $venueScheduleService->getSchedulesInUse($request);
                 $venue_schedules = $venueSchedule['venue_schedules'];
                 $course_times    = $venueSchedule['course_times'];
-                $date = $request->get('date');
-                if(empty($date))
-                    $date = date("Y-m-d");
                 $w   = getDateWeek($date);
                 $date_venue_schedules = isset($venue_schedules[$w]) ? $venue_schedules[$w] : [];
             }
-            $time      = time();
-            $sign_data = [];
-            
+         
             foreach ($data as &$v)
             {
                 $v['sign_data']  = [];
                 $v['can_sign']   = 0;
-                $classes  = $v['classes'];
-                $class_ids = array_column($classes,'id');
-                $classes   = array_column($classes,NULL,'id');
-                $student_id = $v['id'];
-                $sign_up_at = $v['sign_up_at'];
-                $sign_at_time = strtotime($sign_up_at);
-
-                $sign_class_data = $sign_data = [];
+                
+                $classes         = $v['classes'];
+                $class_ids       = array_column($classes,'id');
+                $classes         = array_column($classes,NULL,'id');
+                $student_id      = $v['id'];
+                $sign_up_at      = $v['sign_up_at'];// 学生的报名时间
+                $sign_at_time    = strtotime($sign_up_at);
+                $sign_data       = [];
+                
                 if($date_venue_schedules)
                 {
+                  
+                    $student_sign = isset($student_sign_data[$student_id]) ? $student_sign_data[$student_id]: [];
                     foreach ($date_venue_schedules as $date_venue_schedule)
                     {
                         if(empty($date_venue_schedule))
@@ -209,39 +215,47 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                         $course_time = $course_times[$section];
                         $class_sign_start_minute = $this->class_sign_start_minute;
                         $course_start_time = strtotime("{$date} ".$course_time[0]);
-
                         $compare_time    =  $time + $class_sign_start_minute * 60;
-                        
                         if(in_array($class_id,$class_ids) && $course_start_time > $sign_at_time)
                         {
-                            $status_name  = '未签到';
-                            $type_name    = '';
-                            $sign_at      = '';
-                            $status       = 0;
+                            // 未签到数据初始化
                             $can_sign     = 1;
                             $class_name = "【{$section}】". $date_venue_schedule['class_name'];
-                            $student_sign = isset($student_sign_data[$student_id]) ? $student_sign_data[$student_id]: [];
+                            $status = 0;
+                            $sign_class_data = [
+                                "venue_id"    => $v['venue_id'],
+                                "student_id"  => $student_id,
+                                "class_id"    => $class_id,
+                                "section"      => $section,
+                                'status_name' => '未签到',
+                                'type_name'   => '',
+                                'sign_date'   => '',
+                                'sign_at'     => '',
+                                'status'      => 0,
+                                'class_name'  => $class_name
+                            ];
+                            $sign_at = 0;
                             if($student_sign)
                             {
-                                $student_sign = array_column($student_sign,NULL, 'section');
-                                $student_sign = isset($student_sign[$section]) ? $student_sign[$section] : [];
-                                if($student_sign)
+                                $student_section_sign = isset($student_sign[$section]) ? $student_sign[$section] : [];
+                                if($student_section_sign)
                                 {
-                                    $status_name = $student_sign['status_name'];
-                                    $type_name   = $student_sign['type_name'];
-                                    $sign_at     = $student_sign['created_at'];
-                                    $status      = $student_sign['status'];
+                                    $sign_class_data  = $student_section_sign;
+                                    $sign_class_data['sign_at'] = $student_section_sign['created_at'];
+                                    $sign_at  = $sign_class_data['sign_at'];
+                                    $status  = $student_section_sign['status'];
+                                    unset($student_section_sign['created_at']);
                                 }
+                                // 删除签到数据的数据
+                                unset($student_sign[$section]);
                             }
-
-                            
                             if($status == 0 && $compare_time < $course_start_time)
                             {
                                 $can_sign = 0;
                             }
+                            
                             if($status > 0)
                             {
-                                
                                  $sign_at_time = strtotime($sign_at);
                                  $sign_at_compare_time = $sign_at_time + $this->sign_can_modify_minute * 60;
                                  if($sign_at_compare_time < $time)
@@ -249,22 +263,24 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                                      $can_sign = 0;
                                  }
                             }
-                            $sign_class_data = $classes[$class_id];
-                            $sign_class_data['status_name'] = $status_name;
-                            $sign_class_data['type_name']   = $type_name;
-                            $sign_class_data['sign_at']     = $sign_at;
-                            $sign_class_data['status']      = $status;
-                            $sign_class_data['class_name']  = $class_name;
                             $sign_class_data['can_sign']    = $can_sign;
-                            $sign_class_data['section']     = $section;
                             $sign_data[] = $sign_class_data;
                             $v['can_sign'] = $can_sign;
+                        }
+                    }
+                    // 如果还有其他数据数据继续追加的用户数据中
+                    if(!empty($student_sign))
+                    {
+                        foreach ($student_sign as $section => $sign)
+                        {
+                            $sign['can_sign'] = 0;
+                            $sign['sign_at'] = $sign['created_at'];;
+                            $sign_data[] = $sign;
                         }
                     }
                 }
                 $v['sign_data'] = $sign_data;
             }
-            
             $list['data'] = $data;
         }
         return $list;
@@ -527,7 +543,6 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                             ->select($fields)
                             ->get()
                             ->toArray();
-
             $insert_data = [];
             if($result)
             {
@@ -582,14 +597,12 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             logResult('【学生签到错误】'. $e->__toString(),'error');
             return error('签到错误'. $e->getMessage());
         }
-
         return error('签到失败');
     }
 
 
     public function  getSignCalendar(Request $request)
     {
-
         try
         {
             $service = ServiceFactory::getService("Admin\\VenueSchedule");

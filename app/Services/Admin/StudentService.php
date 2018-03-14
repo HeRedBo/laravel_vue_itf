@@ -106,9 +106,6 @@ class StudentService extends BaseService
                 $where[] = ['section','=', $section];
             if(!empty($class_id))
                 $where[] = ['class_id','=', $class_id];
-            
-            
-            
             $model = ServiceFactory::getModel("Admin\\VenueStudentSign");
             $query = $model->query();
             foreach ($where as $v)
@@ -130,7 +127,7 @@ class StudentService extends BaseService
                     $v['status_name'] = isset($signStatusMap[$v['status']]) ? $signStatusMap[$v['status']] : '';
                     $v['type_name'] = isset($signTypeMap[$v['status']]) ? $signTypeMap[$v['status']] : '';
                     unset($v['classes']);
-                    $result[$v['student_id']][] = $v;
+                    $result[$v['student_id']][$v['section']] = $v;
                 }
             }
         }

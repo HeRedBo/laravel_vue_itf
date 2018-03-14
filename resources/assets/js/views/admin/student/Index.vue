@@ -119,11 +119,7 @@
                         </div> 
 
                     </template>
-
-
-                    
-                    
-                        <!--  按钮分组 -->
+                    <!--  按钮分组 -->
                     <div class="btn-group btn-group-sm">
                         <button type="submit" class="btn btn-primary" @click="$refs.table.loadList()"><i class="fa fa-search"></i></button>
                         <a href="javascript:void(0)" class="btn btn-warning" @click="reset"><i class="fa fa-undo"></i></a>
@@ -315,7 +311,7 @@
     </div>
 
    <!--  form -->
-    <!-- Form -->
+            <!-- Form -->
             <el-dialog title="课程签到" :visible.sync="dialogFormVisible" class="course_time_form" >
               <div class="row">
                   <div class="col-md-10">
@@ -333,9 +329,7 @@
                               @close="handleClose(tag)"
                           >
                           {{tag}}
-                          </el-tag>
-
-                                                   
+                          </el-tag>                
                         </el-form-item>
                         <el-form-item label="道馆" :label-width="formLabelWidth">
                              <template v-for="option in venueOptions">
@@ -891,8 +885,7 @@ export default {
 
         studentSign()
         {
-            // 学生信息签到 
-            console.log('asdas');
+              // 学生信息签到 
               var that = this;
               let url = '/student/sign'
               let method = 'post';
@@ -906,17 +899,13 @@ export default {
                   var {data} = response; 
                   that.dialogFormVisible = false;
                   that.buttonLoading = false;
-                  that.dialogFormVisible = false;
                   that.signForm = {};
-
                   that.$message({
                       showClose: true,
                       message: data.message,
                       type: 'success'
                   });
                   that.$refs.table.loadList();
-                  
-                  // 跳转到列表页
               })
               .catch(function(error) {
                   that.buttonLoading = false;

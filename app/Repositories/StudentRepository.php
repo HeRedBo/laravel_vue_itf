@@ -32,6 +32,7 @@ interface StudentRepository extends RepositoryInterface
     public  function  getStudentBaseInfo($student_id,StudentCard $studentCard);
 
     public function  getStudentCardLogger(Request $request);
+    
     public  function  sign(array $params);
 
     public  function getSignCalendar(Request $request);

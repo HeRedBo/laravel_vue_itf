@@ -142,7 +142,9 @@
                                                 :type="row.type_name"
                                                 close-transition
                                                >
-                                                {{row.class_name}}
+                                                <a  @click="classSign(row)">
+                                                  {{row.class_name}}
+                                                </a>
                                               </el-tag>
                                             </el-tooltip>
                                         </template>
@@ -173,6 +175,51 @@
                 </div>
             </div>
         </div>
+
+                    <!-- Form -->
+            <el-dialog title="课程签到" :visible.sync="dialogFormVisible" class="course_time_form" >
+              <div class="row">
+                  <div class="col-md-10">
+                      <el-form ref="ScheduleForm" 
+                      :model="signForm" 
+                      >
+
+                  
+                       <!--  签到班级 -->
+                        <el-form-item label="签到班级" :label-width="formLabelWidth">
+                              <span>{{signForm.class_name}}</span>
+                        </el-form-item>
+                        
+                        <!-- 签到日期 -->
+                        <el-form-item label="签到日期" :label-width="formLabelWidth">
+                            <span>{{signForm.sign_date}}</span>
+                        </el-form-item>
+
+
+                         <el-form-item label="签到类型" :label-width="formLabelWidth">
+                              <el-radio-group v-model="signForm.status">
+                                  <el-radio :label="1">签到</el-radio>
+                                  <el-radio :label="2">迟到</el-radio>
+                                  <el-radio :label="3">请假</el-radio>
+                                  <el-radio :label="4">旷课</el-radio>
+                              </el-radio-group>
+                         </el-form-item>
+
+                       <el-form-item label="签到备注" :label-width="formLabelWidth">
+                          <el-input type="textarea" :rows="2" v-model="signForm.remark" auto-complete="off" 
+                            size="small">
+                          </el-input>
+                      </el-form-item>
+              </el-form>
+                  </div>
+              </div>
+
+              <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click="studentSign" :loading="buttonLoading">确 定</el-button>
+              </div>
+
+            </el-dialog>
     </div>
 </template>
 <script>
@@ -235,7 +282,9 @@ export default {
             venue_schedules : {},
             venueCourseForm:{},
             schedule : {
-
+            },
+            signForm : {
+              status : 1
             },
             pickerOptions: {
                 shortcuts: [{
@@ -268,6 +317,7 @@ export default {
                   },
                  ]
             },
+            buttonLoading: false
 
         }
     },
@@ -579,11 +629,11 @@ export default {
             venueCourseForm.date_between = date_between_res;
             return venueCourseForm;
         },
-
         reset() 
         {
             this.params = {};
         },
+        
         changeSearchMouth(number)
         {
             if(typeof this.params.search_date == 'string')
@@ -595,6 +645,47 @@ export default {
             this.params.search_date = parseTime(date);
             this.params.date = parseTime(date);
             this.getSignCalendar();
+        },
+        classSign(sign_data)
+        {
+          if(sign_data.can_sign == 0) return;
+          this.signForm.student_ids = [];
+          this.signForm.student_ids.push(this.params.student_id);
+          this.signForm.venue_id      = this.params.venue_id;
+          this.signForm.sign_date     = sign_data.date_time;
+          this.signForm.section       = sign_data.section;
+          this.signForm.class_id      = sign_data.class_id;
+          this.signForm.class_name    = sign_data.class_name;
+          this.dialogFormVisible      = true;
+        },
+        studentSign()
+        {
+           // 学生信息签到 
+              var that = this;
+              let url = '/student/sign'
+              let method = 'post';
+              that.buttonLoading = true;
+              this.$http({
+                  method :method,
+                  url : url,
+                  data : that.signForm
+              })
+              .then(function(response) {
+                  var {data} = response; 
+                  that.dialogFormVisible = false;
+                  that.buttonLoading = false;
+                  that.signForm = {};
+                  that.$message({
+                      showClose: true,
+                      message: data.message,
+                      type: 'success'
+                  });
+                  that.getSignCalendar();
+              })
+              .catch(function(error) {
+                  that.buttonLoading = false;
+                  stack_error(error);
+              });
 
         }
     }
