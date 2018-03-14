@@ -7,7 +7,6 @@
 
               <div class="col-md-4">
                     <div class="form-group form-inline">
-
                         <button type="button" 
                           class="btn btn-default btn-sm checkbox-toggle"  
                           @click="selectAll" 
@@ -59,7 +58,10 @@
                    
                     <!-- 学生性别 -->
                     <div class="input-group input-group-sm" > 
-                         <el-select style="width:90px" size="small" v-model="params.sex" class="filter-item" placeholder="性别">
+                         <el-select style="width:90px" size="small" v-model="params.sex" 
+                         class="filter-item" placeholder="性别"
+                         clearable
+                         >
                             <el-option
                                   v-for="(value, key) in sexOptions"
                                   :key="key"
@@ -69,7 +71,22 @@
                             </el-option>
                         </el-select>
                     </div>
-
+                    
+                    <!-- 学生状态 -->
+                    <div class="input-group input-group-sm" > 
+                         <el-select style="width:90px" size="small" 
+                          v-model="params.status" class="filter-item" 
+                          placeholder="状态" clearable
+                          >
+                            <el-option
+                                  v-for="(value, key) in statusOptions"
+                                  :key="key"
+                                  :value="key"
+                                  :label="value"
+                                  >
+                            </el-option>
+                        </el-select>
+                    </div>
                     
                      <template v-if="!params.sign">
                         <!-- 归属道馆 -->
@@ -273,9 +290,13 @@
                     </el-tag>
                   
                 </el-tooltip>
+            </template>
 
-               
-               
+             <!-- 状态 -->
+            <template slot="status" slot-scope="item">
+                <a href="javascript:void(0)" data-toggle="tooltip" :title="item.item.status==1 ? '有效':'无效'">
+                    <i :class="['fa','fa-circle',item.item.status==1?'text-success':'text-danger']"></i>
+                </a>
             </template>
 
 
@@ -284,8 +305,9 @@
                 <div class="btn-group">
                     <a href="javascript:;" @click="view(item.item)" class="btn btn-success btn-xs">查看</a>
                     <router-link :to="{path:'update/'+  item.item.id}" class="btn bg-orange btn-xs">编辑</router-link>
-                    <router-link target="_blank"  :to="{path:'studentCardList/'+ item.item.id}" class="btn bg-info btn-xs">学生卡券</router-link>
-                    <router-link target="_blank"  :to="{path:'SignCalendar/'+ item.item.venue_id + '/' +item.item.id}" class="btn bg-primary btn-xs">签到日历</router-link>  
+                  <!--   target="_blank"  -->
+                    <router-link  :to="{path:'studentCardList/'+ item.item.id}" class="btn bg-info btn-xs">学生卡券</router-link>
+                    <router-link :to="{path:'SignCalendar/'+ item.item.venue_id + '/' +item.item.id}" class="btn bg-primary btn-xs">签到日历</router-link>  
                 </div>
             </template>
           </vTable>
@@ -468,6 +490,12 @@
 </template>
 
 <script>
+$(function() {
+    $('.box').tooltip({
+        selector: '[data-toggle="tooltip"]'
+    });
+});
+
 
 import {stack_error,parseSearchParam,isEmpty,parseTime} from 'config/helper';
 export default {
@@ -483,8 +511,9 @@ export default {
             venues_name : {label:'道馆', need:'venues'},
             class_name : {label:'班级', need:'classes'},
             sign_data : {label:'签到状态', need:'sign_data', hide:true},
+            status : {label:'学生状态'},
             // created_at:{label:'创建时间', sortable: true},
-            updated_at:{label:'更新时间', sortable: true},
+            updated_at:{label:'更新时间', sortable: true,hide:false},
             actions : {label: '操作'}
         },
         pickerOptions0: {
@@ -503,6 +532,7 @@ export default {
         listLoading: true,
         selectItemVisible : false,
         sexOptions : [],
+        statusOptions :[],
         venueOptions : [],
         classOptions : [],
         signClassOptions : [],
@@ -532,7 +562,9 @@ export default {
     created() 
     {
       this.getSexOptions();
+      this.getStatusOptions();
       this.getUserVenus();
+
     },
     methods: {
         getSelctItem()
@@ -570,6 +602,22 @@ export default {
                   stack_error(error);
                 }); 
         },
+        getStatusOptions() {
+                var url = '/student/statusOptions',that = this;
+                this.$http({
+                   method :"GET",
+                   url : url,
+                })
+                .then(function(response) {
+                  var responseJson = response.data,data = responseJson.data
+                  var options      = [];
+                  that.statusOptions = data;
+                })
+                .catch(function(error) {
+                  stack_error(error);
+                }); 
+        },
+
         getUserVenus() {
             var that = this;
             var url = '/user/userVenues';
@@ -736,9 +784,11 @@ export default {
                 {
                   this.getSignClass();
                 }
+             
                 this.$refs.table.loadList();
             }
-            this.fields.sign_data.hide = !this.fields.sign_data.hide;
+            this.fields.sign_data.hide  = !this.fields.sign_data.hide;
+            this.fields.updated_at.hide = !this.fields.updated_at.hide;
             this.check_box_select      = !this.check_box_select;
             
         },

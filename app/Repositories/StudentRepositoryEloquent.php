@@ -98,12 +98,18 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
     {
         $pageSize = $request->get('pageSize') ?: $this->pageSize;
         $sex     =  $request->get('sex','-1');
+        $status  = $request->get('status','-1');
         $venue_id = $request->get('venue_id');
         $class_id = $request->get('class_id');
         $name     = $request->get('name');
         $sign     = $request->get('sign');
         $params   = $request->all();
         $where = [];
+        if($sign)
+        {
+            $status = 1;
+        }
+
 
         if(!empty($venue_id))
         {
@@ -116,6 +122,11 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
         {
             $where[] = ['sex','=',$sex];
         }
+        if(is_numeric($status) && in_array($status,[0,1]))
+        {
+            $where[] = ['status','=',$status];
+        }
+
         if(!empty($class_id))
             $where[] = ['student_class.class_id','=',$class_id];
 
@@ -181,6 +192,9 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                 $class_ids = array_column($classes,'id');
                 $classes   = array_column($classes,NULL,'id');
                 $student_id = $v['id'];
+                $sign_up_at = $v['sign_up_at'];
+                $sign_at_time = strtotime($sign_up_at);
+
                 $sign_class_data = $sign_data = [];
                 if($date_venue_schedules)
                 {
@@ -194,16 +208,17 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                         $section     = $date_venue_schedule['section'];
                         $course_time = $course_times[$section];
                         $class_sign_start_minute = $this->class_sign_start_minute;
-                        $course_start_time = strtotime($course_time[0]);
-                        $compare_time    = $time + $class_sign_start_minute * 60;
+                        $course_start_time = strtotime("{$date} ".$course_time[0]);
+
+                        $compare_time    =  $time + $class_sign_start_minute * 60;
                         
-                        if(in_array($class_id,$class_ids))
+                        if(in_array($class_id,$class_ids) && $course_start_time > $sign_at_time)
                         {
                             $status_name  = '未签到';
                             $type_name    = '';
-                            $sign_at     = '';
-                            $status     = 0;
-                            $can_sign   = 1;
+                            $sign_at      = '';
+                            $status       = 0;
+                            $can_sign     = 1;
                             $class_name = "【{$section}】". $date_venue_schedule['class_name'];
                             $student_sign = isset($student_sign_data[$student_id]) ? $student_sign_data[$student_id]: [];
                             if($student_sign)
@@ -218,12 +233,13 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                                     $status      = $student_sign['status'];
                                 }
                             }
+
                             
                             if($status == 0 && $compare_time < $course_start_time)
                             {
                                 $can_sign = 0;
                             }
-                            if($status > 0  )
+                            if($status > 0)
                             {
                                 
                                  $sign_at_time = strtotime($sign_at);

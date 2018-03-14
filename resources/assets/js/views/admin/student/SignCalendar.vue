@@ -3,7 +3,8 @@
         <div class="col-md-12">
             <div class="box box-primary">
                 <div class="box-header"> 
-                    <div class="col-md-6">
+                    <div class="row">
+                      <div class="col-md-6">
                         <div class="form-inline">
                                <!-- 归属道馆 -->
                                 <div class="input-group input-group-sm">
@@ -37,17 +38,26 @@
 
         
                         </div>
-                    
-                        
-                        
                     </div>
-                    
                     <div class="col-md-6">
                         <div class="form-inline pull-right">
+                          
+                          <!-- 上下月 -->
+                          <div class="btn-group btn-group-sm">
+                            <button type="button" @click="changeSearchMouth(-30)" class="btn btn btn-default" >
+                                  <!-- <i class="fa fa-search"></i> -->
+                                  <<<上一月
+                            </button>
+                            <button type="button" @click="changeSearchMouth(+30)"class="btn btn btn-default" >
+                                  <!-- <i class="fa fa-search"></i> -->
+                                  >>>下一月
+                            </button>
+                 
+                        </div>
                             <!--  数据搜索框 -->
                            <div class="input-group input-group-sm" >
                                 <el-date-picker
-                                    v-model="params.date"
+                                    v-model="params.search_date"
                                     type="date"
                                     placeholder="选择日期"
                                     size="small"
@@ -57,15 +67,24 @@
                                 </el-date-picker>
                            </div>
 
-                            <!--  按钮分组 -->
+                          
+
+                        <!--  按钮分组 -->
                         <div class="btn-group btn-group-sm">
                             <button type="submit" class="btn btn-primary" @click="getSignCalendar"><i class="fa fa-search"></i>
                             </button>
                             <a href="javascript:void(0)" class="btn btn-warning" @click="reset"><i class="fa fa-undo"></i></a>
                         </div>
                         </div>
+                    </div>
                        
                     </div>
+                    <div class="row">
+                        <div class="text-center">
+                            <h4>{{schedule.mouth_name}}</h4>
+                        </div>
+                    </div>
+                   
                 </div>
                 <div class="box-body tablew-responsive no-padding">
                     <table class="table table-bordered dataTable table-striped table-hover">
@@ -183,7 +202,7 @@ export default {
               week_7: {label: '星期日'},
             },
             params :{
-            
+              search_date : new Date()
             },
             data_start_column: 3,
             total_column : 7,
@@ -272,6 +291,7 @@ export default {
         getSignCalendar() 
         {
             var that = this, params = this.params;
+            this.params.date = parseTime(this.params.search_date);
             var url = '/student/getSignCalendar';
             this.$http({
                 method :'GET',
@@ -564,6 +584,19 @@ export default {
         {
             this.params = {};
         },
+        changeSearchMouth(number)
+        {
+            if(typeof this.params.search_date == 'string')
+            {
+               this.params.search_date = new Date(this.params.search_date);
+            }
+            var date = this.params.search_date;
+            date.setTime(date.getTime() + 3600 * 1000 * 24 * number);
+            this.params.search_date = parseTime(date);
+            this.params.date = parseTime(date);
+            this.getSignCalendar();
+
+        }
     }
 }
 </script>

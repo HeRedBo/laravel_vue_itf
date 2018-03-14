@@ -113,13 +113,22 @@
                             </el-radio-group>
                         </el-form-item>
                         
-                         <!-- 学校 -->
+                         <!-- 会员卡号 -->
                         <el-form-item label="会员卡号" 
                                       prop="card_number"  
                                       v-show="showCardNumber()"
                         >
                               <el-input v-model="studentForm.card_number" placeholder="请输入会员卡号"></el-input>
                         </el-form-item>
+
+                         <!-- 学生状态 -->
+                        <el-form-item label="学生状态">
+                            <el-radio-group v-model="studentForm.status">
+                                <el-radio :label="1">有效</el-radio>
+                                <el-radio :label="0">无效</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+
 
                         <!-- 卡券种类 -->
                         <el-form-item label="购卡类型" v-if="!studentForm.id">

@@ -43,11 +43,25 @@
 					</div>
                     
                     <div class="col-md-6">
+                          
+
                         <div class="form-inline pull-right">
+
+                          <!-- 上下周 -->
+                          <div class="btn-group btn-group-sm">
+                            <button type="button" @click="changeSearchTime(-7)" class="btn btn btn-default" >
+                                  <!-- <i class="fa fa-search"></i> -->
+                                  <<<上一周
+                            </button>
+                            <button type="button" @click="changeSearchTime(+7)"class="btn btn btn-default" >
+                                  <!-- <i class="fa fa-search"></i> -->
+                                  >>>上一周
+                            </button>
+                          </div>
                             <!--  数据搜索框 -->
                            <div class="input-group input-group-sm" >
                                 <el-date-picker
-                                    v-model="params.date"
+                                    v-model="params.search_date"
                                     type="date"
                                     placeholder="选择日期"
                                     size="small"
@@ -230,7 +244,9 @@ export default {
         };
         return {
             fields: {},
-            params :{},
+            params :{
+              search_date:new Date
+            },
             data_start_column: 3,
             total_column : 9,
             limit_data_row : 9,
@@ -646,6 +662,19 @@ export default {
         {
             this.params = {};
         },
+
+        changeSearchTime(number)
+        {
+          if(typeof this.params.search_date == 'string')
+            {
+               this.params.search_date = new Date(this.params.search_date);
+            }
+            var date = this.params.search_date;
+            date.setTime(date.getTime() + 3600 * 1000 * 24 * number);
+            this.params.search_date = parseTime(date);
+            this.params.date = parseTime(date);
+            this.getSchedule();
+        }
     }
 }
 </script>

@@ -16,6 +16,7 @@ export default {
 				phone : '',
 				email : '',
                 birthday : '',
+                status : 1,
                 user_cards : [],
                 user_contacts : []
             },

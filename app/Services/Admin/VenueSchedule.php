@@ -263,8 +263,10 @@ class VenueSchedule extends  BaseService
         $venue_schedules = $this->buildScheduleData($schedules,$params);
         $mouth_end_day =  $mouth_between[1];
         $course_count = getMouthXLength($mouth_end_day);
+        $mouth_name = date("Y年m月",strtotime($date));
         $schedule= [
-            'course_count' => $course_count
+            'course_count' => $course_count,
+            'mouth_name'   => $mouth_name
         ];
         return compact('schedule','venue_schedules');
     }

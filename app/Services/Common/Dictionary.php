@@ -23,12 +23,22 @@ class Dictionary
             -1  => '全部',
             0 => '女',
             1 => '男',
-
         ];
-
         if($index !== false && isset($sexOptions[$index]))
             return $sexOptions[$index];
         return $sexOptions;
+    }
+
+    public static function  studentStatusOptions($index = false)
+    {
+        $statusMap = [
+            -1  => '全部',
+            0 => '无效',
+            1 => '有效',
+        ];
+        if($index !== false && isset($statusMap[$index]))
+            return $statusMap[$index];
+        return $statusMap;
     }
 
     static  function  CardTyeMap($index = false)

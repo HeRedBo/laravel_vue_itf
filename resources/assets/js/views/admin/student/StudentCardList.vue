@@ -83,7 +83,8 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-inline pull-right">
-                             <router-link target="_blank"  :to="{path:'/admin/student/StudentCardLogger/'+ params.student_id}" class="btn bg-info">操作日志</router-link>
+                           <!--  target="_blank"  -->
+                             <router-link  :to="{path:'/admin/student/StudentCardLogger/'+ params.student_id}" class="btn bg-info">操作日志</router-link>
                         </div>
                     </div>
                 </div>

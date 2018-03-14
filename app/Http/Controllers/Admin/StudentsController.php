@@ -201,6 +201,13 @@ class StudentsController extends ApiController
         return $this->response->withData($sexMap);
     }
 
+    public  function  statusOptions()
+    {
+        $statusOptions = Dictionary::studentStatusOptions();
+        return $this->response->withData($statusOptions);
+    }
+
+
     /**
      * 获取学生基本信息
      */

@@ -75,7 +75,7 @@
                             <a href="javascript:;" @click="view(item.item)" class="btn btn-success btn-xs">查看</a>
                             <!-- v-show="item.item.status == 0"  -->
                             <button class="btn bg-orange btn-xs" @click="handleUpdate(item.item)">编辑</button>
-                            <router-link target="_blank"  :to="{path:'logger/'+ item.item.id}" class="btn bg-info btn-xs">操作日志</router-link>
+                            <router-link :to="{path:'logger/'+ item.item.id}" class="btn bg-info btn-xs">操作日志</router-link>
                             
                             <!-- <a href="#"  @click.prevent="$refs.table.onDel(item.item.id)"  class="btn btn-danger btn-xs">删除</a> -->
                         </div>
