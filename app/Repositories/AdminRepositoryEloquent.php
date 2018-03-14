@@ -270,9 +270,9 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
             $user_name = $request->get('user_name','');
             $query     = AdminLogger::query()->with(['users']);
             
-            $query->join('venues', 'admin_logger.venue_id', '=', 'venues.id')
+            $query->join('admin_venues', 'admin_logger.venue_id', '=', 'admin_venues.id')
                     ->join('admin','admin_logger.user_id', '=', 'admin.id')
-                    ->select('admin_logger.*',"venues.name as venue_name");
+                    ->select('admin_logger.*',"admin_venues.name as venue_name");
 
 
             $where = [];
@@ -322,7 +322,7 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
         $query->leftJoin('admin_user_role', 'admin.id','=', 'admin_user_role.user_id')
             ->leftJoin("admin_roles","admin_user_role.role_id",'=', "admin_roles.id")
             ->leftJoin("admin_venue","admin_venue.admin_id","admin.id")
-            ->leftJoin("venues","admin_venue.venue_id","=","venues.id");
+            ->leftJoin("admin_venues","admin_venue.venue_id","=","admin_venues.id");
         
         $fields = ["admin.*"];
         $pageSize  = $request->get('pageSize') ?: self::DEFAULT_PAGE_SIZE;

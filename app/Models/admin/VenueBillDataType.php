@@ -13,6 +13,6 @@ class VenueBillDataType extends Model implements Transformable
 
     protected $fillable = [];
 
-    protected $table = 'venue_bill_data_type';
+    protected $table = 'admin_venue_bill_data_type';
 
 }

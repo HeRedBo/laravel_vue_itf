@@ -62,16 +62,18 @@ class VenueScheduleDetail extends Model implements Transformable
         $result = [];
         $class_id = isset($params['class_id']) ? $params['class_id'] : 0;
         $week     = isset($params['week']) ? $params['week'] : 0;
+        $section = isset($params['section']) ? $params['section'] : 0;
 
         $where = [
             ['schedule_id','=', $schedule_id]
         ];
 
-        
         if(!empty($class_id))
             $where[] = ['class_id','=', $class_id];
         if(!empty($week))
             $where[] = ['week','=', $week];
+        if(!empty($section))
+            $where[] = ['section','=', $section];
 
         $query = $this->query();
         foreach ($where as $v)
@@ -99,9 +101,12 @@ class VenueScheduleDetail extends Model implements Transformable
     {
         $result = [];
         $class_id = isset($params['class_id']) ? $params['class_id'] : 0;
+        $section = isset($params['section']) ? $params['section'] : 0;
         $where = [];
         if(!empty($class_id))
             $where[] = ['class_id','=', $class_id];
+        if(!empty($section))
+            $where[] = ['section','=', $section];
 
         $query = $this->query();
         $query->whereIn('schedule_id', $schedule_ids);

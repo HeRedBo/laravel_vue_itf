@@ -12,10 +12,11 @@ class Student extends Model implements Transformable
     use TransformableTrait;
     protected $fillable = [];
     protected $appends = ['age'];
+    protected $table = 'admin_students';
     
-    protected  $tb_student_contacts = 'student_contacts';
-    protected  $tb_student_card = 'student_card';
-    protected  $tb_student_class = 'student_class';
+    protected  $tb_student_contacts = 'admin_student_contacts';
+    protected  $tb_student_card     = 'admin_student_card';
+    protected  $tb_student_class    = 'admin_student_class';
     
     /**
      * 属于该学生的联系人
@@ -32,10 +33,11 @@ class Student extends Model implements Transformable
         return $this->hasMany(StudentCard::class,'student_id');
     }
     
+    
     public  function classes()
     {
-        return $this->belongsToMany(Classes::class,'student_class','student_id','class_id')
-                    ->select(['classes.id','classes.name','classes.remark']);
+        return $this->belongsToMany(Classes::class,'admin_student_class','student_id','class_id')
+                    ->select(['admin_classes.id','admin_classes.name','admin_classes.remark']);
 
     }
 

@@ -4,7 +4,7 @@ use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateVenuesTable extends Migration
+class CreateAdminVenuesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class CreateVenuesTable extends Migration
     public function up()
     {
         // 场馆表
-        Schema::create('venues', function(Blueprint $table)
+        Schema::create('admin_venues', function(Blueprint $table)
         {
             $table->increments('id')->comment('场馆ID');
             $table->string('name', 50)->default('')->comment('道馆名称');
@@ -47,6 +47,6 @@ class CreateVenuesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('venues');
+        Schema::dropIfExists('admin_venues');
     }
 }

@@ -10,7 +10,7 @@ class StudentCard extends Model implements Transformable
 {
     use TransformableTrait;
     protected $fillable = [];
-    protected  $table = 'student_card';
+    protected  $table = 'admin_student_card';
 
     public  function  card()
     {

@@ -4,7 +4,7 @@ use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRelationNameTable extends Migration
+class CreateAdminRelationNameTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class CreateRelationNameTable extends Migration
     public function up()
     {
         //
-        Schema::create('relation_name', function(Blueprint $table)
+        Schema::create('admin_relation_name', function(Blueprint $table)
         {
             $table->increments('id')->comment('关联关系ID');
             $table->char('name', 60)->default('')->comment('关联关系名称');
@@ -32,6 +32,6 @@ class CreateRelationNameTable extends Migration
     public function down()
     {
         //
-        Schema::dropIfExists('relation_name');
+        Schema::dropIfExists('admin_relation_name');
     }
 }

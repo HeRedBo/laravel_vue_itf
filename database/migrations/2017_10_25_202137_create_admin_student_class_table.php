@@ -4,7 +4,7 @@ use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateStudentClassTable extends Migration
+class CreateAdminStudentClassTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateStudentClassTable extends Migration
      */
     public function up()
     {
-        Schema::create('student_class', function(Blueprint $table)
+        Schema::create('admin_student_class', function(Blueprint $table)
         {
             $table->increments('id')->comment('主键ID');
             $table->integer('student_id')->unsigned()->comment('学生记录ID');
@@ -30,6 +30,6 @@ class CreateStudentClassTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('student_class');
+        Schema::dropIfExists('admin_student_class');
     }
 }

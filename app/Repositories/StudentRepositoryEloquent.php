@@ -128,7 +128,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
         }
 
         if(!empty($class_id))
-            $where[] = ['student_class.class_id','=',$class_id];
+            $where[] = ['admin_student_class.class_id','=',$class_id];
 
         $orderBy = $request->get('orderBy')?:'id';
         $sortBy  = $request->get('sortedBy')?:'desc';
@@ -138,7 +138,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
         ];
 
         $query = $this->model->query();
-        $query->join("student_class",'students.id','=','student_class.student_id');
+        $query->join("admin_student_class",'admin_students.id','=','admin_student_class.student_id');
         if($where)
         {
             foreach ($where as $v)
@@ -155,8 +155,8 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             }
         }
 
-        $fields = ["students.*"];
-        $query->groupBy('students.id');
+        $fields = ["admin_students.*"];
+        $query->groupBy('admin_student_class.id');
         $list =  $query->with(['operator','venues','classes'])
                         ->select($fields)
                         ->paginate($pageSize)
@@ -170,6 +170,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             $date = $request->get('date');
             if(empty($date))
                 $date = date("Y-m-d");
+            $params['date'] = $date;
             
             
             $sign_time = strtotime($date);
@@ -178,6 +179,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             if($sign && $sign_time  <  $time )
             {
                 $student_ids = array_column($data,'id');
+
                 $student_sign_data = $this->studentService->getStudentSignData($student_ids, $params);
                 $venueScheduleService = ServiceFactory::getService("Admin\\VenueSchedule");
                 $venueSchedule = $venueScheduleService->getSchedulesInUse($request);
@@ -185,13 +187,14 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                 $course_times    = $venueSchedule['course_times'];
                 $w   = getDateWeek($date);
                 $date_venue_schedules = isset($venue_schedules[$w]) ? $venue_schedules[$w] : [];
+
+
             }
-         
+            
             foreach ($data as &$v)
             {
                 $v['sign_data']  = [];
                 $v['can_sign']   = 0;
-                
                 $classes         = $v['classes'];
                 $class_ids       = array_column($classes,'id');
                 $classes         = array_column($classes,NULL,'id');
@@ -199,11 +202,10 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                 $sign_up_at      = $v['sign_up_at'];// 学生的报名时间
                 $sign_at_time    = strtotime($sign_up_at);
                 $sign_data       = [];
-                
                 if($date_venue_schedules)
                 {
-                  
-                    $student_sign = isset($student_sign_data[$student_id]) ? $student_sign_data[$student_id]: [];
+                    $student_sign_tmp = isset($student_sign_data[$student_id]) ? $student_sign_data[$student_id]: [];
+                    $student_sign = isset($student_sign_tmp[$date]) ? $student_sign_tmp[$date] : [];
                     foreach ($date_venue_schedules as $date_venue_schedule)
                     {
                         if(empty($date_venue_schedule))
@@ -216,6 +218,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                         $class_sign_start_minute = $this->class_sign_start_minute;
                         $course_start_time = strtotime("{$date} ".$course_time[0]);
                         $compare_time    =  $time + $class_sign_start_minute * 60;
+
                         if(in_array($class_id,$class_ids) && $course_start_time > $sign_at_time)
                         {
                             // 未签到数据初始化

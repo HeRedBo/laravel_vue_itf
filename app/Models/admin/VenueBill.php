@@ -12,6 +12,6 @@ class VenueBill extends Model implements Transformable
 
     protected $fillable = [];
 
-    protected $table = 'venue_bill';
+    protected $table = 'admin_venue_bill';
 
 }

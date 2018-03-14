@@ -46,11 +46,11 @@
                           <div class="btn-group btn-group-sm">
                             <button type="button" @click="changeSearchMouth(-30)" class="btn btn btn-default" >
                                   <!-- <i class="fa fa-search"></i> -->
-                                  <<<上一月
+                                  <上一月
                             </button>
                             <button type="button" @click="changeSearchMouth(+30)"class="btn btn btn-default" >
                                   <!-- <i class="fa fa-search"></i> -->
-                                  >>>下一月
+                                  下一月>
                             </button>
                  
                         </div>

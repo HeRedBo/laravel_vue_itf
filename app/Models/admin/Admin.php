@@ -61,7 +61,7 @@ class Admin extends Authenticatable implements Transformable
      */
     public function venues()
     {
-        return $this->belongsToMany(Venue::class,'admin_venue','admin_id','venue_id')->select(['venues.id','venues.name','venues.logo','venues.logo_thumb']);
+        return $this->belongsToMany(Venue::class,'admin_venue','admin_id','venue_id')->select(['admin_venues.id','admin_venues.name','admin_venues.logo','admin_venues.logo_thumb']);
     }
     
 

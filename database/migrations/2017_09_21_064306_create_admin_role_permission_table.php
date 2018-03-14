@@ -4,9 +4,9 @@ use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRolePermissionTable extends Migration
+class CreateAdminRolePermissionTable extends Migration
 {
-    protected $table_name = 'role_permission';
+    protected $table_name = 'admin_role_permission';
 
     /**
      * Run the migrations.

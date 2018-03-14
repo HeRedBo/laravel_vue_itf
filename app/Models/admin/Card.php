@@ -10,6 +10,7 @@ class Card extends Model implements Transformable
 {
     use TransformableTrait;
 
+    protected  $table = "admin_cards";
     protected $fillable = [
     	'venue_id','name','number','unit','card_price','explain','status','operator_id',
     ];

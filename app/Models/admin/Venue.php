@@ -10,6 +10,7 @@ class Venue extends Model implements Transformable
 {
     use TransformableTrait;
 
+    protected  $table = "admin_venues";
     protected $dates = ['created_at', 'updated_at'];
 
     protected $fillable = [

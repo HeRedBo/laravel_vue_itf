@@ -4,7 +4,7 @@ use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateVenueBillDataTypeTable extends Migration
+class CreateAdminVenueBillDataTypeTable extends Migration
 {
 
     /**
@@ -15,7 +15,7 @@ class CreateVenueBillDataTypeTable extends Migration
     public function up()
     {
         // 道馆账单数据类型字典表
-        Schema::create('venue_bill_data_type', function (Blueprint $table) {
+        Schema::create('admin_venue_bill_data_type', function (Blueprint $table) {
             $table->increments('id')->comment('主键ID');
             $table->integer('venue_id')->unsigned()->default('0')->comment('道馆ID');
             $table->tinyInteger('type')->default('1')->comment('账单数据类型 1支出,2收入');
@@ -34,6 +34,6 @@ class CreateVenueBillDataTypeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('venue_bill_data_type');
+        Schema::dropIfExists('admin_venue_bill_data_type');
     }
 }

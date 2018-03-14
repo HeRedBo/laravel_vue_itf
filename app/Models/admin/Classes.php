@@ -10,7 +10,7 @@ class Classes extends Model implements Transformable
 {
     use TransformableTrait;
 
-    protected $table = 'classes';
+    protected $table = 'admin_classes';
 
     //protected $dates = ['created_at', 'updated_at'];
     protected $fillable = [

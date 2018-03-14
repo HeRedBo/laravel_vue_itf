@@ -4,7 +4,7 @@ use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateVenueBillLogTable extends Migration
+class CreateAdminVenueBillTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class CreateVenueBillLogTable extends Migration
      */
     public function up()
     {
-         // 道馆账单数据日志表
-        Schema::create('venue_bill_log', function (Blueprint $table) 
+        // 道馆账单表
+        Schema::create('admin_venue_bill', function (Blueprint $table)
         {
             $table->increments('id')->comment('主键ID');
             $table->integer('venue_id')->unsigned()->default('0')->comment('道馆ID');
@@ -28,14 +28,13 @@ class CreateVenueBillLogTable extends Migration
             $table->tinyInteger('status')->default('0')->comment('账单状态 0：未审核 1：审核失败 2：通过');
             $table->string('remark',255)->comment('账单备注');
             $table->timestamp('bill_created_at')->nullable()->comment('账单创建时间');
+            $table->unsignedInteger('create_user_id')->default('0')->comment('账单创建人用户ID');
             $table->unsignedInteger('operator_id')->default('0')->comment('操作用户ID');
-            $table->unsignedInteger('create_user_id')->default('0')->comment('录入人用户ID');
             $table->string('operate_remark',255)->comment('账单操作备注');
             $table->timestamp('created_at')->nullable()->comment('创建时间');
-            $table->comment = '道馆账单日志表';
+            $table->timestamp('updated_at')->nullable()->comment('更新时间');
+            $table->comment = '道馆账单表';
         });
-
-        
     }
 
     /**
@@ -45,6 +44,6 @@ class CreateVenueBillLogTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('venue_bill_log');
+        Schema::dropIfExists('admin_venue_bill');
     }
 }

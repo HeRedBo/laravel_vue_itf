@@ -12,7 +12,7 @@ class CardSnap extends Model implements Transformable
     
     use TransformableTrait;
 
-    protected $table = 'card_snap'; // 表名
+    protected $table = 'admin_card_snap'; // 表名
 
     protected $fillable = [
     	"card_id","venue_id","type","name","number","unit","card_price","explain","status","created_at",

@@ -13,7 +13,7 @@ class CreateStudentContactsTable extends Migration
      */
     public function up()
     {
-        Schema::create('student_contacts', function(Blueprint $table)
+        Schema::create('admin_student_contacts', function(Blueprint $table)
         {
             $table->increments('id')->comment('主键ID');
             $table->integer('student_id')->unsigned()->comment('学生ID');
@@ -33,6 +33,6 @@ class CreateStudentContactsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('student_contacts');
+        Schema::dropIfExists('admin_student_contacts');
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Migrations\Migration;
 /**
  *  学生会员卡表
  */
-class CreateStudentMemberCardTable extends Migration
+class CreateAdminStudentMemberCardTable extends Migration
 {
     /**
      * Run the migrations.
@@ -16,7 +16,7 @@ class CreateStudentMemberCardTable extends Migration
      */
     public function up()
     {
-        Schema::create('student_number_card', function(Blueprint $table)
+        Schema::create('admin_student_number_card', function(Blueprint $table)
         {
 
             $table->increments('id')->comment('主键ID');
@@ -41,6 +41,6 @@ class CreateStudentMemberCardTable extends Migration
     public function down()
     {
 
-        Schema::dropIfExists('student_number_card');
+        Schema::dropIfExists('admin_student_number_card');
     }
 }

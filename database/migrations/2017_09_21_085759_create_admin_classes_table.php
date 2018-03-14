@@ -4,7 +4,7 @@ use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateClassesTable extends Migration
+class CreateAdminClassesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateClassesTable extends Migration
      */
     public function up()
     {
-        Schema::create('classes', function(Blueprint $table)
+        Schema::create('admin_classes', function(Blueprint $table)
         {
             $table->increments('id')->comment('主键ID');
             $table->integer('venue_id')->default('0')->comment('道馆ID');
@@ -34,6 +34,6 @@ class CreateClassesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('classes');
+        Schema::dropIfExists('admin_classes');
     }
 }

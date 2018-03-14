@@ -131,12 +131,12 @@ class StudentCard extends  BaseService
         $pageSize = $request->get('pageSize') ?:  20;
         if($student_id)
         {
-            $where[] = ['student_card.student_id','=', $student_id];
+            $where[] = ['admin_student_card.student_id','=', $student_id];
         }
 
-        $DB = DB::table("student_card")
-                ->join('card_snap', "student_card.card_snap_id","=", "card_snap.id")
-                ->join('admin', "student_card.operator_id","=", "admin.id")
+        $DB = DB::table("admin_student_card")
+                ->join('admin_card_snap', "admin_student_card.card_snap_id","=", "admin_card_snap.id")
+                ->join('admin', "admin_student_card.operator_id","=", "admin.id")
         ;
         if($where)
         {
@@ -147,10 +147,10 @@ class StudentCard extends  BaseService
         }
         $DB->orderBy($orderBy, $sortBy);
         $fields = [
-                "student_card.*",
-                "card_snap.type",
-                DB::raw("card_snap.name as card_name"),
-                DB::raw("card_snap.card_price as price"),
+                "admin_student_card.*",
+                "admin_card_snap.type",
+                DB::raw("admin_card_snap.name as card_name"),
+                DB::raw("admin_card_snap.card_price as price"),
                 DB::raw("admin.name as operator_name"),
         ];
         $list = $DB->select($fields)->paginate($pageSize)->toArray();

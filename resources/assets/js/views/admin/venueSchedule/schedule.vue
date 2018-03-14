@@ -51,11 +51,11 @@
                           <div class="btn-group btn-group-sm">
                             <button type="button" @click="changeSearchTime(-7)" class="btn btn btn-default" >
                                   <!-- <i class="fa fa-search"></i> -->
-                                  <<<上一周
+                                  <上一周
                             </button>
                             <button type="button" @click="changeSearchTime(+7)"class="btn btn btn-default" >
                                   <!-- <i class="fa fa-search"></i> -->
-                                  >>>上一周
+                                  上一周>
                             </button>
                           </div>
                             <!--  数据搜索框 -->

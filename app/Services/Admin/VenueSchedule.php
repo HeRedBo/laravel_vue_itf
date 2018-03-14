@@ -232,6 +232,7 @@ class VenueSchedule extends  BaseService
             $first_day = $week_between[0];
             $last_day  = $week_between[1];
             $params['date'] = $first_day;
+
             if($first_day < $date)
             {
                 $schedule = $this->searchSchedule($params);
@@ -269,6 +270,7 @@ class VenueSchedule extends  BaseService
         $schedules = $venueScheduleModel->getDateBetweenSchedule($params);
         $params['class_id']   = $class_id;
         $params['student_id'] = $student_id;
+
         $venue_schedules = $this->buildScheduleData($schedules,$params);
         $mouth_end_day   =  $mouth_between[1];
         $course_count    = getMouthXLength($mouth_end_day);
@@ -296,7 +298,7 @@ class VenueSchedule extends  BaseService
             $schedule_details            = $this->getScheduleDetails($schedule_ids, $params);
             $venue_schedules_extend_data = $this->getVenueSchedulesExtend($schedule_ids, $params);
             $student_sign_data           = $this->getStudentSignData($params);
-            $scheduleCourseTimes        = $this->getScheduleCourseTimeByIds($schedule_ids);
+            $scheduleCourseTimes         = $this->getScheduleCourseTimeByIds($schedule_ids);
             // 从新组装数据 已当前周的开始时间与结束时间进行判断从足数据
         }
         
@@ -304,20 +306,18 @@ class VenueSchedule extends  BaseService
         $end_date_time   = $params['end_time'];
         $student_id      = $params['student_id']; //
         $query        = Student::query();
+
         $student_info    = $query
                                 ->where('id','=', $student_id)
                                 ->with('classes')
                                 ->first();
-        
         $sign_up_date    = $student_info->sign_up_at;
         $classes         = $student_info->classes->toArray();
         $class_ids       = array_column($classes,'id');
         $sign_up_time    = strtotime($sign_up_date);
         $temp_date_time  = $start_date_time;
-        
-        
-        $now_time = time();
-        
+        $now_time         = time();
+
         while ($temp_date_time <= $end_date_time)
         {
             $mouth_temp_time = strtotime($temp_date_time);
@@ -356,6 +356,7 @@ class VenueSchedule extends  BaseService
             // 不显示日期小于学生报名时间的数据
             if($mouth_temp_time <= $sign_up_time)
             {
+                $temp_date_time = date("Y-m-d", strtotime("{$temp_date_time} + 1 day"));
                 continue;
             }
             
@@ -403,7 +404,9 @@ class VenueSchedule extends  BaseService
                 foreach ($schedule_data_tmp as $k => &$v)
                 {
                     if(empty($v))
+                    {
                         continue;
+                    }
                     $class_id = $v['class_id'];
                     if(!in_array($class_id,$class_ids))
                     {
@@ -469,6 +472,7 @@ class VenueSchedule extends  BaseService
                 }
                 $venue_schedules[$w][$i]['schedule_data'] = array_filter($schedule_data_tmp);
             }
+
             $temp_date_time = date("Y-m-d", strtotime("{$temp_date_time} + 1 day"));
         }
         return $venue_schedules;
@@ -485,7 +489,6 @@ class VenueSchedule extends  BaseService
         $year  = date("Y",$date_time);
         $month = date("m",$date_time);
         $date = date("d",$date_time);
-
         $lunar_result = $lunar_service->convertSolarToLunar($year, $month, $date);
         $lunar_name = $lunar_result[2];
         if($lunar_name == '初一')
@@ -611,16 +614,8 @@ class VenueSchedule extends  BaseService
         $student_id     = $params['student_id'];
         $student_ids    = [$student_id];
         $student_sign_data = $studentService->getStudentSignData($student_ids, $params);
-        $result = [];
-        if($student_sign_data)
-        {
-            $student_sign_data = $student_sign_data[$student_id];
-            foreach ($student_sign_data as $k => $v)
-            {
-                $result[$v['sign_date']][$v['section']] = $v;
-            }
-        }
-        return $result;
+        return isset($student_sign_data[$student_id]) ? $student_sign_data[$student_id] : [];
+
     }
 
     public  function  getVenueSchedulesExtend($schedule_ids ,$params)
@@ -672,6 +667,8 @@ class VenueSchedule extends  BaseService
     {
         $date     = isset($params['date']) ? $params['date'] : date("Y-m-d");
         $venue_id = isset($params['venue_id']) ? (int) $params['venue_id'] : 0;
+        if(empty($venue_id))
+            return [];
         $venueSchedule_model = ServiceFactory::getModel("Admin\\VenueSchedule");
         $query = $venueSchedule_model->query();
         $where = [
@@ -681,6 +678,7 @@ class VenueSchedule extends  BaseService
         ];
         if(!empty($venue_id))
             $where[] = ['venue_id','=', $venue_id];
+
         foreach ($where as $v)
         {
             $query->where($v[0], $v[1], $v[2]);
@@ -776,17 +774,18 @@ class VenueSchedule extends  BaseService
     protected  function getVenueScheduleExtend($schedule_id , $params)
     {
         $class_id = isset($params['class_id']) ? $params['class_id'] : 0;
+        $section  = isset($params['section']) ? $params['section'] : 0;
         $date = isset($params['date']) ? $params['date'] : '';
-        
         $where = [
             ['schedule_id', '=', $schedule_id],
         ];
         if(!empty($class_id))
             $where[] = ['class_id','=', $class_id];
+        if(!empty($section))
+            $where[] = ['section','=',$section];
         if(empty($date))
             $date =date("Y-m-d");
-        
-        
+
         $date_between = getWeekBE($date);
         $model =   $venueSchedule_model = ServiceFactory::getModel("Admin\\VenueScheduleDetailExtend");
         $query = $model->query()

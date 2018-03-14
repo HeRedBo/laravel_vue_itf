@@ -9,6 +9,6 @@ use Prettus\Repository\Traits\TransformableTrait;
 class RelationName extends Model implements Transformable
 {
     use TransformableTrait;
-    protected  $table = "relation_name";
+    protected  $table = "admin_relation_name";
     //
 }

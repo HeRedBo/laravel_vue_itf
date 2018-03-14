@@ -115,6 +115,7 @@ class StudentService extends BaseService
             $query->whereIn('student_id', $student_ids);
             $query->with(['classes']);
             $data = $query->get();
+
             if($data)
             {
                 $data = $data->toArray();
@@ -127,7 +128,7 @@ class StudentService extends BaseService
                     $v['status_name'] = isset($signStatusMap[$v['status']]) ? $signStatusMap[$v['status']] : '';
                     $v['type_name'] = isset($signTypeMap[$v['status']]) ? $signTypeMap[$v['status']] : '';
                     unset($v['classes']);
-                    $result[$v['student_id']][$v['section']] = $v;
+                    $result[$v['student_id']][$v['sign_date']][$v['section']] = $v;
                 }
             }
         }
