@@ -285,22 +285,17 @@ class StudentsController extends ApiController
             return $this->response->withInternalServer($res['msg']);
 
     }
-
-
-
-
-
+    
     public  function  sign(StudentSignRequest $request)
     {
         $params = $request->all();
-        $res = $this->repository->sign($params);
+        $res = $this->repository->sign($params,$this->student_card_service);
         if($res['status'] == 1)
             return $this->response->withSuccess($res['msg']);
         else
             return $this->response->withInternalServer($res['msg']);
     }
-
-
+    
     public  function  getSignCalendar(StudentSignCalendar $request)
     {
         $res = $this->repository->getSignCalendar($request);

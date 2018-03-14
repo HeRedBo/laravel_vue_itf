@@ -46,18 +46,15 @@ class StudentCard extends  BaseService
     protected  $venues_student_number_card_redis_key = 'venues_student_number_card_redis_key:';
 
     protected $attributeValue = [
-        'total_class_number' => '课堂总数',
+        'total_class_number'   => '课堂总数',
         'residue_class_number' => '已上课程数',
-        'start_time' => '卡券有效期开始时间',
-        'end_time' => '卡券有效期结束时间',
-        'card_price' => '卡券价格',
-        'status' => '卡券有效状态',
-        'operator_id' => '操作人ID',
-        'operator_name' => '操作用户姓名',
+        'start_time'           => '卡券有效期开始时间',
+        'end_time'             => '卡券有效期结束时间',
+        'card_price'           => '卡券价格',
+        'status'               => '卡券有效状态',
+        'operator_id'          => '操作人ID',
+        'operator_name'        => '操作用户姓名',
     ];
-
-
-
     
     public  function __construct(
         StudentNumberCardRepositoryEloquent $studentNumberCardRepository,
@@ -547,5 +544,95 @@ class StudentCard extends  BaseService
         }
         $data = $query->select($fields)->get()->toArray();
         return success("数据获取成功",$data);
+    }
+    
+    /**
+     * 修改学生卡券的使用次数 || 仅针对使用次卡的学生
+     * @param array $studentIds 学生记录ID
+     * @param int   $number
+     * @author Red-Bo
+     */
+    public function updateCardResidueNumber(array $studentIds, $number = 1)
+    {
+        
+        try 
+        {
+            $whereIn = [
+                ['student_id', $studentIds]
+            ];
+            
+            $where = [
+                ['status','=', self::CARD_STATUS_OK],
+            ];
+            $model  = new studentCardModel();
+            $query = $model->query();
+            foreach ($whereIn as $v)
+            {
+                $query->whereIn($v[0], $v[1]);
+            }
+            foreach ($where as $v)
+            {
+                $query->where($v[0], $v[1], $v[2]);
+            }
+            $student_cards = $query
+                            ->with("card_snap")
+                            ->get();
+            if(empty($student_cards))
+            {
+                return error("未找到需要修改的卡券信息");
+            }
+            $student_cards = $student_cards->toArray();
+            foreach ($student_cards as $student_card)
+            {
+               $card_snap = $student_card['card_snap'];
+               // 如果是次卡类型 修改卡券的实验次数
+               if($card_snap['type'] == self::CI_CARD_TYPE)
+               {
+                   // increment
+                   // 修改卡券使用数量
+                   $old_data = $student_card;
+                   $total_class_number   = $student_card['total_class_number'];
+                   $residue_class_number = $student_card['residue_class_number'];
+                   if($total_class_number > $residue_class_number)
+                   {
+                       
+                       $new_nunber = $residue_class_number + $number;
+                       $update_data = [
+                           'residue_class_number' => $new_nunber,
+                       ];
+
+                       $query2  = studentCardModel::query();
+                       $where = [
+                            ['id','=', $student_card['id']],
+                            ['total_class_number','>=', $new_nunber], //防止数据并发处理
+                       ];
+                       foreach ($where as $k => $v) 
+                       {
+                           $query2->where($v[0], $v[1], $v[2]);
+                       }
+
+                       $res = $query2->update($update_data);
+                       // 添加数据操作日志
+                       if($res)
+                       {
+
+                            $old_data['card_name'] = $card_snap['name'];
+                            $log_data = $this->buildStudentCardLog($old_data,$update_data,'修改卡券使用次数');
+                            if($log_data)
+                            {
+                                $student_log_service = ServiceFactory::getService("Logs\\StudentCardLogService");
+                                $student_log_service->addCardLog($log_data);
+                            }
+                       }  
+                   }
+               }
+            }
+        } 
+        catch (\Exception $e) 
+        {
+            logResult('【修改学生次卡卡券使用次数】'. $e->__toString(),'error');
+            return error($e->getMessage());
+        }
+        return success("数据修改成功！");
     }
 }

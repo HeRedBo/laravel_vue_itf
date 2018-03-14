@@ -503,7 +503,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
      * @param array $params
      * @return mixed
      */
-    public  function  sign(array $params)
+    public  function  sign(array $params, StudentCard $studentCard)
     {
         try
         {
@@ -543,7 +543,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                             ->select($fields)
                             ->get()
                             ->toArray();
-            $insert_data = [];
+            $insert_data = $sign_student_ids = [];
             if($result)
             {
                 foreach ($result as $v)
@@ -563,6 +563,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                             'operator_id' => $this->admin_id,
                             'created_at' => $now,
                         ];
+                        $sign_student_ids[] =  $v['id'];
                     }
                 }
             }
@@ -570,27 +571,41 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             {
                 return error('学生信息不存在');
             }
-
             if($insert_data)
             {
                 $model = ServiceFactory::getModel("Admin\\VenueStudentSign");
                 // 先删旧数据
                 $query = $model->query();
-                $query->where('venue_id','=', $venue_id)
-                      ->where('class_id','=', $class_id)
-                      ->whereIn('student_id',$student_ids)
-                      ->where('sign_date', '=', $params['sign_date'])
-                      ->delete();
+                $where = [
+                    ['venue_id','=', $venue_id],
+                    ['class_id','=', $class_id],
+                    ['sign_date', '=', $params['sign_date']],
+                    ['section', '=', $params['section']],
+                ];
+                foreach ($where as $v)
+                {
+                    $query->where($v[0], $v[1],$v[2]);
+                }
+                
+                $query->whereIn('student_id',$student_ids)
+                       ->delete();
                 $res = $model->BatchInsert($insert_data);
-
                 if($res)
                 {
+                    // 签到成功 调用签到用户修改卡券使用接接口
+                    if($sign_student_ids)
+                    {
+                        $this->studentCardService =$studentCard;
+                        $this->studentCardService->updateCardResidueNumber($sign_student_ids);
+                    }
+                    
                     $student_names = array_column($result,'name');
                     $student_names = implode(',', $student_names);
                     Event::fire(new AdminLogger($venue_id,'sign',"【{$student_names}】签到"));
                     return success('签到成功');
                 }
             }
+            
         }
         catch (\Exception $e)
         {
@@ -599,8 +614,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
         }
         return error('签到失败');
     }
-
-
+    
     public function  getSignCalendar(Request $request)
     {
         try

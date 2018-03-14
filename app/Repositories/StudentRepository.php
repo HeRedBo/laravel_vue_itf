@@ -33,7 +33,7 @@ interface StudentRepository extends RepositoryInterface
 
     public function  getStudentCardLogger(Request $request);
     
-    public  function  sign(array $params);
+    public  function  sign(array $params,StudentCard $studentCard);
 
     public  function getSignCalendar(Request $request);
 
