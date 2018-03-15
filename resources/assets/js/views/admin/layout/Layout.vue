@@ -8,10 +8,10 @@
 	</div>
 </template>
 <script>
-import {Navbar, Sidebar,AppMain} from 'views/admin/layout'
+import {Navbar, Sidebar,AppMain} from 'views/admin/Layout'
 
 export default {
-	name : 'layout',
+	name : 'Layout',
 	components : {
         Navbar,
         Sidebar,
