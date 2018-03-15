@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use Mockery\CountValidator\Exception;
 use Prettus\Repository\Eloquent\BaseRepository;
+use App\Repositories\AdminCommonRepository;
+
 use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\ClassesRepository;
 use App\Models\Admin\Classes;
@@ -14,7 +16,7 @@ use Illuminate\Support\Facades\DB;
  * Class ClassesRepositoryEloquent
  * @package namespace App\Repositories;
  */
-class ClassesRepositoryEloquent extends BaseRepository implements ClassesRepository
+class ClassesRepositoryEloquent extends AdminCommonRepository implements ClassesRepository
 {
     protected  $fields = [
         'name' => '',

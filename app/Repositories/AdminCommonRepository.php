@@ -96,4 +96,37 @@ class AdminCommonRepository extends  BaseRepository
         return $user;
     }
     
+    /**
+     * 获取道馆的各个模块的统计统计数
+     * @param int $is_self
+     * @author Red-Bo
+     */
+    public function getNumber($is_self = 1, $where = [])
+    {
+        $whereIn = [];
+        if($is_self)
+        {
+            $venue_ids = $this->getUserVenueIds();
+            if($venue_ids)
+            {
+                   $whereIn[] = ['venue_id', $venue_ids];
+            }
+        }
+        $query = $this->model->query();
+        if($whereIn)
+        {
+            foreach ($whereIn as $in)
+            {
+                $query->whereIn($in[0], $in[1]);
+            }
+        }
+        if($where)
+        {
+            foreach ($where as $v)
+            {
+                $query->where($v[0], $v[1], $v[2]);
+            }
+        }
+        return $query->count();
+    }
 }

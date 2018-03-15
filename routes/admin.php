@@ -13,6 +13,7 @@ Route::group(['middleware' => ['auth:admin','menu']], function() {
     Route::get('/', 'IndexController@index');
     Route::any('/menu', ['as' => 'admin.menu', 'uses' => 'IndexController@menu']);
     Route::get('/checkAcl', ['as' => 'admin.acl', 'uses' => 'IndexController@checkAcl']);
+   
 });
 
 if (!Request::ajax()) {
@@ -21,6 +22,9 @@ if (!Request::ajax()) {
 
 
 Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
+    // index statistics
+    Route::get('/statistics', ['as' => 'admin.statistics', 'uses' => 'IndexController@statistics']);
+    
     Route::get('venue/edit ', ['as' => 'admin.venue.edit', 'uses' => 'VenueController@edit']);
     Route::get('venue/getVenues ', ['as' => 'admin.venue.getVenues', 'uses' => 'VenueController@getVenueOptions']);
     Route::get('venue/checkName ', ['as' => 'admin.venue.checkName', 'uses' => 'VenueController@checkVenueName']);

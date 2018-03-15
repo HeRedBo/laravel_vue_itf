@@ -25,7 +25,7 @@ class CardCreateRequest extends FormRequest
     {
         $rules = [
             'type' => 'required',
-            'name' => 'required|unique:cards|min:2|max:255',
+            'name' => 'required|unique:admin_cards|min:2|max:255',
             'venue_id' => 'required|numeric',
             'card_price' => 'required|numeric',
             'unit' => '',

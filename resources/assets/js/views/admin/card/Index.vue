@@ -7,8 +7,26 @@
                             <button v-show="showCreateButton"  @click="handleCreate" type="button" class="btn btn-sm btn-success">添加卡券
                             </button>
                         </span>
+
+
                        
+
                         <div class="form-inline pull-right">
+                            <!-- 归属道馆 -->
+                            <div class="input-group input-group-sm">
+                                <el-select style="width:160px"  v-show="selectItemVisible" v-model="params.venue_id" placeholder="请选择道馆"  class="filter-item"  @change="venueChange" size="small"
+                                clearable
+                                >
+                                    <el-option
+                                           v-for="item in venueOptions"
+                                           :key="item.value"
+                                           :label="item.label"
+                                           :value="item.value"
+                                           >
+                                    </el-option>
+                                </el-select>
+                            </div>
+
                             <div class="input-group input-group-sm">
                                 <el-select style="width:100px" size="small"  v-model="params.type" class="filter-item" placeholder="卡券类型">
                                     <el-option
@@ -431,7 +449,6 @@ export default {
            })
            .then(function(response) 
            {
-
                 let {data} = response;
                 var  respondata = data.data
                 var options = [];
@@ -573,7 +590,11 @@ export default {
             {
                 delete this.params.type;
             }
-        }
+        },
+        venueChange(value) {
+            // 刷新页面
+            this.$refs.table.loadList();
+        },
     },  
     watch: {  
         'params.type': 'filterSearchParams',  

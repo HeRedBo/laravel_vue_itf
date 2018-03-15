@@ -283,3 +283,9 @@ export default {
 <style rel="stylesheet/scss" lang="scss">
  @import "resources/assets/styles/index";
 </style>
+<style type="text/css">
+   .el-tag {
+      margin-bottom: 5px;
+      margin-left: 4px;
+    }
+</style>

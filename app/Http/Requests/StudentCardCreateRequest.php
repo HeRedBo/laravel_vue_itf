@@ -24,7 +24,7 @@ class StudentCardCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'student_id'   => 'required|numeric|exists:students,id',
+            'student_id'   => 'required|numeric|exists:admin_students,id',
             'user_cards'   => 'required|array',
         ];
     }

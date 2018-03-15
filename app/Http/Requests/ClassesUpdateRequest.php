@@ -24,7 +24,7 @@ class ClassesUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:classes,name,'.$this->get('id').'|min:3|max:255',
+            'name' => 'required|unique:admin_classes,name,'.$this->get('id').'|min:3|max:255',
             'venue_id' => 'required'
         ];
     }

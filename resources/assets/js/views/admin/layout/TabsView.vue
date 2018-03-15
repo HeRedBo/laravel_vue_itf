@@ -35,8 +35,6 @@ export default {
       // if (this.$route.matched[this.$route.matched.length - 1].name) {
       //   return this.$route.matched[this.$route.matched.length - 1]
       // }
-     
-
       // this.$route.matched[0].path = '/'
       return this.$route;
     },
@@ -50,8 +48,6 @@ export default {
 
   watch : {
     $route() {
-       console.log('this.$route');
-      console.log(this.$route);
       this.addViewTabs();
     }
   }

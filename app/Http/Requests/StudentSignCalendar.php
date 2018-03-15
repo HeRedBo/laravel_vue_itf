@@ -25,7 +25,7 @@ class StudentSignCalendar extends FormRequest
     {
         return [
             'venue_id'   => 'required|numeric',
-            'student_id' => 'required|numeric|exists:students,id',
+            'student_id' => 'required|numeric|exists:admin_students,id',
             'class_id'   => 'numeric',
             'date'       => 'date',
         ];

@@ -26,11 +26,11 @@ class VenueBillDataType extends FormRequest
         $rules = [
             'venue_id'       => 'required|exists:venues,id',
             'type'           => 'required|in:1,2', // 1 入账 2 出账
-            'name'           => 'required|unique:venue_bill_data_type,name',
+            'name'           => 'required|unique:admin_venue_bill_data_type,name',
         ];
         if($this->get('id'))
         {
-            $rules['name'] = 'required|unique:venue_bill_data_type,name,'. $this->get('id');
+            $rules['name'] = 'required|unique:admin_venue_bill_data_type,name,'. $this->get('id');
         }
         return $rules;
     }

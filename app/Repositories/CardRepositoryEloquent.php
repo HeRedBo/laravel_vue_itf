@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Eloquent\BaseRepository;
+use App\Repositories\AdminCommonRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\CardRepository;
 use App\Models\Admin\Card;
@@ -14,7 +15,7 @@ use App\Services\Logs\CardOperationLogServices;
  * Class CardRepositoryEloquent
  * @package namespace App\Repositories;
  */
-class CardRepositoryEloquent extends BaseRepository implements CardRepository
+class CardRepositoryEloquent extends AdminCommonRepository implements CardRepository
 {
     protected $fields = [
         'venue_id'      => 0,

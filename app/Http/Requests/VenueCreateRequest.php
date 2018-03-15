@@ -24,7 +24,7 @@ class VenueCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:venues',
+            'name' => 'required|unique:admin_venues',
             'logo' => 'required',
         ];
     }

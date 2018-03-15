@@ -14,12 +14,16 @@ use App\Services\Admin\VenueBillService;
 use Illuminate\Support\Facades\Event;
 use App\Events\AdminLogger;
 use App\Services\ServiceFactory;
+use App\Repositories\StudentRepository;
 
 class ApiTestController extends ApiController
 {
     protected $student_card_service;
     protected $bill_service;
+    protected $repository;
+    
     public  function __construct(
+        StudentRepository $repository,
         StudentCard $student_card, 
         VenueBillService $bill_service
     )
@@ -27,6 +31,7 @@ class ApiTestController extends ApiController
         parent::__construct();
         $this->student_card_service = $student_card;
         $this->bill_service = $bill_service;
+        $this->repository = $repository;
         
     }
     
@@ -37,9 +42,14 @@ class ApiTestController extends ApiController
 
     public  function  ApiTest()
     {
-        $student_ids = [7];
-        $result = $this->student_card_service->updateCardResidueNumber($student_ids);
-        dd($result);
+
+        $result = $this->repository->getNumber();
+
+        
+        // 更新卡券使用次数测试
+        // $student_ids = [7];
+        // $result = $this->student_card_service->updateCardResidueNumber($student_ids);
+        // dd($result);
         
         
         $json = '{"card_id":3,"operation":"\u4fee\u6539\u5361\u5238\u72b6\u6001","field":["\u5361\u5238\u542f\u7528\u72b6\u6001"],"oldValue":["\u672a\u542f\u7528"],"newValue":["\u542f\u7528"]}';

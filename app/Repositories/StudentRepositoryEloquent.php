@@ -156,7 +156,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
         }
 
         $fields = ["admin_students.*"];
-        $query->groupBy('admin_student_class.id');
+        $query->groupBy('admin_students.id');
         $list =  $query->with(['operator','venues','classes'])
                         ->select($fields)
                         ->paginate($pageSize)

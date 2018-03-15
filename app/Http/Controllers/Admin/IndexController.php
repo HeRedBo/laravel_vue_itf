@@ -8,14 +8,32 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Admin\Permission;
 use Illuminate\Support\Facades\Auth;
+use App\Repositories\StudentRepository;
+use App\Repositories\CardRepository;
+use App\Repositories\ClassesRepository;
+use App\Repositories\VenueScheduleRepository;
 
 class IndexController extends ApiController
 {
-	
-	public function __construnct() 
+    
+    protected $student;
+    protected $cards;
+    protected $classes;
+    protected $venues;
+    
+    
+	public function __construct(
+	    StudentRepository $student,
+        CardRepository $cards,
+        ClassesRepository $classes,
+        VenueScheduleRepository $venues
+    )
 	{
-		parent::__construnct();
-
+		parent::__construct();
+		$this->student = $student;
+		$this->cards = $cards;
+		$this->classes = $classes;
+		$this->venues = $venues;
 	}
 	/**
 	 * index
@@ -52,5 +70,16 @@ class IndexController extends ApiController
         $res['status']= $check;
         return $this->response->withData($res);
 	}
+    
+	
+	public  function statistics()
+    {
+        $students = $this->student->getNumber();
+        $cards    = $this->cards->getNumber();
+        $classes  = $this->classes->getNumber();
+        $venues  = $this->venues->getNumber();
+        $data = compact('students', 'cards', 'classes','venues');
+        return $this->response->withData($data);
+    }
 }
 

@@ -78,7 +78,13 @@ export default {
               data : this.loginForm
             })
             .then(function(response) {
-              that.loading = false
+              that.loading = false;
+              let {data} = response;
+              that.$message({
+                    showClose: true,
+                    message: data.message,
+                    type: 'success'
+                });
                that.$router.push({ path: '/admin' })
            })
            .catch(function(error) {

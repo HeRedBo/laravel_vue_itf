@@ -27,7 +27,7 @@ class CardUpdateRequest extends FormRequest
 
         $rules = [
             'type' => 'required',
-            'name' => 'required|unique:cards,name,'.$this->get('id').'|min:2|max:255',
+            'name' => 'required|unique:admin_cards,name,'.$this->get('id').'|min:2|max:255',
             'venue_id' => 'required|numeric',
             'card_price' => 'required|numeric',
             'unit' => '',
