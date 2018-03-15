@@ -6,10 +6,17 @@ use Closure;
 use App\Models\Admin\Admin;
 use App\Models\Admin\Permission;
 use App\Models\Admin\Role;
-use Auth, Cache;
+use Auth, Cache,DB;
 
 class Menu
 {
+    protected $tb_admin_user_role = 'admin_user_role';
+    protected $tb_admin_roles = 'admin_roles';
+    protected $tb_admin_role_permission = 'admin_role_permission';
+    protected $tb_admin_permissions = 'admin_permissions';
+    const SHOW_OK = 1;
+    const ADMIN_UID = 1;
+
     /**
      * Handle an incoming request.
      *
@@ -27,47 +34,123 @@ class Menu
     {
         Cache::forget('menus');
         $data = Cache::store(config('cache.default','file'))->get('menus', function() {
+            
             $data   = [];
             $uid    = Auth::guard('admin')->user()->id;
-            $user   = Admin::find($uid);
-            $level0 = Permission::where('parent_id','0')->orderBy('order_num','ASC')->get()->toArray();
-            $parentIds  =  array_unique(array_column($level0,'id'));
-            $subPermissions = Permission::whereIn('parent_id',$parentIds)
-                              ->where('is_show',1)
-                              ->orderBy('order_num','ASC')
-                              ->get()
-                              ->toArray();
-    
-            $subLevels = [];
-            foreach ($subPermissions as $key => $val)
-            {
-                $subLevels[$val['parent_id']][] = $val;
-            }
-            
+            $query = DB::table($this->tb_admin_user_role); 
+            $where = [
+               
+                ["admin_permissions.is_show","=",self::SHOW_OK],
+            ];
+            if($uid !== self::ADMIN_UID)
+                $where[] =  ["admin_user_role.user_id","=",$uid];
 
-            foreach ($level0 as $key => $val) 
+            $query->join($this->tb_admin_roles, $this->tb_admin_user_role.".role_id","=", $this->tb_admin_roles.'.id')
+                 ->join($this->tb_admin_role_permission, $this->tb_admin_user_role.".role_id","=",$this->tb_admin_role_permission.".role_id")
+                ->join($this->tb_admin_permissions, $this->tb_admin_role_permission.".permission_id","=",$this->tb_admin_permissions.".id")
+
+                ;
+            $query->select([$this->tb_admin_permissions.".*"]);
+            if($where)
             {
-              
-                $subLevel = isset($subLevels[$val['id']]) ? $subLevels[$val['id']] : [];
-                foreach ($subLevel as $k => $v)
+                foreach ($where as $k => $v) 
                 {
-                    $subLevel[$k]['url'] = '/' .str_replace('.', '/', $v['name']);
-                    if(!$user->hasPermission($v['name']) && $uid != 1) {
-                        unset($subLevel[$k]);
+                    $query->where($v[0], $v[1], $v[2]);
+                }
+            }
+
+            $query->orderBy('order_num','ASC');
+            $permissions = $query->get();
+            $menu        = [];
+
+            if($permissions)
+            {
+                $permissions = $permissions->toArray();
+                $userPermissionIds = array_column($permissions,'id');
+            }
+
+            $level0 = [];
+            foreach ($permissions as $k => $v) 
+            {
+                if($v->parent_id == 0)
+                {
+                    $level0[] = $v;
+                }
+            }
+            $parentIds  =  array_unique(array_column($level0,'id'));
+
+            $subLevels  = [];
+            foreach ($parentIds as $k => $parentId) 
+            {
+                foreach ($permissions as $kk => $v) 
+                {
+                    if($v->parent_id == $parentId)
+                    {
+                        $subLevels[$v->parent_id][] = $v;
                     }
                 }
-
-                $val['url'] =  '/' .str_replace('.', '/', $val['name']);
-
-                $data[$val['name']] = $val;
-                $data[$val['name']]['children'] = [];
-
+            }
+        
+            foreach ($level0 as $key => $val) 
+            {
+                $subLevel = isset($subLevels[$val->id]) ? $subLevels[$val->id] : [];
+                foreach ($subLevel as $k => $v)
+                { 
+                    $subLevel[$k]->url = '/' .str_replace('.', '/', $v->name);
+                }
+                $val->url =  '/' .str_replace('.', '/', $val->name);
+                $data[$val->name] = $val;
+                $data[$val->name]->children = [];
                 if(!empty($subLevel)) {
-                    $data[$val['name']]['children'] = $subLevel;
+                    $data[$val->name]->children = $subLevel;
                 }
             }
+
             Cache::put('menus', $data);
             return $data;
+
+            // $level0 = Permission::where('parent_id','0')
+            //                     ->orderBy('order_num','ASC')
+            //                     ->get()
+            //                     ->toArray();
+            
+            // $parentIds  =  array_unique(array_column($level0,'id'));
+
+            // $subPermissions = Permission::whereIn('parent_id',$parentIds)
+            //                   ->where('is_show',1)
+            //                   ->orderBy('order_num','ASC')
+            //                   ->get()
+            //                   ->toArray();
+
+            // $subLevels = [];
+            // foreach ($subPermissions as $key => $val)
+            // {
+            //     $subLevels[$val['parent_id']][] = $val;  
+            // }
+        
+            // foreach ($level0 as $key => $val) 
+            // {
+              
+            //     $subLevel = isset($subLevels[$val['id']]) ? $subLevels[$val['id']] : [];
+            //     foreach ($subLevel as $k => $v)
+            //     {
+            //         $subLevel[$k]['url'] = '/' .str_replace('.', '/', $v['name']);
+            //         if(!$user->hasPermission($v['name']) && $uid != 1) {
+            //             unset($subLevel[$k]);
+            //         }
+            //     }
+
+            //     $val['url'] =  '/' .str_replace('.', '/', $val['name']);
+
+            //     $data[$val['name']] = $val;
+            //     $data[$val['name']]['children'] = [];
+
+            //     if(!empty($subLevel)) {
+            //         $data[$val['name']]['children'] = $subLevel;
+            //     }
+            // }
+            // Cache::put('menus', $data);
+            // return $data;
             
         });
         return $data;

@@ -15,7 +15,7 @@
                                 style='width: 85%; margin-left:50px; margin-top:20px'
                         >
                                 <el-form-item label="父级">
-                                    <el-select v-model="permissionForm.parent_id" placeholder="请选择">
+                                    <el-select filterable  v-model="permissionForm.parent_id" placeholder="请选择">
                                       <el-option
                                         v-for="item in parentOptions"
                                             :key="item.value"

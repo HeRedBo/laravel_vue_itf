@@ -186,9 +186,10 @@ class StudentsController extends ApiController
     {
         try{
             $data = $this->repository->getRelationOptions();
-        }catch (\Exception $e)
+        }
+        catch (\Exception $e)
         {
-            dd($e);
+            return $this->response->withInternalServer($e->getMessage());
         }
 
         $data = array_column($data, NULL ,'id');

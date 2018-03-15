@@ -26,8 +26,16 @@ class AuthenticateAdmin
         $routeName = starts_with(Route::currentRouteName(),'admin.') ? Route::currentRouteName() : 'admin.' . Route::currentRouteName();
         if(!Gate::check($routeName))
         {
-            $response = new ApiResponse();
-            return $response->withForbidden('你没有权限执行此操作');
+            if($request->ajax())
+            {
+                $response = new ApiResponse();
+                return $response->withForbidden('你没有权限执行此操作');
+            }
+            else
+            {
+                $url = '/admin/error/403';
+                return redirect($url);
+            }  
         }
         return $next($request);
     }

@@ -40,7 +40,7 @@ class Role extends Model implements Transformable
      */
     public function permissions()
     {
-        return $this->belongsToMany(Permission::class, 'role_permission','role_id','permission_id');
+        return $this->belongsToMany(Permission::class, 'admin_role_permission','role_id','permission_id');
     }
 
     

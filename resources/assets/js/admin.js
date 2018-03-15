@@ -70,12 +70,12 @@ router.beforeEach((to, from, next) => {
     
     NProgress.start() // 开启Progress
     var url = '/admin/checkAcl', path =to.path;
-
     if(path == '/admin/login') 
     {
         NProgress.done() // 结束Progress
         return next();
     }
+    
     axios({
         method:'GET',
             url:url,
@@ -89,9 +89,8 @@ router.beforeEach((to, from, next) => {
             NProgress.done() // 结束Progress
             let {data} = response;
             let responseData = data.data;
-
             if(!responseData.status) {
-                return next({ path: '/admin/error'});
+                return next({ path: '/admin/error/403'});
             }
       })
      .catch(function(error) {

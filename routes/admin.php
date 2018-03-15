@@ -90,9 +90,9 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     Route::resource('student', 'StudentsController');
     
     Route::post('venueBill/createDataType', ['as' => 'admin.venueBill.createDataType', 'uses' => 'VenueBillController@createVenueBillDataType']);
-    Route::resource('venue-bill', 'VenueBillController');
+    Route::resource('venueBill', 'VenueBillController');
     
-    // venuechedules
+    // venueschedules
     Route::get('venueSchedules/changeStatus', ['as' => 'admin.venueSchedules.changeStatus', 'uses' => 'VenueSchedulesController@changeStatus']);
     Route::get('venueSchedules/schedules', ['as' => 'admin.venueSchedules.schedules', 'uses' => 'VenueSchedulesController@schedules']);
     Route::post('venueSchedules/saveScheduleExtend', ['as' => 'admin.venueSchedules.saveScheduleExtend', 'uses' => 'VenueSchedulesController@saveScheduleExtend']);

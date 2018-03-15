@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { apiUrl } from 'config/base'
 import NProgress from 'nprogress' // Progress 进度条
+import { Message} from 'element-ui'
 /**
  * Create Axios
  */
@@ -28,7 +29,7 @@ http.interceptors.request.use(function (config) {
     // Do something with request error 
     return Promise.reject(error);
   });
-
+var that = this;
 // respone拦截器
 http.interceptors.response.use(function (response) {
     NProgress.done() // 结束Progress
@@ -77,13 +78,24 @@ http.interceptors.response.use(function (response) {
         // 跳转到登录页面
         window.location = '/admin/login';
     }
-    
+
+    if ([403].indexOf(response.status) >= 0) 
+    {
+        // 跳转提示用户无权限操作
+        var {data} = response;
+        Message({
+           message: data.message,
+           type: 'error',
+           duration: 3 * 1000
+        });
+        //window.location = '/admin/error/403';
+    }
     console.log('err' + error)// for debug
-    //  Message({
-    //    message: error.message,
-    //    type: 'error',
-    //    duration: 5 * 1000
-    //  })
+     // Message({
+     //   message: error.message,
+     //   type: 'error',
+     //   duration: 5 * 1000
+     // })
 
     NProgress.done() // 结束Progress
     return Promise.reject(error);

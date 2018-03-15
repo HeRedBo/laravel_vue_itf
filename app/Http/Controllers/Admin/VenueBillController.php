@@ -190,8 +190,7 @@ class VenueBillController extends ApiController
         return redirect()->back()->with('message', 'VenueBill deleted.');
     }
 
-    // 道馆战队数据类型创建
-    
+    // 道馆账单数据类型创建
     public function createVenueBillDataType(VenueBillDataType $request)
     {
         $res = $this->repository->saveVenueBillDataType($request);
