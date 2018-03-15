@@ -66,7 +66,7 @@
 
 <script>
 
-import PanThumb from 'components/Panthumb';
+import PanThumb from 'components/PanThumb';
 import ImageCropper from 'components/ImageCropper';
 import {stack_error,str_repeat} from 'config/helper';
 import VDistpicker from 'v-distpicker'

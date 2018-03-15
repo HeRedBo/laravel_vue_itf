@@ -323,7 +323,7 @@
       
       <script>
       
-      import PanThumb from 'components/Panthumb';
+      import PanThumb from 'components/PanThumb';
       import ImageCropper from 'components/ImageCropper';
       import {stack_error,isMobile,parseTime} from 'config/helper';
       import VDistpicker from 'v-distpicker'

@@ -43,7 +43,7 @@ window.toastr.options = {
 // 全局组件
 Vue.component(
 	'vTable',
-	require('components/admin/Table.vue')
+	require('components/Admin/Table.vue')
 );
 
 
