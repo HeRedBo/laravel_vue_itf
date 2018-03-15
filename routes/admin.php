@@ -24,8 +24,7 @@ if (!Request::ajax()) {
 Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     // index statistics
     Route::get('/statistics', ['as' => 'admin.statistics', 'uses' => 'IndexController@statistics']);
-    
-    Route::get('venue/edit ', ['as' => 'admin.venue.edit', 'uses' => 'VenueController@edit']);
+    //Route::get('venue/edit ', ['as' => 'admin.venue.edit', 'uses' => 'VenueController@edit']);
     Route::get('venue/getVenues ', ['as' => 'admin.venue.getVenues', 'uses' => 'VenueController@getVenueOptions']);
     Route::get('venue/checkName ', ['as' => 'admin.venue.checkName', 'uses' => 'VenueController@checkVenueName']);
     Route::resource('venue', 'VenueController');
@@ -34,10 +33,11 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     Route::get('/upload/index', 'UploadController@index');
     Route::post('/upload/uploadImg', 'UploadController@uploadImg');
     Route::post('/upload/uploadImg', 'UploadController@uploadImg');
-    Route::post('/upload/upAvatar', 'UploadController@uploadAvatar');
-    
+
     Route::get('/upload/file-detail', 'UploadController@fileDetail');
     Route::get('/upload/file-list', 'UploadController@getFileList');
+
+    Route::post('/upload/upAvatar', ['as' => 'admin.upload.upAvatar', 'uses' => 'UploadController@uploadAvatar']);
 
     // role
     Route::get('role/edit ', ['as' => 'admin.role.edit', 'uses' => 'RolesController@edit']);
@@ -87,15 +87,16 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     Route::get('student/signClassOptions', ['as' => 'admin.student.signClassOptions', 'uses' => 'StudentsController@signClassOptions']);
     Route::post('student/changeStudentCardStatus', ['as' => 'admin.student.changeStudentCardStatus', 'uses' => 'StudentsController@changeStudentCardStatus']);
     Route::get('student/cardLogger', ['as' => 'admin.student.cardLogger', 'uses' => 'StudentsController@cardLogger']);
+
     Route::resource('student', 'StudentsController');
     
     Route::post('venueBill/createDataType', ['as' => 'admin.venueBill.createDataType', 'uses' => 'VenueBillController@createVenueBillDataType']);
     Route::resource('venueBill', 'VenueBillController');
     
-    // venueschedules
-    Route::get('venueSchedules/changeStatus', ['as' => 'admin.venueSchedules.changeStatus', 'uses' => 'VenueSchedulesController@changeStatus']);
-    Route::get('venueSchedules/schedules', ['as' => 'admin.venueSchedules.schedules', 'uses' => 'VenueSchedulesController@schedules']);
-    Route::post('venueSchedules/saveScheduleExtend', ['as' => 'admin.venueSchedules.saveScheduleExtend', 'uses' => 'VenueSchedulesController@saveScheduleExtend']);
-    Route::resource('venueSchedules', 'VenueSchedulesController');
+    // venueschedule
+    Route::get('venueSchedule/changeStatus', ['as' => 'admin.venueSchedule.changeStatus', 'uses' => 'VenueSchedulesController@changeStatus']);
+    Route::get('venueSchedule/schedule', ['as' => 'admin.venueSchedule.schedule', 'uses' => 'VenueSchedulesController@schedules']);
+    Route::post('venueSchedule/saveScheduleExtend', ['as' => 'admin.venueSchedule.saveScheduleExtend', 'uses' => 'VenueSchedulesController@saveScheduleExtend']);
+    Route::resource('venueSchedule', 'VenueSchedulesController');
 
 });

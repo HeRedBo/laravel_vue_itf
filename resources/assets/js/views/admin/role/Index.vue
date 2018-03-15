@@ -140,6 +140,7 @@ export default {
     },
     methods : {
         handleCreate () {
+            this.RoleForm = {};
             this.dialogFormVisible = true;
         },
 

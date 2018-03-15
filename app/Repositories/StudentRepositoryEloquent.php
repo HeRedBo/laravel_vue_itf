@@ -187,10 +187,8 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
                 $course_times    = $venueSchedule['course_times'];
                 $w   = getDateWeek($date);
                 $date_venue_schedules = isset($venue_schedules[$w]) ? $venue_schedules[$w] : [];
-
-
             }
-            
+
             foreach ($data as &$v)
             {
                 $v['sign_data']  = [];

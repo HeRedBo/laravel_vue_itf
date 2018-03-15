@@ -172,14 +172,19 @@ class CardRepositoryEloquent extends AdminCommonRepository implements CardReposi
        
     }
 
-    public  function  checkCardName($name,$id)
+    public  function  checkCardName(array $params)
     {
-        $where = [
+        $name = $params['name'] ? $params['name'] : '';
+        $id   = $params['id'] ? $params['id'] : 0;
+        $venue_id = $params['venue_id'] ? $params['venue_id']: 0;
+         $where = [
             'name'=> $name,
         ];
         if($id > 0) {
             $where[] = ['id','!=', $id];
         }
+        if($venue_id)
+            $where[] = ['venue_id','=', $venue_id];
         return  $this->findWhere($where)->toArray();
     }
 

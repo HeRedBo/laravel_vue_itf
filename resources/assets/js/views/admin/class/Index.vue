@@ -92,6 +92,10 @@
                             <i :class="['fa','fa-circle',item.item.status==1?'text-success':'text-danger']"></i>
                         </a>
                     </template>
+                     <template slot="username" slot-scope="item">
+                        <span>{{item.item.operator.name}}</span>
+                    </template>
+                    
                      <!-- 操作 -->
                     <template slot="actions" slot-scope="item">
                         <div class="btn-group">
@@ -315,12 +319,14 @@ export default {
         {
             var url = 'class/checkClassName',that = this;
             let id = that.ClassForm.id ? that.ClassForm.id : 0;
+            var venue_id =  that.ClassForm.venue_id;
             this.$http({
                 method :"GET",
                 url : url,
                 params : {
                     name : name,
                     id   : id,
+                    venue_id : venue_id
                 }
             })
             .then(function(response) {

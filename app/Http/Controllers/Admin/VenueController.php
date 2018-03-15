@@ -96,9 +96,8 @@ class VenueController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request)
+    public function edit($id)
     {
-        $id      = $request->get('id');
         $venue   = $this->repository->find($id)->toArray();
         return $this->response->withData($venue);
     }

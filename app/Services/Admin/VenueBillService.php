@@ -99,14 +99,14 @@ class VenueBillService
                 try
                 {
                     DB::beginTransaction();
-                    DB::table('venue_bill')->insert($venue_bill_data);
+                    DB::table('admin_venue_bill')->insert($venue_bill_data);
                     $venue_bill_log_data = [];
                     foreach ($venue_bill_data as $k => $v)
                     {
                         unset($v['updated_at']);
                         $venue_bill_log_data[] = $v;
                     }
-                    DB::table('venue_bill_log')->insert($venue_bill_log_data);
+                    DB::table('admin_venue_bill_log')->insert($venue_bill_log_data);
                 }
                 catch (\Exception $e)
                 {

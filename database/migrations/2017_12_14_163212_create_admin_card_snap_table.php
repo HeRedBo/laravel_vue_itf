@@ -4,7 +4,7 @@ use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCardSnapTable extends Migration
+class CreateAdminCardSnapTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class CreateCardSnapTable extends Migration
     public function up()
     {
         // 卡券快照表
-        Schema::create('card_snap', function (Blueprint $table) {
+        Schema::create('admin_card_snap', function (Blueprint $table) {
             $table->increments('id')->comment('主键ID');
             $table->integer('card_id')->comment('历史卡券ID');
             $table->unsignedInteger('venue_id')->default('0')->comment('道馆ID');
@@ -38,6 +38,6 @@ class CreateCardSnapTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('card_snap');
+        Schema::dropIfExists('admin_card_snap');
     }
 }

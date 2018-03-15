@@ -26,7 +26,6 @@ export default {
             })
             .then(function(response) {
                 let {data} = response;
-                console.log(data.data);
                 that.permission_routers = data.data;     
             }).catch(function(error) {
                 that.loading = false;
@@ -39,7 +38,6 @@ export default {
             'sidebar'
         ]),
         isCollapse() {
-            console.log(!this.sidebar.opened);
             return !this.sidebar.opened
         }
     },

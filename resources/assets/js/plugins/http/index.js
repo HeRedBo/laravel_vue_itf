@@ -33,7 +33,6 @@ var that = this;
 // respone拦截器
 http.interceptors.response.use(function (response) {
     NProgress.done() // 结束Progress
-    console.log('response');
     // Do something with response data 
     return response;
 

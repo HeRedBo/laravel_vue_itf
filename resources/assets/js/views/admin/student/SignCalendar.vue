@@ -366,7 +366,6 @@ export default {
             {
                 let {data} = response;
                 var  respondata = data.data
-                console.log(respondata);
                 // that.fields   = respondata.fields;
                 that.schedule = respondata.schedule;
                 that.course_count    = that.schedule.course_count;
@@ -491,7 +490,7 @@ export default {
                 // 数据操作入库
                 var  week  = that.ScheduleForm.week;
                 var section = that.ScheduleForm.section;
-                var url = '/venueSchedules/saveScheduleExtend';
+                var url = '/venueSchedule/saveScheduleExtend';
                 this.$http({
                     method: 'POST',
                     url: url,
@@ -560,7 +559,7 @@ export default {
             formData.venue_course_form = that.tranformVenueCourseForm(that.venueCourseForm);
             
             // ajax 调用后台接口保存数据
-            let url = '/venueSchedules' + (this.venueCourseForm.id ? '/' + this.venueCourseForm.id : '')
+            let url = '/venueSchedule' + (this.venueCourseForm.id ? '/' + this.venueCourseForm.id : '')
             let method = this.venueCourseForm.id ? 'put' : 'post';
             this.$http({
                 method: method,

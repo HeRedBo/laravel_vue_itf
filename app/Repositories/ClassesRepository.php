@@ -17,7 +17,7 @@ interface ClassesRepository extends RepositoryInterface
     
     public  function  deleteClasses($id);
     
-    public function checkClassName($name,$id);
+    public function checkClassName(array $params);
     
     public function getVenueClassOptions($venue_id);
 }

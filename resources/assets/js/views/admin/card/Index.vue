@@ -476,12 +476,14 @@ export default {
         {
             var url = 'card/checkCardName',that = this;
             let id = that.CardForm.id ? that.CardForm.id : 0;
+            var venue_id  = that.CardForm.venue_id;
             this.$http({
                 method :"GET",
                 url : url,
                 params : {
                     name : name,
                     id   : id,
+                    venue_id : venue_id
                 }
             })
             .then(function(response) {

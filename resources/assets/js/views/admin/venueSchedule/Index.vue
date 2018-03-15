@@ -169,7 +169,7 @@ export default {
                 operator_name : {label:'操作人', need:'operator'},
                 actions : {label: '操作'}
         },
-        ajax_url: "/venueSchedules",
+        ajax_url: "/venueSchedule",
         params: {},
         currentPage: 1,
         perPage: 15,
@@ -177,7 +177,7 @@ export default {
           operator :{},
           venues : {}
         },
-        del: {url:'/venueSchedules',title:"删除后数据无法恢复! 确定要删除课程表吗?",successText:'道馆信息删除成功!'}
+        del: {url:'/venueSchedule',title:"删除后数据无法恢复! 确定要删除课程表吗?",successText:'道馆信息删除成功!'}
         
       }
     },
@@ -207,7 +207,7 @@ export default {
             }).then(function() 
             {
 
-              var url =  '/venueSchedules/changeStatus';
+              var url =  '/venueSchedule/changeStatus';
               that.$http({
                 method :'GET',
                 url : url,

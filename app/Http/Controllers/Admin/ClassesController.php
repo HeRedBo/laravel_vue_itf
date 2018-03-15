@@ -156,10 +156,9 @@ class ClassesController extends ApiController
     
     public function  checkClassName(Request $request)
     {
-        $name  = $request->get('name');
-        $id    = $request->get('id');
+        $params = $request->all();
         $status = 0;
-        $check = $this->repository->checkClassName($name,$id);
+        $check = $this->repository->checkClassName($params);
         if($check)
             $status = 1;
         $result['status'] = $status;

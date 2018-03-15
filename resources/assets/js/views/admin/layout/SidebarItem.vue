@@ -56,7 +56,6 @@ export default {
 		}
 	},
 	created(){
-       console.log('asda')
       // console.log(this.routes)
     }
 }

@@ -14,7 +14,7 @@ interface CardRepository extends RepositoryInterface
 
     public function  updateCard(array $data, $id);
     
-    public function checkCardName($name,$id);
+    public function checkCardName(array $params);
 
     public  function  updateStatus($id, $status);
 

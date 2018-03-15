@@ -4,7 +4,7 @@ use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddOperatorNaneCardPrefixToTable extends Migration
+class AddOperatorNameCardPrefixToAdminVenuesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class AddOperatorNaneCardPrefixToTable extends Migration
      */
     public function up()
     {
-        Schema::table('venues', function (Blueprint $table) {
+        Schema::table('admin_venues', function (Blueprint $table) {
             //
             $table->string('operator_name',60)->default('')->after('operator_id')->comment('操作用户姓名');
             $table->string('card_prefix',60)->default('')->after('parent_id')->comment('会员卡前缀');
@@ -27,7 +27,7 @@ class AddOperatorNaneCardPrefixToTable extends Migration
      */
     public function down()
     {
-        Schema::table('venues', function (Blueprint $table) {
+        Schema::table('admin_venues', function (Blueprint $table) {
              Schema::dropIfExists('venues');
         });
     }

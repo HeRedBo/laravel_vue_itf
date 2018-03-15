@@ -191,12 +191,12 @@ class CardsController extends ApiController
     }
 
 
+
     public function  checkCardName(Request $request)
     {
-        $name  = $request->get('name');
-        $id    = $request->get('id');
+        $params = $request->all();
         $status = 0;
-        $check = $this->repository->checkCardName($name,$id);
+        $check = $this->repository->checkCardName($params);
         if($check)
             $status = 1;
         $result['status'] = $status;

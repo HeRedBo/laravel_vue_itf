@@ -37,11 +37,6 @@ export default [
                         component : () => import('views/admin/venue/Index.vue'),
                     },
                     {
-                        path: 'new_index',
-                        name : '道馆列表',
-                        component : () => import('views/admin/venue/new_index.vue'),
-                    },
-                    {
                         path: 'Table',
                         name : '表格',
                         component : () => import('views/admin/venue/Index_table.vue'),
@@ -168,7 +163,7 @@ export default [
                      },
                      {
                         path: 'logger/:id',
-                        name: '操作日志',
+                        name: '卡券操作日志',
                         component: () => import('views/admin/card/Logger.vue')
                     }
                 ]

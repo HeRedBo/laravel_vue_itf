@@ -332,20 +332,23 @@ export default {
                   },
                  ]
             },
+            request_flag : false
 
         }
     },
 
     created() 
     {
-    	this.getUserVenus();
+    	  this.getUserVenus();
         this.getSchedule();  
     },
     methods:{
     	getSchedule() 
     	{
-    		var that = this,params = this.params;
-            var url = '/venueSchedules/schedules';
+    		  var that = this,params = this.params;
+            var url = '/venueSchedule/schedule';
+            if(that.request_flag) return;
+            that.request_flag = true;
             this.$http({
                 method :'GET',
                 url : url,
@@ -360,9 +363,11 @@ export default {
                 that.course_count    = that.schedule.course_count;
                 that.course_times    = respondata.course_times;
                 that.venue_schedules = respondata.venue_schedules;
+                that.request_flag = false;
             })
             .catch(function(error) 
             {
+                that.request_flag = false;
                 console.log(error);
                 stack_error(error);
             });
@@ -452,6 +457,9 @@ export default {
                 {
                     var venue_id =  options[0].value;
                     that.getClasses(venue_id);
+                    that.params.venue_id = venue_id;
+                    that.getSchedule();
+
                 } 
                 else
                 {
@@ -490,6 +498,7 @@ export default {
         },
 
         venueChange(value) {
+          
             this.getClasses(value);
         },
 
@@ -505,7 +514,7 @@ export default {
             	// 数据操作入库
                 var  week  = that.ScheduleForm.week;
                 var section = that.ScheduleForm.section;
-                var url = '/venueSchedules/saveScheduleExtend';
+                var url = '/venueSchedule/saveScheduleExtend';
                 this.$http({
                     method: 'POST',
                     url: url,
@@ -574,7 +583,7 @@ export default {
             formData.venue_course_form = that.tranformVenueCourseForm(that.venueCourseForm);
             
             // ajax 调用后台接口保存数据
-            let url = '/venueSchedules' + (this.venueCourseForm.id ? '/' + this.venueCourseForm.id : '')
+            let url = '/venueSchedule' + (this.venueCourseForm.id ? '/' + this.venueCourseForm.id : '')
             let method = this.venueCourseForm.id ? 'put' : 'post';
             this.$http({
                 method: method,

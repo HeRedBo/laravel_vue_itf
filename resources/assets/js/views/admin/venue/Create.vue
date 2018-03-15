@@ -9,7 +9,7 @@ export default {
     data() {
         return {
            venueForm : {
-               parent_id: ''
+               parent_id: 0
             },
             select: {}
         }

@@ -25,13 +25,11 @@ export default {
     methods : {
 
         loadVenue() {
-            var url = 'venue/edit', that = this, id = this.$route.params.id;
+            //var url = 'venue/edit', that = this, id = this.$route.params.id;
+            var that = this, id = this.$route.params.id,  url = 'venue/'+id+'/edit';
             this.$http({
              method :"GET",
              url : url,
-             params : {
-               id : id
-             }
           })
           .then(function(response) {
             var responseJson = response.data;

@@ -4,7 +4,7 @@ use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateStudentContactsTable extends Migration
+class CreateAdminStudentContactsTable extends Migration
 {
     /**
      * Run the migrations.

@@ -26,7 +26,7 @@
         methods : {
             loadData() 
             {
-                var that = this, id = this.$route.params.id, url = 'venueSchedules/' + id + '/edit';
+                var that = this, id = this.$route.params.id, url = 'venueSchedule/' + id + '/edit';
                 that.$http({
                     method: "GET",
                     url: url

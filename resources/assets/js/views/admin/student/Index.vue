@@ -5,7 +5,7 @@
           <div class="box-header">
             <div class="row">
 
-              <div class="col-md-4">
+              <div class="col-md-2">
                     <div class="form-group form-inline">
                         <button type="button" 
                           class="btn btn-default btn-sm checkbox-toggle"  
@@ -42,7 +42,7 @@
                   
               </div>
 
-              <div class="col-md-8">
+              <div class="col-md-10">
 
                 <div class="form-inline pull-right">
 
@@ -397,7 +397,7 @@
             <table class="table  table-bordered" style="font-size: 14px">
                 <tbody>
                 <tr>
-                    <th>姓名</th>studentSign
+                    <th>姓名</th>
                     <td> {{student_info.name}} </td>
                     <th>性别</th>
                     <td> {{student_info.sex_map?student_info.sex_map[student_info.sex]:''}} </td>
@@ -454,7 +454,7 @@
                 <tr v-show="student_info.in_user_student_card&&student_info.in_user_student_card.type==2">
                     <th>卡券购买时间</th>
                     <td colspan="2"> {{student_info.in_user_student_card ? student_info.in_user_student_card.created_at : '' }} </td>
-                    <th>卡券总次数/th>
+                    <th>卡券总次数</th>
                     <td> {{student_info.in_user_student_card ? student_info.in_user_student_card.total_class_number : 0 }} </td>
                     <th>卡券消费次数</th>
                     <td> {{student_info.in_user_student_card ? student_info.in_user_student_card.residue_class_number : 0 }}</td>

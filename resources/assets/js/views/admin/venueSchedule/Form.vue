@@ -563,7 +563,6 @@ export default {
             }
             // 校验课程时间
             var check = this.validateVenueSchedule();
-            console.log(check);
             if(!check)
             {
                 this.$message.error('课程表数据不能为空！');
@@ -578,7 +577,7 @@ export default {
             
             // ajax 调用后台接口保存数据
             
-            let url = '/venueSchedules' + (this.venueCourseForm.id ? '/' + this.venueCourseForm.id : '')
+            let url = '/venueSchedule' + (this.venueCourseForm.id ? '/' + this.venueCourseForm.id : '')
             let method = this.venueCourseForm.id ? 'put' : 'post';
             this.$http({
                 method: method,
