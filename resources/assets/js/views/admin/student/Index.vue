@@ -129,9 +129,9 @@
 
             </div>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-inline" v-show="params.sign">
+            <div class="row" v-show="params.sign">
+                <div class="col-md-6">
+                    <div class="form-inline" >
                          <!-- 签到日期    -->
                         <div class="input-group input-group-sm">
                              <el-date-picker
@@ -183,12 +183,17 @@
 
 
                     </div>
-                    
-
-                    
-
-
                 </div>
+                 <div class="col-md-6">
+                            <div class="form-inline pull-right">
+                               图例：
+                                <el-tag>未签到</el-tag>
+                                <el-tag type="success">已签到</el-tag>
+                                <el-tag type="gray">迟到</el-tag>
+                                <el-tag type="warning">请假</el-tag>
+                                <el-tag type="danger">旷课</el-tag>
+                            </div>
+                  </div>
             </div>
           </div>
 
