@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use App\Repositories\studentNumberCardRepository;
+use App\Repositories\StudentNumberCardRepository;
 use App\Models\Admin\StudentNumberCard;
 use App\Validators\StudentNumberCardValidator;
 
