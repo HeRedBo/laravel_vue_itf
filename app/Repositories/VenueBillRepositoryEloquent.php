@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use App\Repositories\venueBillRepository;
+use App\Repositories\VenueBillRepository;
 use App\Models\Admin\VenueBill;
 use App\Models\Admin\VenueBillDataType;
 use App\Validators\VenueBillValidator;
