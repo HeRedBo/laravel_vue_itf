@@ -7,7 +7,7 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-	<title>@yield('title') | {{ config('app.name','laravel')}}</title>
+	<title>@yield('title') {{ config('app.name','laravel')}}</title>
 	<!-- Style -->
 	<link rel="stylesheet" type="text/css" href="/css/admin.css" />
 	<style type="text/css"></style>
