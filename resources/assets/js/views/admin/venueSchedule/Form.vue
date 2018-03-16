@@ -10,8 +10,9 @@
                         class="el-form"
                         :rules="venueCourseFormRules">
                            <!-- 道馆 -->
+                          <!--   v-show="selectItemVisible"  -->
                             <el-form-item label="归属道馆" 
-                                v-show="selectItemVisible" 
+                               
                                 prop="venue_id" 
                             >
                                 <el-select 
