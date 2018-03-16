@@ -34,11 +34,6 @@ class RedirectIfAuthenticated
                 return response()->json($data);
            }   
         }
-        if(!Auth::guard($guard)->check() && ($request->path() != 'admin/login'))
-        {
-            $url = "admin/login";
-            return redirect($url);
-        }
         return $next($request);
     }
 }

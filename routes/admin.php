@@ -1,27 +1,24 @@
 <?php
-//Route::get('/', 'IndexController@index');
 
+Route::get('/login', ['uses' => 'IndexController@index'])->name('login');
 Route::post('/login', ['as' => 'admin.login','uses' => 'LoginController@login']);
 Route::get('/logout', 'LoginController@logout'); //退出系统
 Route::get('/ApiTest/api-test', 'ApiTestController@ApiTest');
 Route::get('/ApiTest/up-base64-img', 'ApiTestController@uploadBase64Img');
 Route::get('/ApiTest/save-operator-log', 'ApiTestController@saveOperatorLog');
 
-
-
 Route::group(['middleware' => ['auth:admin','menu']], function() {
     Route::get('/', 'IndexController@index');
     Route::any('/menu', ['as' => 'admin.menu', 'uses' => 'IndexController@menu']);
     Route::get('/checkAcl', ['as' => 'admin.acl', 'uses' => 'IndexController@checkAcl']);
-   
 });
 
 if (!Request::ajax()) {
     Route::get('{path?}', ['uses' => 'IndexController@index'])->where('path', '[\/\w\.-]*');
 }
 
-
 Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
+    
     // index statistics
     Route::get('/statistics', ['as' => 'admin.statistics', 'uses' => 'IndexController@statistics']);
     //Route::get('venue/edit ', ['as' => 'admin.venue.edit', 'uses' => 'VenueController@edit']);
