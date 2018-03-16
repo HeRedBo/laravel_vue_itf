@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Repositories\StudentRepository;
 use App\Repositories\CardRepository;
 use App\Repositories\ClassesRepository;
-use App\Repositories\VenueScheduleRepository;
+use App\Repositories\VenueRepositoryEloquent;
 
 class IndexController extends ApiController
 {
@@ -26,7 +26,7 @@ class IndexController extends ApiController
 	    StudentRepository $student,
         CardRepository $cards,
         ClassesRepository $classes,
-        VenueScheduleRepository $venues
+        VenueRepositoryEloquent $venues
     )
 	{
 		parent::__construct();

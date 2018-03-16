@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
+use App\Repositories\AdminCommonRepository;
 use App\Repositories\VenueRepository;
 use App\Models\Admin\Venue;
 use  App\Criteria\VenueCriteria;
@@ -12,7 +13,7 @@ use  App\Criteria\VenueCriteria;
  * Class VenueRepositoryEloquent
  * @package namespace App\Repositories;
  */
-class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
+class VenueRepositoryEloquent extends AdminCommonRepository implements VenueRepository
 {
     protected $fields = [
         'name' => '',
@@ -150,12 +151,51 @@ class VenueRepositoryEloquent extends BaseRepository implements VenueRepository
         return  $this->findWhere($where)->toArray();
     }
 
+
+    /**
+     * 获取道馆的各个模块的统计统计数
+     *
+     * @param int $is_self
+     * @param array $where
+     * @return int
+     */
+    public function getNumber($is_self = 1, $where = [])
+    {
+        $whereIn = [];
+        if($is_self)
+        {
+            $venue_ids = $this->getUserVenueIds();
+            if($venue_ids)
+            {
+                $whereIn[] = ['id', $venue_ids];
+            }
+        }
+        $query = $this->model->query();
+        if($whereIn)
+        {
+            foreach ($whereIn as $in)
+            {
+                $query->whereIn($in[0], $in[1]);
+            }
+        }
+        if($where)
+        {
+            foreach ($where as $v)
+            {
+                $query->where($v[0], $v[1], $v[2]);
+            }
+        }
+        return $query->count();
+    }
+
     public function getTreeData()
     {
         $fields = ['id','name','parent_id','created_at','updated_at'];
         $venues = $this->all($fields)->toArray();
         return  $this->_reSort($venues);
     }
+
+
     
     private function _reSort($data, $parent_id=0, $level=0, $isClear=TRUE)
 	{

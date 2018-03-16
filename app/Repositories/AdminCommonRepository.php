@@ -96,10 +96,13 @@ class AdminCommonRepository extends  BaseRepository
         return $user;
     }
     
+
     /**
      * 获取道馆的各个模块的统计统计数
+     *
      * @param int $is_self
-     * @author Red-Bo
+     * @param array $where
+     * @return int
      */
     public function getNumber($is_self = 1, $where = [])
     {
