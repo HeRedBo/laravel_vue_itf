@@ -66,7 +66,8 @@ return [
 
         'qiniu' => [
             'driver' => 'qiniu',
-            'domain' => 'http://oxzyl4pnt.bkt.clouddn.com/',          //你的七牛域名，支持 http 和 https，也可以不带协议，默认 http
+            'domain' => env('QINIU_DOMAIN'), // 七牛云链接域名          
+            //你的七牛域名，支持 http 和 https，也可以不带协议，默认 http
             'access_key'    => env('QINIU_ACCESS_KEY'),                          //AccessKey
             'secret_key' => env('QINIU_SECRET_KEY'),                             //SecretKey
             'bucket' => env('QINIU_BUCKET'),                                 //Bucket名字
