@@ -22,7 +22,7 @@ class RedirectIfAuthenticated
         {
            if(!$request->ajax())
            {
-                $url = $guard ? '/admin' : 'home';
+                $url = $guard ? '/home' : '/admin';
                 return redirect($url);
            }
            else

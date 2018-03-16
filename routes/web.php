@@ -13,7 +13,7 @@
 
 Route::get('/', function () {
 	
-	$url = "admin/login";
+	$url = "/admin/login";
     return redirect($url);
     //return view('welcome');
 });
