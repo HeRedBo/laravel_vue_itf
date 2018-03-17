@@ -331,10 +331,7 @@ export default {
 
                 for (let j in total_course_time) 
                 {
-                    console.log(j);
                     var t_course_time = total_course_time[j];
-                    console.log(t_course_time);
-
                     if(j == r_key) 
                         continue;
                     if(!isEmpty(t_course_time))

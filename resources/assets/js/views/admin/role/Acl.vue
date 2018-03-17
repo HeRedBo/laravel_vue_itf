@@ -47,8 +47,6 @@
                 })
                 .then(function(response) {
                     var {data} = response; 
-                    console.log(data);
-                    console.log(data.data.tree);
                     that.treeData = data.data.tree;
                     that.initTree();
                     // 跳转到列表页

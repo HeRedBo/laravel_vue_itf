@@ -368,7 +368,6 @@
             },
 
             validateBirthday = (rule, value, callback) => {
-                console.log(typeof value);
                 callback();
             },
             validateCardNumber = (rule, value, callback) =>  {
@@ -756,7 +755,6 @@
             {
               this.Contacts.relation_name = this.relationOptions[this.Contacts.relation_id].name;
               this.studentForm.user_contacts.push(this.Contacts);
-              console.log(this.userContacts);
               this.Contacts = {};
               this.dialogContactsFormVisible = false;
             },
@@ -775,7 +773,6 @@
               if(length > 1) 
               {
                   for (var i = length-1; i >= 0; i--) {
-                    console.log(this.studentForm.user_cards[i]);
                     this.studentForm.user_cards[i].status = 0;
                   }
                   that.studentForm.user_cards[index].status = 1;

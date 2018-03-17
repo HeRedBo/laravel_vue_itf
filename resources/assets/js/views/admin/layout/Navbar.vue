@@ -64,10 +64,6 @@ export default {
 			user : window.User
 		}
 	},
-	created(){
-		console.log(this.user);
-	},
-
 	components : {
 		Hamburger,
 		Levelbar,

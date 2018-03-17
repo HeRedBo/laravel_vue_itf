@@ -604,7 +604,7 @@ $(function () {
                 });
             },
             handleEdit(index, row) {
-                console.log(index, row);
+                // console.log(index, row);
             },
             reset() {
                 this.params = {};
@@ -636,7 +636,6 @@ $(function () {
                     .then(function (response) {
                         var responseJson = response.data, data = responseJson.data
                         that.student_info = data;
-                        console.log(data);
                     })
                     .catch(function (error) {
                         stack_error(error);
@@ -644,7 +643,6 @@ $(function () {
             },
             changeStudentCardStatus(row)
             {
-                console.log(row);
                 if(row.status >=2)
                     return;
 
@@ -659,7 +657,6 @@ $(function () {
             },
             statusTimeChange(value)
             {
-                console.log(value);
                 this.changeStatusForm.start_time =value;
             },
             handleChangeStatus()

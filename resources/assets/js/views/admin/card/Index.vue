@@ -8,9 +8,6 @@
                             </button>
                         </span>
 
-
-                       
-
                         <div class="form-inline pull-right">
                             <!-- 归属道馆 -->
                             <div class="input-group input-group-sm">
@@ -403,8 +400,8 @@ export default {
             } 
             else 
             {
-                    console.log('error submit!!')
-                    return false
+                console.log('error submit!!')
+                return false
             }
 
             });

@@ -211,16 +211,12 @@
             changePasswordRule() {
                 if(!this.userForm.id) {
                     this.userRules.password =  [
-                    { required: true, message: '请输入密码', trigger: 'blur'},
-                    { min: 6, max: 50, message: '长度在 6 到 50 个字符', trigger: 'blur' },
-                  ]
+                      { required: true, message: '请输入密码', trigger: 'blur'},
+                      { min: 6, max: 50, message: '长度在 6 到 50 个字符', trigger: 'blur' },
+                    ]
                 } else { 
-                    delete  this.userRules.password;
-                    
+                    delete  this.userRules.password; 
                 }
-                console.log(this.userRules);
-
-
             },
       
             cropSuccess(resData) {

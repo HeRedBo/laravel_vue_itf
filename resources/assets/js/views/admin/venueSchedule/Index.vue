@@ -262,7 +262,6 @@ export default {
                 }); 
         },
          view(data) {
-            console.log(data)
             this.schedule = data;
             setTimeout( function() {
                 swal({
