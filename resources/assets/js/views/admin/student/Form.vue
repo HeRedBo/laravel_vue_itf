@@ -115,8 +115,8 @@
                         
                          <!-- 会员卡号 -->
                         <el-form-item label="会员卡号" 
-                                      prop="card_number"  
-                                      v-show="showCardNumber()"
+                              prop="card_number"  
+                              v-show="showCardNumber()"
                         >
                               <el-input v-model="studentForm.card_number" placeholder="请输入会员卡号"></el-input>
                         </el-form-item>
@@ -372,7 +372,7 @@
                 callback();
             },
             validateCardNumber = (rule, value, callback) =>  {
-                if (this.studentForm.id == 0 && this.studentForm.auto_create_number ==0) 
+                if (this.studentForm.id == 0 && this.studentForm.auto_create_number == 0) 
                 {
                     if(!value) {
                       return callback(new Error('学生会员卡不能为空'));
@@ -512,10 +512,11 @@
             },
             showCardNumber()
             {
-              if(this.studentForm.id == 0 || this.studentForm.auto_create_number == 0)
-                return false
-              else if(this.studentForm.id > 0)
-                return true;
+
+              if(this.studentForm.id == 0 && this.studentForm.auto_create_number == 0)
+              {
+                  return false
+              }
               return true;
             },
 

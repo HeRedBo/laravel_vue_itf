@@ -11,6 +11,9 @@ use App\Repositories\ClassesRepository;
 use App\Models\Admin\Classes;
 use App\Validators\ClassesValidator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
+use App\Events\AdminLogger;
+
 
 /**
  * Class ClassesRepositoryEloquent
@@ -61,7 +64,7 @@ class ClassesRepositoryEloquent extends AdminCommonRepository implements Classes
      * @param array $data
      * @return array
      */
-    public  function  createClass(array $data)
+    public  function  create(array $data)
     {
         $class = $this->model;
         // 设置字段默认值
@@ -72,6 +75,7 @@ class ClassesRepositoryEloquent extends AdminCommonRepository implements Classes
         $res = $class->save();
         if($res)
         {
+            Event::fire(new AdminLogger($data['venue_id'],'create',"添加班级【$class->id】【{$data['name']}】"));
             return success('班级创建成功');
         }
         else{
@@ -79,7 +83,7 @@ class ClassesRepositoryEloquent extends AdminCommonRepository implements Classes
         }
     }
 
-    public  function  updateClass(array $data, $id)
+    public  function  update(array $data, $id)
     {
         $class = $this->find($id);
         if($class)
@@ -90,15 +94,16 @@ class ClassesRepositoryEloquent extends AdminCommonRepository implements Classes
                 {
                     $class->$field = (!isset($data[$field])) ? $this->fields[$field] : $data[$field];
                 }
-                // 保存用户信息
+                // 保存卡券信息
                 $res = $class->save();
                 if($res)
                 {
-                    return success('班级创建成功');
+                    Event::fire(new AdminLogger($data['venue_id'],'update',"编辑班级【{$class->id}】【{$data['name']}】"));
+                    return success('班级编辑成功');
                 }
                 else
                 {
-                    return error('班级数据创建失败');
+                    return error('班级数据编辑失败');
                 }
             }
             catch (\Exception $e)
@@ -116,9 +121,11 @@ class ClassesRepositoryEloquent extends AdminCommonRepository implements Classes
     /**
      * 删除课程数据 课程被启用 不能被删除
      * @param $id
+     * @return mixed
      * @author Red-Bo
      */
-    public  function  deleteClasses($id)
+
+    public  function  delete($id)
     {
         $classes = $this->find($id);
         try
@@ -128,6 +135,10 @@ class ClassesRepositoryEloquent extends AdminCommonRepository implements Classes
                 // 这里以后需要添加 课程是否被引用的判断
                 $res = $this->delete($id);
                 if($res !== false)
+                {
+                    Event::fire(new AdminLogger($classes->venue_id,'update',"删除班级【{$classes->name}】"));
+                    return success('数据删除成功');
+                }
                     return success('数据删除成功');
             }
         }catch (\Exception $e)

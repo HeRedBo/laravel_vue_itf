@@ -18,7 +18,8 @@ export default {
                 birthday : '',
                 status : 1,
                 user_cards : [],
-                user_contacts : []
+                user_contacts : [],
+                auto_create_number : 1
             },
             select: {}
         }

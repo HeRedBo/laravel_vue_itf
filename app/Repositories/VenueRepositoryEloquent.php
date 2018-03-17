@@ -153,7 +153,7 @@ class VenueRepositoryEloquent extends AdminCommonRepository implements VenueRepo
 
 
     /**
-     * 获取道馆的各个模块的统计统计数
+     * 获取管理员管理的的道馆数
      *
      * @param int $is_self
      * @param array $where

@@ -88,7 +88,7 @@ class CardsController extends ApiController
             $data = array_merge($request->all(), [
                 'operator_id'      => auth('admin')->user()->id,
             ]);
-            $res = $this->repository->createCard($data);
+            $res = $this->repository->create($data);
             if($res['status'] == 1)
                 return $this->response->withCreated('数据创建成功');
             else
@@ -145,7 +145,7 @@ class CardsController extends ApiController
      * @param  CardUpdateRequest $request
      * @param  string            $id
      *
-     * @return Response
+     * @return  \Illuminate\Http\JsonResponse
      */
     public function update(CardUpdateRequest $request, $id)
     {
@@ -154,13 +154,11 @@ class CardsController extends ApiController
             $data = array_merge($request->all(), [
                 'operator_id'      => auth('admin')->user()->id,
             ]);
-            $res = $this->repository->updateCard($data,$id);
-
+            $res = $this->repository->update($data,$id);
             if($res['status'] == 1)
                 return $this->response->withCreated($res['msg']);
             else
                 return $this->response->withInternalServer($res['msg']);
-            
         } 
         catch (\Exception $e)
         {
@@ -230,6 +228,7 @@ class CardsController extends ApiController
     /**
      * 通过学生ID获取学生道馆卡券下拉框
      * @param Request $request
+     * @return array
      */
     public  function  studentCardOptions(Request $request)
     {

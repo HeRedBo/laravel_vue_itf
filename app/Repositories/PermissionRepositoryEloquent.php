@@ -8,6 +8,8 @@ use App\Repositories\PermissionRepository;
 use App\Models\Admin\Permission;
 use App\Validators\PermissionValidator;
 use Cache;
+use Illuminate\Support\Facades\Event;
+use App\Events\AdminLogger;
 
 /**
  * Class PermissionRepositoryEloquent
@@ -94,34 +96,34 @@ class PermissionRepositoryEloquent extends BaseRepository implements PermissionR
     }
 
 
-    public function createPermissionData(array $data)
+    public function create(array $data)
     {
-        $permisson = $this->model;
+        $permission = $this->model;
         // 设置字段默认值
         foreach(array_keys($this->fields) as $field)
         {
-            $permisson->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
+            $permission->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
         }
-        $permisson->save();
+        $permission->save();
         Cache::forget('menus');
         return success('数据创建成功');
     }
 
-    public function updatePermissionData(array $data, $id)
+    public function update(array $data, $id)
     {
-        $permisson = $this->find($id);
-        if($permisson)
+        $permission = $this->find($id);
+        if($permission)
         {
             // 设置字段默认值
             foreach(array_keys($this->fields) as $field)
             {
-                $permisson->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
+                $permission->$field = empty($data[$field]) ? $this->fields[$field] : $data[$field];
                 if($field == 'is_show') {
-                    $permisson->$field = (bool) $permisson->$field;
+                    $permission->$field = (bool) $permission->$field;
                 } 
                 
             }
-            $permisson->save();
+            $permission->save();
             Cache::forget('menus');            
             return success('数据更新成功');
         }

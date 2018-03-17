@@ -13,6 +13,8 @@ use App\Http\Requests\PermissionUpdateRequest;
 use App\Repositories\PermissionRepository;
 use Illuminate\Support\Facades\DB;
 
+
+
 class PermissionsController extends ApiController
 {
     /**
@@ -35,18 +37,13 @@ class PermissionsController extends ApiController
      */
     public function index()
     {
-
         $data['tree'] =  $this->repository->getTreeData();
         $data['select'] = $this->repository->getSelectList();
         return $this->response->withData($data);
-        
-        
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
         $permissions = $this->repository->all();
-
         if (request()->wantsJson())
         {
-
             return response()->json([
                 'data' => $permissions,
             ]);
@@ -64,7 +61,7 @@ class PermissionsController extends ApiController
      */
     public function store(PermissionCreateRequest $request)
     {
-        $permission = $this->repository->createPermissionData($request->all());
+        $permission = $this->repository->create($request->all());
         return $this->response->withCreated('权限创建成功');
     }
 
@@ -79,17 +76,13 @@ class PermissionsController extends ApiController
     public function show($id)
     {
         $permission = $this->repository->find($id);
-
         if (request()->wantsJson()) {
-
             return response()->json([
                 'data' => $permission,
             ]);
         }
-
         return view('permissions.show', compact('permission'));
     }
-
 
     /**
      * Show the form for editing the specified resource.
@@ -117,17 +110,15 @@ class PermissionsController extends ApiController
      */
     public function update(PermissionUpdateRequest $request, $id)
     {
-        $permission = $this->repository->updatePermissionData($request->all(), $id);
+        $permission = $this->repository->update($request->all(), $id);
         return $this->response->withSuccess('权限修改成功');
     }
 
-
     /**
-     * Remove the specified resource from storage.
+     *  Remove the specified resource from storage.
      *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
     {
@@ -136,7 +127,7 @@ class PermissionsController extends ApiController
             $this->repository->delete($id);
             return $this->response->withSuccess('数据删除成功');
         }
-        catch (\Expectation $e)
+        catch (\Exception $e)
         {
             return $this->response->withInternalServer($e->getMessage());
         }

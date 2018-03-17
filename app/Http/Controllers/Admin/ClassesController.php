@@ -65,7 +65,7 @@ class ClassesController extends ApiController
         $data = array_merge($request->all(), [
             'operator_id'      => auth('admin')->user()->id,
         ]);
-        $res = $this->repository->createClass($data);
+        $res = $this->repository->create($data);
         if($res['status'] == 1)
             return $this->response->withCreated('数据创建成功');
         else
@@ -125,7 +125,7 @@ class ClassesController extends ApiController
         $data = array_merge($request->all(), [
             'operator_id'     => auth('admin')->user()->id,
         ]);
-        $res = $this->repository->updateClass($data,$id);
+        $res = $this->repository->update($data,$id);
         if($res['status'] == 1)
             return $this->response->withSuccess('数据修改成功');
         else
@@ -142,7 +142,7 @@ class ClassesController extends ApiController
      */
     public function destroy($id)
     {
-        $res = $this->repository->deleteClasses($id);
+        $res = $this->repository->delete($id);
         if (request()->ajax())
         {
             if($res['status'] == 1)

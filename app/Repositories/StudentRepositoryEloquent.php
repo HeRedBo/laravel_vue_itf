@@ -630,17 +630,11 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
         }
     }
 
-    public function getStudentService()
-    {
-        exit;
-        $this->studentService->sayHello();
-        return $this->studentService->sayHello();
-    }
 
     /**
      * 获取签到道馆班级课程下拉框
      * @param  Request $request 请求参数
-     * @return [type]           [description]
+     * @return mixed
      */
     public function signClassOptions(Request $request)
     {
@@ -653,19 +647,18 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             $params['date'] = $date;
             $result = $this->studentService->signClassOptions($params);
             return success('数据获取成功',$result);
-        }catch (\Exception $e)
+        }
+        catch (\Exception $e)
         {
             logResult('【学生签到课程记录】'. $e->__toString(),'error');
             return error('签到课程获取失败'. $e->getMessage());
         }
-
-
-
     }
 
     /**
      * 获取学生卡券操作日志
      * @param Request $request
+     * @return array
      */
     public function getStudentCardLogger(Request $request)
     {

@@ -11,11 +11,11 @@ use Prettus\Repository\Contracts\RepositoryInterface;
 interface ClassesRepository extends RepositoryInterface
 {
 
-    public  function createClass(array  $data);
+    public  function create(array  $data);
 
-    public  function  updateClass(array $data, $id);
+    public  function  update(array $data, $id);
     
-    public  function  deleteClasses($id);
+    public  function  delete($id);
     
     public function checkClassName(array $params);
     

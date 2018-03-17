@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Services\Common\Dictionary;
 use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Eloquent\BaseRepository;
 use App\Repositories\AdminCommonRepository;
@@ -10,6 +11,8 @@ use App\Repositories\CardRepository;
 use App\Models\Admin\Card;
 use App\Validators\CardValidator;
 use App\Services\Logs\CardOperationLogServices;
+use Illuminate\Support\Facades\Event;
+use App\Events\AdminLogger;
 
 /**
  * Class CardRepositoryEloquent
@@ -68,8 +71,6 @@ class CardRepositoryEloquent extends AdminCommonRepository implements CardReposi
         return Card::class;
     }
 
-    
-
     /**
      * Boot up the repository, pushing criteria
      */
@@ -85,7 +86,7 @@ class CardRepositoryEloquent extends AdminCommonRepository implements CardReposi
      * @param array  $data
      * @return  mixed
      */
-    public function createCard(array $data)
+    public function create(array $data)
     {
         $card = $this->model;
         // 设置字段默认值
@@ -110,6 +111,7 @@ class CardRepositoryEloquent extends AdminCommonRepository implements CardReposi
                 if($res['status'] == 1)
                 {
                     DB::commit();
+                    Event::fire(new AdminLogger($data['venue_id'],'create',"添加卡券【{$data['name']}】"));
                     return success('卡券创建成功');
                 }
                 else
@@ -133,7 +135,7 @@ class CardRepositoryEloquent extends AdminCommonRepository implements CardReposi
      * @param       $id
      * @author Red-Bo
      */
-    public function  updateCard(array $data, $id)
+    public function  update(array $data, $id)
     {
         $card = $this->find($id);
         if($card)
@@ -143,6 +145,7 @@ class CardRepositoryEloquent extends AdminCommonRepository implements CardReposi
             // 卡券启用后不可编辑 超级管理员可以修改 
             // if($card->status == 1 && $uid != 1)
             //     return error('卡券一启用不能编辑');
+
             // 设置字段默认值
             foreach(array_keys($this->fields) as $field)
             {
@@ -157,6 +160,7 @@ class CardRepositoryEloquent extends AdminCommonRepository implements CardReposi
                     $card_log_services =  new CardOperationLogServices();
                     $card_log_services->addCardLog($log_data);
                 }
+                Event::fire(new AdminLogger($data['venue_id'],'create',"添加卡券【{$data['name']}】"));
                 return success('卡券修改成功');
                 
             }
@@ -205,13 +209,13 @@ class CardRepositoryEloquent extends AdminCommonRepository implements CardReposi
                     return error('卡卷修改失败');
                 }
             }
-
             $log_data = $this->buildCardLogData($old_card_data, $card,'修改卡券状态');
             if($log_data)
             {
                 $card_log_services =  new CardOperationLogServices();
                 $card_log_services->addCardLog($log_data);
             }
+            Event::fire(new AdminLogger($card['venue_id'],'update',"修改卡券【{$card['name']}】状态为".$this->cardStatusMap[$status]));
             return success('卡卷修改成功');
         }
         return error('数据不存在');

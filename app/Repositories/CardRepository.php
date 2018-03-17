@@ -10,9 +10,9 @@ use Prettus\Repository\Contracts\RepositoryInterface;
  */
 interface CardRepository extends RepositoryInterface
 {
-    public function createCard(array $data);
+    public function create(array $data);
 
-    public function  updateCard(array $data, $id);
+    public function  update(array $data, $id);
     
     public function checkCardName(array $params);
 
