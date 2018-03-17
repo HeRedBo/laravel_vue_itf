@@ -669,6 +669,8 @@ export default {
           this.signForm.section       = sign_data.section;
           this.signForm.class_id      = sign_data.class_id;
           this.signForm.class_name    = sign_data.class_name;
+          this.signForm.remark        = sign_data.remark;
+          //this.signForm.status        = sign_data.status;
           this.dialogFormVisible      = true;
         },
         studentSign()

@@ -12,7 +12,7 @@
 export default {
   computed : {
      visitedViews () {
-        return this.$store.state.app.visitedViews.slice(-8);
+        return this.$store.state.app.visitedViews.slice(-6);
      }
   },
   methods : {

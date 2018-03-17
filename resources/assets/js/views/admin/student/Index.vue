@@ -866,8 +866,8 @@ export default {
           this.signForm.venue_id      = this.params.venue_id;
           this.signForm.sign_date     = parseTime(this.params.sign_date,'{y}-{m}-{d}');
           this.signForm.section       = sign_data.section;
-          this.signForm.class_id      = sign_data.id;
-          var sign_class = sign_data.section +'_' + sign_data.id;
+          this.signForm.class_id      = sign_data.class_id;
+          var sign_class = sign_data.section +'_' + sign_data.class_id;
           this.signForm.sign_class    = sign_class;
           this.signForm.student_ids   = student_ids;
           this.signForm.student_names = student_names;

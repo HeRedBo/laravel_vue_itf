@@ -429,6 +429,7 @@ class VenueSchedule extends  BaseService
                     {
                         $sign_tmp         = $student_sign_tmp[$v['section']];
                         $v['status']      = $sign_tmp['status']; // 签到状态
+                        $v['remark']      = $sign_tmp['remark']; // 签到备注
                         $v['status_name'] = $sign_tmp['status_name'];
                         $v['type_name']   = $sign_tmp['type_name'];
                         $v['sign_at']     = $sign_tmp['created_at'];
@@ -472,6 +473,7 @@ class VenueSchedule extends  BaseService
                 }
                 $venue_schedules[$w][$i]['schedule_data'] = array_filter($schedule_data_tmp);
             }
+
 
             $temp_date_time = date("Y-m-d", strtotime("{$temp_date_time} + 1 day"));
         }
