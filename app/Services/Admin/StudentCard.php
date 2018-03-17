@@ -231,13 +231,13 @@ class StudentCard extends  BaseService
         {
             // get the latest record  on studentNumberCard
             $where = [
-                ['students.venue_id','=', $venue_id]
+                ['admin_students.venue_id','=', $venue_id]
             ];
             $orderBy = [
-                ['student_number_card.id','desc']
+                ['admin_student_number_card.id','desc']
             ];
-            $DB = DB::table('student_number_card')
-                ->join("students", "student_number_card.student_id",'=', 'students.id');
+            $DB = DB::table('admin_student_number_card')
+                ->join("admin_students", "admin_student_number_card.student_id",'=', 'admin_students.id');
             if($where)
             {
                 foreach ($where as $v)
