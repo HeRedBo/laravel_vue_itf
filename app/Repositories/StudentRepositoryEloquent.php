@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Event;
 use App\Events\AdminLogger;
 
 
+
 /**
  * Class StudentRepositoryEloquent
  * @package namespace App\Repositories;
@@ -329,6 +330,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             {
                 $this->venueService->createUserCardBill($user_card,$data['venue_id']);
             }
+            Event::fire(new AdminLogger($data['venue_id'],'create',"新增学生【 {$student_id}】【{$data['name']}】"));
 
             DB::commit();
             return success('学生信息创建成功');
@@ -390,7 +392,7 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             $student->giveContactsTo($studentContacts);
             // 处理用户会员卡问题
             $number_card_id = $this->studentCardService->saveStudentNumberCard($id, $data);
-
+            Event::fire(new AdminLogger($data['venue_id'],'update',"编辑学生信息【{$student->id}】【{$data['name']}】"));
             DB::commit();
             return success('数据修改成功');
         }
