@@ -584,6 +584,7 @@
             selectCard(value) {
                 var card = this.cardOptions[value];
                 card.is_new = 1;
+                card.id=0;
                 card.status = 1;
                 card.card_id = card.id;
                 var that = this; 
