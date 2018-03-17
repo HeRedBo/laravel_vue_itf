@@ -382,6 +382,17 @@ class AdminRepositoryEloquent extends AdminCommonRepository implements AdminRepo
         return  $query->select($fields)->paginate($pageSize)->toArray();
     }
 
+    public  function  getUserVenue($uid)
+    {
+        $user = $this->find($uid);
+        $user_venues = [];
+        if($user)
+        {
+            $user_venues = $user->venues->toArray();
+        }
+        return success('ok', $user_venues);
+    }
+
 
     public function user()
     {

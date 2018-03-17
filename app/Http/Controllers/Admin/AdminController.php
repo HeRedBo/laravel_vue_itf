@@ -145,7 +145,7 @@ class AdminController extends ApiController
     public function getUserVenues()
     {
         $uid = auth('admin')->user()->id;
-        $res = $this->repository->getUserVenues($uid);
+        $res = $this->repository->getUserVenue($uid);
         if($res['status'] == 1)
         {
             return $this->response->withData($res['data']);

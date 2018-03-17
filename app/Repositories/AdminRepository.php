@@ -21,6 +21,8 @@ interface AdminRepository extends RepositoryInterface
     public function checkUserName($name, $id);
 
     public function deleteUser($id);
+    
+    public  function  getUserVenue($uid);
 
 
     public function logger(Request $request);
