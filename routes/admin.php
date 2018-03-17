@@ -56,6 +56,7 @@ Route::group(['middleware' => ['auth:admin','authAdmin']], function() {
     Route::get('user/userVenues', ['as' => 'admin.user.userVenues', 'uses' => 'AdminController@getUserVenues']);
     Route::get('user/checkUserName', ['as' => 'admin.user.checkUserName', 'uses' => 'AdminController@checkUserName']);
     Route::get('user/logger', ['as' => 'admin.user.logger', 'uses' => 'AdminController@logger']);
+    Route::get('user/info', ['as' => 'admin.user.info', 'uses' => 'AdminController@info']);
 
     Route::resource('user', 'AdminController');
 

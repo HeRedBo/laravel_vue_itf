@@ -116,6 +116,11 @@ export default [
                         name : '操作日志',
                         component : () => import('views/admin/user/Logger.vue')
                     },
+                    {
+                        path: 'info',
+                        name: '修改资料',
+                        component: () => import('views/admin/user/Info.vue')
+                    },
 
                 ]
             },

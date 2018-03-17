@@ -218,4 +218,15 @@ class AdminController extends ApiController
             return $this->response->withInternalServer($res['msg']);
 
     }
+
+    public  function  info()
+    {
+        $res = $this->repository->user();
+        if($res['status'])
+            return $this->response->withData($res['data']);
+        else
+            return $this->response->withInternalServer($res['msg']);
+
+    }
+
 }

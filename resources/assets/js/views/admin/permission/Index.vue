@@ -58,7 +58,7 @@
             <div class="col-md-6">
                 <div class="box box-info">
                     <div class="box-header with-border">
-                        <h3 class="box-title">权限数</h3>
+                        <h3 class="box-title">权限树</h3>
                     </div>
     
                     <div id="treeAcl"></div>

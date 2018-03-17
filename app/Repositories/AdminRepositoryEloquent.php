@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Admin\AdminLogger;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\AdminRepository;
+use App\Repositories\AdminCommonRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -14,7 +15,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
  * Class AdminRepositoryEloquent
  * @package namespace App\Repositories;
  */
-class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
+class AdminRepositoryEloquent extends AdminCommonRepository implements AdminRepository
 {
     /**
      * model fields
@@ -233,17 +234,7 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
         }
            
     }
-    
-    public  function  getUserVenues($uid)
-    {
-        $user = $this->find($uid);
-        $user_venues = [];
-        if($user)
-        {
-            $user_venues = $user->venues->toArray();
-        }
-        return success('ok', $user_venues);
-    }
+
 
     /**
      * 管理员操作日志数据表
@@ -389,5 +380,26 @@ class AdminRepositoryEloquent extends BaseRepository implements AdminRepository
         $query->groupBy("admin.id");
         $query->orderBy($orderBy, $sortBy);
         return  $query->select($fields)->paginate($pageSize)->toArray();
+    }
+
+
+    public function user()
+    {
+        $id   = $this->admin_id;
+        $user = Admin::with(['roles','venues'])->find($id);
+        $data = [];
+        if($user)
+        {
+            $roles = $user->roles->toArray();
+            $venues = $user->venues->toArray();
+            $roles_mame = array_column($roles,'name');
+            $venueStr   = array_column($venues,'name');
+            $data = $user->toArray();
+            $data['rolesStr'] = $id == 1 ? '超级管理员' : (!empty($roles_mame) ? implode(',', $roles_mame) : '未分配');
+            $data['venuesStr'] = (!empty($roleStr)) ? implode(',', $venueStr) : '未分配';
+            $data['roles'] = array_column($roles,'id');
+            $data['venues'] = array_column($venues,'id');
+        }
+        return success("数据获取成功",$data);
     }
 }
