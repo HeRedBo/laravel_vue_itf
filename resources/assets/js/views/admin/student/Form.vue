@@ -583,10 +583,10 @@
             },
             selectCard(value) {
                 var card = this.cardOptions[value];
-                card.is_new = 1;
+                card.is_new  = 1;
+                card.card_id = card.id;
                 card.id=0;
                 card.status = 1;
-                card.card_id = card.id;
                 var that = this; 
 
                 this.$prompt('请输入卡券数量', '卡券数量', {
