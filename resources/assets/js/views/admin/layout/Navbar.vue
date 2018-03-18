@@ -90,8 +90,8 @@ export default {
               data : this.loginForm
             })
             .then(function(response) {
-                location.reload()// 为了重新实例化vue-router对象 避免bug
-                //that.$router.push({ path: '/admin/login' })      
+                //location.reload()// 为了重新实例化vue-router对象 避免bug
+                that.$router.push({ path: '/admin/login' })      
            })
            .catch(function(error) {
             
