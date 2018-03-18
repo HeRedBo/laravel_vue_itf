@@ -55,12 +55,11 @@ import Hamburger from 'components/Hamburger';
 import Levelbar from './Levelbar';
 import TabsView from './TabsView';
 import Screenfull from 'components/Screenfull'
-import { stack_error} from 'config/helper';
+import { stack_error,isEmpty} from 'config/helper';
 
 export default {
 	data() {
 		return {
-			image : window.User.picture,
 			user : window.User
 		}
 	},
@@ -75,13 +74,15 @@ export default {
 			'sidebar'
 		])
 	},
+	created() {
+		this.initUser();
+	},
 	methods : {
 		toggleSideBar() {
 			this.$store.dispatch('ToggleSideBar')
 		},
 		
 		logout() {
-
 			var that = this;
 			this.$http({
               method :"GET",
@@ -89,14 +90,34 @@ export default {
               data : this.loginForm
             })
             .then(function(response) {
-                //location.reload()// 为了重新实例化vue-router对象 避免bug
-               that.$router.push({ path: '/admin/login' })
-               
+                location.reload()// 为了重新实例化vue-router对象 避免bug
+                //that.$router.push({ path: '/admin/login' })      
            })
            .catch(function(error) {
             
              stack_error(error);
            });
+		},
+
+		initUser()
+		{
+			var that = this;
+			if(isEmpty(that.user))
+			{
+				this.$http({
+	              	method :"GET",
+	              	url : '/user/info',
+            	})
+            	.then(function(response) {
+                	 var {data} = response; 
+                	 that.user = data.data;
+           		})
+           		.catch(function(error) {
+             		stack_error(error);
+           		});
+
+			}
+			return true;
 		}
 	}
 }
