@@ -255,7 +255,7 @@ class StudentCard extends  BaseService
             $result = $DB->first();
             if($result)
             {
-                $number =substr($result['$result'],-4);
+                $number =substr($result['number'],-4);
             }
             // 将数据存入redis 下次直接读取redis
             Redis::set($this->venues_student_number_card_redis_key. $venue_id, $number);
