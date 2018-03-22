@@ -7,6 +7,7 @@ use itbdw\QiniuStorage\QiniuStorage;
 use App\Services\Logs\OperationLogServices;
 use App\Services\Logs\CardOperationLogServices;
 use App\Services\Admin\StudentCard;
+use App\Models\Admin\Admin;
 use App\Models\Admin\Student;
 use App\Models\Admin\Card;
 use App\Models\Admin\CardSnap;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Event;
 use App\Events\AdminLogger;
 use App\Services\ServiceFactory;
 use App\Repositories\StudentRepository;
+use App\Jobs\SendEmail;
 
 class ApiTestController extends ApiController
 {
@@ -42,6 +44,12 @@ class ApiTestController extends ApiController
 
     public  function  ApiTest()
     {
+
+        $user = Admin::find(1);
+        $this->dispatch(new SendEmail($user));
+        echo '1111111';
+        return;
+        exit;
 
         $result = $this->repository->getNumber();
 
