@@ -30,7 +30,7 @@
                 <!-- 头像 -->
                 <el-form-item label="头像">
                   <div class="components-container">
-                    <pan-thumb :image="venueForm.id ? venueForm.logo : image ">
+                    <pan-thumb :image="image">
                     </pan-thumb>
                     <el-button type="primary" icon="upload" style="position: absolute;bottom: 15px;margin-left: 40px;" @click="imagecropperShow=true">修改logo
                     </el-button>
@@ -120,7 +120,7 @@ export default
         },
         imagecropperShow: false,
 		    imagecropperKey: 0,
-        image: 'http://owu2vcxbh.bkt.clouddn.com/files/avatar/default.png',
+        image: 'https://itftkd-test-1252493044.cos.ap-guangzhou.myqcloud.com/files/avatar/default.png',
         buttonLoading: false,
         
       }
@@ -167,12 +167,13 @@ export default
        
       },
 
-      cropSuccess(resData) {
+      cropSuccess(respData) {
+        console.log(respData)
         this.imagecropperShow = false;
         this.imagecropperKey = this.imagecropperKey + 1;
-        this.image = resData.data.url;
-        this.venueForm.logo = resData.data.real_path;
-        this.venueForm.logo_thumb = resData.data.thumb[0].real_path;
+        this.venueForm.logo = respData.data.real_path;
+        this.venueForm.logo_thumb = respData.data.real_path;
+        this.image = respData.data.url;
       },
 
       close() {

@@ -186,9 +186,11 @@ return [
         Prettus\Repository\Providers\RepositoryServiceProvider::class,
 
         //集成图片裁剪功能
-        Intervention\Image\ImageServiceProvider::class
-
+        Intervention\Image\ImageServiceProvider::class,
+        YueCode\Cos\QCloudCosServiceProvider::class,
+        Freyo\Flysystem\QcloudCOSv5\ServiceProvider::class,
     ],
+
 
     /*
     |--------------------------------------------------------------------------
@@ -239,7 +241,8 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         // 图片裁切门面
-        'Image' => Intervention\Image\Facades\Image::class
+        'Image' => Intervention\Image\Facades\Image::class,
+
     ],
 
 ];

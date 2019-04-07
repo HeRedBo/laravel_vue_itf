@@ -104,7 +104,7 @@ class VenueRepositoryEloquent extends AdminCommonRepository implements VenueRepo
             {
                 if( in_array($field, ['logo','logo_thumb']))
                 {
-                    if(strrpos($data[$field],'http:') !== false) {
+                    if((strrpos($data[$field],'https:') !== false) || strrpos($data[$field],'http:') !== false) {
                         continue;
                     }
                 }
