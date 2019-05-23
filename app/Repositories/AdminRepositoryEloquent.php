@@ -152,7 +152,7 @@ class AdminRepositoryEloquent extends AdminCommonRepository implements AdminRepo
                 {
                     if($field == 'picture')
                     {
-                        if(strrpos($data[$field],'http:') !== false || strrpos($data['picture'],'https:') !== false) {
+                        if(strrpos($data[$field],'http:') !== false || strrpos($data[$field],'https:') !== false) {
                             continue;
                         }
                     }
@@ -173,7 +173,6 @@ class AdminRepositoryEloquent extends AdminCommonRepository implements AdminRepo
                 }
                 // 保存用户信息
                 $admin->save();
-                
                 $roles  = $data['roles'];
                 $venues = $data['venues'];
                 if(!empty($roles))
