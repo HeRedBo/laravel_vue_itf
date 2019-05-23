@@ -112,16 +112,15 @@ class VenueRepositoryEloquent extends AdminCommonRepository implements VenueRepo
             }
             $logo = $data['logo'];
             $logo_thumb = $data['logo_thumb'];
-             
             $manager = app('uploader');
-            if($old_logo != $logo)
+            if(!(strrpos($data['logo'],'http:') !== false || strrpos($data['logo'],'https:') !== false) &&  $old_logo != $logo)
             {
                 // 删除旧图
                 $manager->deleteFile($old_logo);
             }
 
             // 删除旧的缩略图
-            if($old_logo_thumb != $logo_thumb)
+            if(!(strrpos($data['logo_thumb'],'http:') !== false || strrpos($data['logo_thumb'],'https:') !== false) && $old_logo_thumb != $logo_thumb)
             {
                 $manager->deleteFile($old_logo_thumb);
             }

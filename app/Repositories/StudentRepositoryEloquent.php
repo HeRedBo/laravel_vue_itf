@@ -368,20 +368,18 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             {
                 if($field == 'picture')
                 {
-                    if(strrpos($data[$field],'http:') !== false) {
+                    if(strrpos($data[$field],'http:') !== false || strrpos($data[$field],'https:') !== false) {
                         continue;
                     }
                 }
                 $student->$field = (!isset($data[$field]) || is_null($data[$field])) ? $this->fields[$field] : $data[$field];
             }
-
-            if($old_picture != $data['picture'])
+            if(!(strrpos($data['picture'],'http:') !== false || strrpos($data['picture'],'https:') !== false) && $old_picture != $data['picture'])
             {
                 // 删除旧图
                 $manager = app('uploader');
                 $manager->deleteFile($old_picture);
             }
-
             //修改用户信息
             $student->save();
             $studentContacts = $data['user_contacts'];
@@ -438,12 +436,10 @@ class StudentRepositoryEloquent extends AdminCommonRepository implements Student
             }
             // 获取学生会员卡编号
             $student['card_number'] = $studentCard->getStudentNumberCard($id);
-
             $contacts =  $student->contacts->toArray();
             $relations_ids = array_column($contacts,'relation_id');
             $relation_names = RelationName::whereIn('id', $relations_ids)->get()->toArray();
             $relation_names = array_column($relation_names,NULL,'id');
-
             foreach ($contacts as &$contact) {
                 $contact['relation_name'] = $relation_names[$contact['relation_id']]['name'];
             }

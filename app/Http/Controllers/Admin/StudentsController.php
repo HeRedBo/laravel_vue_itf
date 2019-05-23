@@ -122,8 +122,7 @@ class StudentsController extends ApiController
         $result = $this->repository->getStudentInfo($id, $this->student_card_service);
         if($result['status'] == 1)
         {
-            return $this
-                    ->response->setResponseData($result['data'])
+            return $this->response->setResponseData($result['data'])
                     ->withSuccess($result['msg']);
         }
         else
