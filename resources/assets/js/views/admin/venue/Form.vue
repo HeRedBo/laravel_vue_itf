@@ -75,8 +75,6 @@ export default
 {
     components: { PanThumb ,ImageCropper, VDistpicker},
     name: 'venue',
-
-
     props: {
       venueForm: {
           type: Object,
@@ -89,6 +87,12 @@ export default
         default() {
               return {}
         }
+      },
+      image : {
+          type : String,
+          default() {
+              return ''
+          }
       }
     },
 
