@@ -14,8 +14,7 @@
                         >
                             <i class="fa fa-square-o"></i>
                         </button>
-
-                        <button type="button" class="btn btn-default btn-sm checkbox-sign"  @click="sign" >
+                        <button type="button" v-if="can('admin.student.sign')" class="btn btn-default btn-sm checkbox-sign"  @click="sign" >
                             <i class="fa fa-square-o"></i>
                             签到
                         </button>
@@ -46,7 +45,7 @@
 
                 <div class="form-inline pull-right">
 
-                    <router-link :to="{path:'create'}" class="btn btn-sm btn-success">
+                    <router-link :to="{path:'create'}" v-if="can('admin.student.create')" class="btn btn-sm btn-success">
                       学生新增
                     </router-link> 
 
@@ -304,11 +303,12 @@
             <!-- 操作 -->
             <template slot="actions" slot-scope="item">
                 <div class="btn-group">
-                    <a href="javascript:;" @click="view(item.item)" class="btn btn-success btn-xs">查看</a>
-                    <router-link :to="{path:'update/'+  item.item.id}" class="btn bg-orange btn-xs">编辑</router-link>
+                    <a href="javascript:;" v-if="can('admin.student.show')" @click="view(item.item)" class="btn btn-success btn-xs">查看</a>
+                    <router-link :to="{path:'update/'+  item.item.id}" v-if="can('admin.student.update')" class="btn bg-orange btn-xs">编辑</router-link>
                   <!--   target="_blank"  -->
-                    <router-link  :to="{path:'studentCardList/'+ item.item.id}" class="btn bg-info btn-xs">学生卡券</router-link>
-                    <router-link :to="{path:'SignCalendar/'+ item.item.venue_id + '/' +item.item.id}" class="btn bg-primary btn-xs">签到日历</router-link>  
+                    <router-link  :to="{path:'studentCardList/'+ item.item.id}" v-if="can('admin.student.studentCardList')"  class="btn bg-info btn-xs">学生卡券</router-link>
+                    <router-link :to="{path:'SignCalendar/'+ item.item.venue_id + '/' +item.item.id}" 
+                    v-if="can('admin.student.getSignCalendar')" class="btn bg-primary btn-xs">签到日历</router-link>  
                 </div>
             </template>
           </vTable>

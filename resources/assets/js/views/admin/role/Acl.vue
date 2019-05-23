@@ -70,7 +70,10 @@
                         theme_name : "classic"
                     },
                     "checkbox": {
-                        cascade : "", three_state : true, whole_node: true
+                        cascade : "up+down+undetermined",
+                        three_state : true, 
+                        whole_node: true,
+            
                     },
                     'plugins': ['types', 'checkbox', 'ui']
                 });

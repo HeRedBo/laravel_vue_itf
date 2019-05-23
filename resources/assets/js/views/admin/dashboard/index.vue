@@ -90,11 +90,20 @@ export default {
         	statistics: {},
             emptyGif: 'https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3'
         }
+    },
+    watch :{
+      　'$route': function (to, from) {
+           //执行数据更新查询
+    　　    //this.changePage();
+            console.log(to)
+            console.log(from)
 
+    　　}
     },
     created() {
     	this.getStatistics();
     },
+    
     methods : {
     	getStatistics() 
     	{
@@ -116,6 +125,7 @@ export default {
     	}
 
     }
+
 }
 </script>
 

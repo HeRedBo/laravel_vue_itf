@@ -4,7 +4,7 @@
             <div class="box">
                 <div class="box-header">
                         <span>
-                            <button v-show="showCreateButton"  @click="handleCreate" type="button" class="btn btn-sm btn-success">添加卡券
+                            <button v-show="showCreateButton" v-if="can('admin.card.store')"  @click="handleCreate" type="button" class="btn btn-sm btn-success">添加卡券
                             </button>
                         </span>
 
@@ -87,10 +87,10 @@
                     <!-- 操作 -->
                     <template slot="actions" slot-scope="item">
                         <div class="btn-group">
-                            <a href="javascript:;" @click="view(item.item)" class="btn btn-success btn-xs">查看</a>
+                            <a href="javascript:;" v-if="can('admin.card.show')" @click="view(item.item)" class="btn btn-success btn-xs">查看</a>
                             <!-- v-show="item.item.status == 0"  -->
-                            <button class="btn bg-orange btn-xs" @click="handleUpdate(item.item)">编辑</button>
-                            <router-link :to="{path:'logger/'+ item.item.id}" class="btn bg-info btn-xs">操作日志</router-link>
+                            <button class="btn bg-orange btn-xs" v-if="can('admin.card.edit')" @click="handleUpdate(item.item)">编辑</button>
+                            <router-link :to="{path:'logger/'+ item.item.id}" v-if="can('admin.card.cardLogger')" class="btn bg-info btn-xs">操作日志</router-link>
                             
                             <!-- <a href="#"  @click.prevent="$refs.table.onDel(item.item.id)"  class="btn btn-danger btn-xs">删除</a> -->
                         </div>

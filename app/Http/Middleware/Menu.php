@@ -34,7 +34,6 @@ class Menu
     {
         Cache::forget('menus');
         $data = Cache::store(config('cache.default','file'))->get('menus', function() {
-
             $data   = [];
             $uid    = Auth::guard('admin')->user()->id;
             $query = DB::table($this->tb_admin_user_role);
@@ -54,7 +53,6 @@ class Menu
                 $query->join($this->tb_admin_roles, $this->tb_admin_user_role.".role_id","=", $this->tb_admin_roles.'.id')
                     ->join($this->tb_admin_role_permission, $this->tb_admin_user_role.".role_id","=",$this->tb_admin_role_permission.".role_id")
                     ->join($this->tb_admin_permissions, $this->tb_admin_role_permission.".permission_id","=",$this->tb_admin_permissions.".id")
-
                 ;
                 $query->select([$this->tb_admin_permissions.".*"]);
                 if($where)
@@ -64,18 +62,51 @@ class Menu
                         $query->where($v[0], $v[1], $v[2]);
                     }
                 }
-
                 $query->orderBy('order_num','ASC');
                 $permissions = $query->get();
             }
             $permissionIds = [];
+
+
             if($permissions)
             {
                 $permissions = $permissions->toArray();
                 $permissionIds = array_column($permissions,'id');
             }
 
-             $level0 = Permission::where('parent_id','0')
+            // 优化侧标栏搜索 完善只有一种数据的时候
+            # dd($permissions->toArray());
+            // inner join  `admin_permissions` as parent_admin_permissions on parent_admin_permissions.`id` = `admin_permissions`.`parent_id`
+            $query = DB::table($this->tb_admin_user_role)
+                ->join($this->tb_admin_roles, $this->tb_admin_user_role.".role_id","=", $this->tb_admin_roles.'.id')
+                ->join($this->tb_admin_role_permission, $this->tb_admin_user_role.".role_id","=",$this->tb_admin_role_permission.".role_id")
+                ->join($this->tb_admin_permissions, $this->tb_admin_role_permission.".permission_id","=",$this->tb_admin_permissions.".id")
+                ->join(DB::raw("{$this->tb_admin_permissions} as parent_admin_permissions"),'parent_admin_permissions.id','=',$this->tb_admin_permissions.".parent_id")
+                ->whereNotIn(DB::raw("parent_admin_permissions.id"), $permissionIds)
+            ;
+            $query->select([DB::raw("parent_admin_permissions.*")])
+                ->groupBy(DB::raw("parent_admin_permissions.id"));
+            $where = [
+                [DB::raw("parent_admin_permissions.is_show"),"=",self::SHOW_OK],
+                ["admin_user_role.user_id","=",$uid]
+            ];
+            if($where)
+            {
+                foreach ($where as $k => $v)
+                {
+                    $query->where($v[0], $v[1], $v[2]);
+                }
+            }
+            $other_permissions = $query->get()->toArray();
+            if($other_permissions)
+            {
+                $other_permissions = array_column($other_permissions,NULL,'id');
+                $permissions = array_column($permissions,NULL,'id');
+                $permissions = $permissions + $other_permissions;
+                $permissions = array_values($permissions);
+            }
+
+            $level0 = Permission::where('parent_id','0')
                                  ->orderBy('order_num','ASC')
                                  ->get()
                                  ->toArray();
@@ -83,6 +114,7 @@ class Menu
             $subLevels  = [];
             foreach ($parentIds as $k => $parentId)
             {
+
                 foreach ($permissions as $kk => $v)
                 {
                     if($v->parent_id == $parentId)
@@ -91,6 +123,7 @@ class Menu
                     }
                 }
             }
+
             foreach ($level0 as $key => $val)
             {
                 $subLevel = isset($subLevels[$val['id']]) ? $subLevels[$val['id']] : [];
@@ -112,6 +145,7 @@ class Menu
                     }
                 }
             }
+            //dd($data);
             Cache::put('menus', $data);
             return $data;
 

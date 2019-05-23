@@ -105,5 +105,15 @@ export default function install (Vue) {
           get() {
               return http
           }
-      })
+      }),
+   
+    Vue.prototype.can = function (as) {
+        var permissions = window.Permissions;
+        if ($.inArray(as, permissions)>-1 || window.User.id == 1) {
+            return true;
+        }
+        return false;
+    }
 }
+
+

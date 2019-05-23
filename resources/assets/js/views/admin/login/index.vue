@@ -85,7 +85,8 @@ export default {
                     message: data.message,
                     type: 'success'
                 });
-               that.$router.push({ path: '/admin' })
+               //that.$router.push({ path: '/admin/dashboard'})
+               window.location.href = '/admin/dashboard';
            })
            .catch(function(error) {
              that.loading = false;

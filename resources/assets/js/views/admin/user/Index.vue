@@ -6,10 +6,9 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-inline pull-right">
-                             <router-link :to="{path:'create'}" class="btn btn-sm btn-success">
+                             <router-link :to="{path:'create'}" v-if="can('admin.user.create')" class="btn btn-sm btn-success">
                               用户新增
                             </router-link> 
-
 
                             <!-- 角色 -->
                              <div class="input-group input-group-sm">
@@ -125,9 +124,9 @@
                 <!-- 操作 -->
                 <template slot="actions" slot-scope="item">
                     <div class="btn-group">
-                        <a href="#" @click.prevent="view(item.item)" class="btn btn-success btn-xs">查看</a>
-                        <router-link target="_blank" :to="{path:'update/'+ item.item.id}" class="btn  bg-orange btn-xs">编辑</router-link>
-                        <a @click="handleDelete(item.item.id)" class="btn btn-danger btn-xs">删除</a>
+                        <a href="#" v-if="can('admin.user.show')" @click.prevent="view(item.item)" class="btn btn-success btn-xs">查看</a>
+                        <router-link v-if="can('admin.user.edit')" target="_blank" :to="{path:'update/'+ item.item.id}" class="btn  bg-orange btn-xs">编辑</router-link>
+                        <a v-if="can('admin.user.destroy')"  @click.prevent="$refs.table.onDel(item.item.id)" class="btn btn-danger btn-xs">删除</a>
 
 
                     </div>
@@ -255,24 +254,24 @@ export default {
     },
 
      getVenues() {
-                var url = '/user/venues', that = this;
-                this.$http({
-                   method :"GET",
-                   url : url,
-                })
-                .then(function(response) {
-                  var responseJson = response.data,data = responseJson.data
-                  var options = [];
-                  for (var i in data ) {
-                    let label =  data[i].name;
-                    options.push({value : data[i].id , label: label});
-                  } 
-                  that.venueOptions = options;
-                })
-                .catch(function(error) {
-                  stack_error(error);
-                }); 
-        },
+              var url = '/user/venues', that = this;
+              this.$http({
+                 method :"GET",
+                 url : url,
+              })
+              .then(function(response) {
+                var responseJson = response.data,data = responseJson.data
+                var options = [];
+                for (var i in data ) {
+                  let label =  data[i].name;
+                  options.push({value : data[i].id , label: label});
+                } 
+                that.venueOptions = options;
+              })
+              .catch(function(error) {
+                stack_error(error);
+              }); 
+      },
 
 
     }

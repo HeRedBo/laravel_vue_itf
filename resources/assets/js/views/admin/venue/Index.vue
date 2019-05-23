@@ -6,7 +6,7 @@
            <div class="row">
               <div class="col-md-2">
                 <span>
-                    <router-link :to="{path:'create'}" class="btn btn-sm btn-success">
+                    <router-link :to="{path:'create'}" v-if="can('admin.venue.create')" class="btn btn-sm btn-success">
                       添加
                     </router-link>
                 </span>  
@@ -63,7 +63,7 @@
                     <div class="btn-group">
                       <!--   <a href="javascript:;" @click="view(item.item)" class="btn btn-success btn-xs">查看</a> -->
                         <!-- v-show="item.item.status == 0"  -->
-                      <router-link :to="{path:'update/'+  item.item.id}" class="btn bg-orange btn-xs">编辑</router-link>
+                      <router-link :to="{path:'update/'+  item.item.id}" v-if="can('admin.venue.edit')" class="btn bg-orange btn-xs">编辑</router-link>
                         <a href="#"  @click.prevent="$refs.table.onDel(item.item.id)"  class="btn btn-danger btn-xs">删除</a>
           <!--               <router-link target="_blank"  :to="{path:'logger/'+ item.item.id}" class="btn bg-info btn-xs">操作日志</router-link> -->
                         

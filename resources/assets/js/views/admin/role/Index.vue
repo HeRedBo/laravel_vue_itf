@@ -6,7 +6,7 @@
                     <div class="row">
                         <div class="col-md-2">
                             <div class="input-group input-group-sm" >
-                                <a href="#" @click="handleCreate" class="btn btn-sm btn-success">角色添加</a>
+                                <a href="#" v-if="can('admin.role.create')" @click="handleCreate" class="btn btn-sm btn-success">角色添加</a>
                             </div>
                         </div>
 
@@ -54,9 +54,10 @@
                 <!-- 操作 -->
                 <template slot="actions" slot-scope="item">
                     <div class="btn-group">
-                        <router-link :to="{path:'setacl/'+ item.item.id}" class="btn bg-purple btn-xs">设置权限</router-link>
-                        <button class="btn bg-orange btn-xs" @click="handleUpdate(item.item)">编辑</button>
-                        <a href="javascript:void(0)"  @click="$refs.table.onDel(item.item.id)" class="btn btn-danger btn-xs">删除</a>
+                        <router-link :to="{path:'setacl/'+ item.item.id}"  v-if="can('admin.role.setAcl')"
+                        class="btn bg-purple btn-xs">设置权限</router-link>
+                        <button class="btn bg-orange btn-xs" v-if="can('admin.role.setAcl')" @click="handleUpdate(item.item)">编辑</button>
+                        <a href="javascript:void(0)"  v-if="can('admin.role.destroy')" @click="$refs.table.onDel(item.item.id)" class="btn btn-danger btn-xs">删除</a>
                     </div>
                 </template>
                 </vTable>

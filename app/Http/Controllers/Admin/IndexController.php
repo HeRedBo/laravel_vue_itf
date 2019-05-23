@@ -41,8 +41,20 @@ class IndexController extends ApiController
 	public function Index()
 	{
 	    $user = Auth::guard('admin')->user();
+        $permissionsArr = [];
+        if($user)
+        {
+            $permissions = Permission::all();
+            foreach ($permissions as $key => $val) {
+                if ($user->hasPermission($val->name)) {
+                    array_push($permissionsArr, $val->name);
+                }
+            }
+        }
+        # dd($permissionsArr);
 		return view('admin.index',[
-		    'user' => $user
+		    'user' => $user,
+            'permissions' => json_encode($permissionsArr),
         ]);
 	}
 
@@ -61,6 +73,7 @@ class IndexController extends ApiController
 	{
 		$path        = Request::get('path');
         $routeName   = implode('.', explode('/',$path));
+        $routeName = ltrim($routeName,'.');
         $permission  = Permission::where('name',$routeName)->first();
         $check = true;
         if($permission)

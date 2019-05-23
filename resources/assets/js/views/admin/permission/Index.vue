@@ -46,7 +46,7 @@
                                 <el-form-item label="左侧是否显示">
                                       <el-checkbox v-model="permissionForm.is_show"></el-checkbox>
                                 </el-form-item>
-                                <el-form-item>
+                                <el-form-item> 
                                   <el-button type="primary" @click="onSubmit" > {{ permissionForm.id ? '更新' : '立即创建' }}</el-button>
                                 </el-form-item>
                               </el-form>
