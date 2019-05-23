@@ -152,7 +152,7 @@ class AdminRepositoryEloquent extends AdminCommonRepository implements AdminRepo
                 {
                     if($field == 'picture')
                     {
-                        if(strrpos($data[$field],'http:') !== false) {
+                        if(strrpos($data[$field],'http:') !== false || strrpos($data['picture'],'https:') !== false) {
                             continue;
                         }
                     }
@@ -165,7 +165,7 @@ class AdminRepositoryEloquent extends AdminCommonRepository implements AdminRepo
                     $admin->password = bcrypt($data['password']);
                 }
 
-                if($old_picture != $data['picture'])
+                if(!(strrpos($data['picture'],'http:') !== false || strrpos($data['picture'],'https:') !== false) &&   $old_picture != $data['picture'])
                 {
                     // 删除旧图
                     $manager = app('uploader');
