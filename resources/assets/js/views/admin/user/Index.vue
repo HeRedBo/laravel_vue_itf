@@ -12,8 +12,8 @@
 
                             <!-- 角色 -->
                              <div class="input-group input-group-sm">
-                                 <el-select style="width:160px" v-model="params.role_id" placeholder="角色"  class="filter-item"  size="small"
-                                    clearable multiple autosize
+                                 <el-select multiple style="width:160px" v-model="params.role_id" placeholder="角色"  class="filter-item"  size="small"
+                                    
                                  >
                                         <el-option
                                                v-for="item in roleOptions"
@@ -200,7 +200,9 @@ export default {
                 actions : {label: '操作'}
             },
             ajax_url: "/user",
-            params : {},
+            params : {
+              role_id : []
+            },
             currentPage: 1,
             perPage: 15,
             del: {url:'/user',title:'用户删除后不可恢复，确定要删除角色吗?'},
@@ -218,9 +220,11 @@ export default {
     methods : {
       reset() 
       {
-        this.params = {};
+        this.params = {
+          role_id : []
+        };
+        //this.params.role_id = [];
       },
-
       view(row) {
         this.user = row;
         setTimeout(function() {
