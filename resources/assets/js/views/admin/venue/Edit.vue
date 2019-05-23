@@ -42,7 +42,7 @@ export default {
             select.city = city;
             select.area = area;
             that.select = select;
-            that.image  = data.logo_url;
+            that.image  = data.logo;
           })
           .catch(function(error) {
             console.log('load  venue data error')

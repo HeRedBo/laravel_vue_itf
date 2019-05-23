@@ -442,7 +442,7 @@
               },
               imagecropperShow: false,
               imagecropperKey: 0,
-              image: 'http://owu2vcxbh.bkt.clouddn.com/files/avatar/default.png', 
+              image: 'https://itftkd-test-1252493044.cos.ap-guangzhou.myqcloud.com/files/avatar/default.png', 
               userCards : [],
               Contacts : {},
               userContacts : [],
