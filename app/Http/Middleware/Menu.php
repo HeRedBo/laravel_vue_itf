@@ -83,6 +83,7 @@ class Menu
                 ->join($this->tb_admin_permissions, $this->tb_admin_role_permission.".permission_id","=",$this->tb_admin_permissions.".id")
                 ->join(DB::raw("{$this->tb_admin_permissions} as parent_admin_permissions"),'parent_admin_permissions.id','=',$this->tb_admin_permissions.".parent_id")
                 ->whereNotIn(DB::raw("parent_admin_permissions.id"), $permissionIds)
+                ->orderBy('order_num','ASC');
             ;
             $query->select([DB::raw("parent_admin_permissions.*")])
                 ->groupBy(DB::raw("parent_admin_permissions.id"));
